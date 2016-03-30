@@ -19,7 +19,7 @@ public abstract class Symbol {
      *
      * @return Original scope
      */
-    Scope getScope() {
+    public Scope getScope() {
         return currentScope;
     }
 }

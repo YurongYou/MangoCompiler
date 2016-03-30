@@ -13,14 +13,17 @@ public class ArrayType extends Type {
     }
 
     /**
+     * To check whether two Array Type is suitable
      * @param rhs The other Type instance to compare with
      * @return whether this equals to rhs
      */
     @Override
-    Boolean equals(Type rhs) {
+    public Boolean isSuitableAs(Type rhs) {
         if (rhs instanceof ArrayType
                 && ((ArrayType) rhs).dim == dim
-                && ((ArrayType) rhs).baseType == baseType) return true;
+                && ((ArrayType) rhs).baseType.isSuitableAs(baseType)) return true;
+        //since an array can be null
+        if (rhs == null) return true;
         return false;
     }
 }

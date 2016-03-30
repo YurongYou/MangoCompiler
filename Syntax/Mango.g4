@@ -32,19 +32,17 @@ dimExpr :
     ;
 
 type:
-    'bool'
-    | 'int'
-	| 'string'
-	| ID
-	| type ('[]')+
+    'bool'              # BoolType
+    | 'int'             # IntType
+	| 'string'          # StringType
+	| ID                # IDType
+	| type ( DIM )+     # ArrayType
 	;
 
-returnType :
-    type
-    | 'void'
+funcDecl:
+    type ID '(' formalParameterList? ')' block          # FuncWithReturn
+    | 'void' ID '(' formalParameterList? ')' block      # Prosedure
     ;
-
-funcDecl: returnType ID '(' formalParameterList? ')' block;
 
 formalParameterList: formalParameter (',' formalParameter)*;
 
@@ -161,6 +159,7 @@ LOG_NOT : '!';
 LOG_AND : '&&';
 LOG_OR : '||';
 
+DIM : '[]';
 //ASSIGN : '=';
 
 ID : ID_LETTER (ID_LETTER | DIGIT)*;

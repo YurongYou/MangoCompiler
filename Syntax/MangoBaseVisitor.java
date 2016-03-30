@@ -31,6 +31,7 @@ public class MangoBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements 
      */
     @Override
     public T visitDecl(MangoParser.DeclContext ctx) {
+        System.out.println("Line:" + ctx.getStart().getLine() + " Column:" + ctx.getStart().getCharPositionInLine());
         return visitChildren(ctx);
     }
 
