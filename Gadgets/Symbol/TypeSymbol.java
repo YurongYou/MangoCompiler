@@ -1,6 +1,6 @@
 package Gadgets.Symbol;
 
-import Gadgets.Scope;
+import Gadgets.Scope.Scope;
 import Gadgets.Type.Type;
 
 /**
@@ -9,7 +9,7 @@ import Gadgets.Type.Type;
 public class TypeSymbol extends Symbol {
     private Type type;
 
-    TypeSymbol(Scope _crrScope, Type _type) {
+    public TypeSymbol(Scope _crrScope, Type _type) {
         super(_crrScope);
         type = _type;
     }

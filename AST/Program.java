@@ -1,7 +1,7 @@
 package AST;
 
 import Gadgets.Position;
-import Gadgets.Scope;
+import Gadgets.Scope.Scope;
 
 import java.util.List;
 

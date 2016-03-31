@@ -1,6 +1,6 @@
 package Gadgets.Symbol;
 
-import Gadgets.Scope;
+import Gadgets.Scope.Scope;
 import Gadgets.Type.Type;
 
 /**

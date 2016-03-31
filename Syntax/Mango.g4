@@ -1,9 +1,8 @@
 grammar Mango;
 
-//import MangoLexer;
 /*
 	Built by YurongYou.
-	Based on Mx* Language Reference Manual 2016/3/21
+	Based on Mx* Language Reference Manual 2016/3/29
  */
 
 prog:
@@ -21,22 +20,18 @@ varDecl:
     | type ID '=' expr ';'
 	;
 
-creationExpr:
-    NEW type dimExpr?
-    | NEW type
-    | CONSTANT
-    ;
 
-dimExpr :
-    ('[' expr ']')+
+
+atomType:
+    'bool'
+    | 'int'
+    | 'string'
+    | ID
     ;
 
 type:
-    'bool'              # BoolType
-    | 'int'             # IntType
-	| 'string'          # StringType
-	| ID                # IDType
-	| type ( DIM )+     # ArrayType
+    atomType               # atom
+    |type DIM              # ArrayType
 	;
 
 funcDecl:
@@ -51,53 +46,65 @@ formalParameter: type ID;
 block: '{' stmt* '}';
 
 stmt:
-    expr? ';'
-    | block
-    | selectionStmt
-    | iterationStmt
-    | jumpStmt
-    | varDecl
+    ';'                 # EmptyStmt
+    | expr ';'          # ExprStmt
+    | block             # CompoundStmt
+    | selection         # SelectionStmt
+    | iteration         # IterationStmt
+    | jump              # JumpStmt
+    | varDecl           # VarDeclStmt
     ;
 
-jumpStmt:
-    RETURN expr ';'     #ReturnStmt
-    | BREAK ';'         #BreakStmt
-    | CONTINUE ';'      #ContinueStmt
+jump:
+    RETURN expr ';'     # ReturnStmt
+    | BREAK ';'         # BreakStmt
+    | CONTINUE ';'      # ContinueStmt
     ;
 
-selectionStmt: IF '(' expr ')' stmt (ELSEIF '(' expr ')' stmt)* (ELSE stmt)*;
+selection: IF '(' expr ')' stmt (subSelection)* (ELSE stmt)?;
 
-iterationStmt:
+subSelection: ELSEIF '(' expr ')' stmt;
+
+iteration:
     WHILE '(' expr? ')' stmt                        # WhileLoop
     | FOR '(' expr? ';' expr? ';' expr? ')' stmt    # ForLoop
     ;
 
 expr:
     '(' expr ')'                            # Bracket
-    | CONSTANT                              # Constant
-    | ID                                    # Id
+    | CONSTANT                              # Node
+    | ID                                    # Node
     | expr op = (PPLUS|MMINUS)              # SelfOpPost
     | ID '(' exprList? ')'                  # Call
     | expr '[' expr ']'                     # Index
-    | expr '.' expr                         # FieldAndMethod
+    | expr '.' ID                           # FieldAccess
+    | expr '.' ID '(' exprList? ')'         # ClassFuncAccess
     | op = (PPLUS|MMINUS) expr              # SelfOpPre
     | op = (PLUS | MINUS) expr              # Sign
-    | LOG_NOT expr                          # LogNot
-    | BIT_NOT expr                          # BitNot
+    | op = LOG_NOT expr                     # LogNot
+    | op = BIT_NOT expr                     # BitNot
     | creationExpr                          # Creation
-    | expr op = (MULT | DIV | MOD) expr     # MulDicMod
-    | expr op = (PLUS | MINUS) expr         # PlusMinus
-    | expr op = (SHIFT_L | SHIFR_R) expr    # Shift
-    | expr op = (LESS|LARGE|LEQ|GEQ) expr   # Relation
-    | expr op = (EQ | NEQ) expr             # Equal
-    | expr BIT_AND expr                     # BitAnd
-    | expr BIT_XOR expr                     # BitXor
-    | expr BIT_OR expr                      # BitOr
-    | expr LOG_AND expr                     # LogAnd
-    | expr LOG_OR expr                      # LogOr
+    | expr op = (MULT | DIV | MOD) expr     # binary
+    | expr op = (PLUS | MINUS) expr         # binary
+    | expr op = (SHIFT_L | SHIFT_R) expr    # binary
+    | expr op = (LESS|LARGE|LEQ|GEQ) expr   # LogBinary
+    | expr op = (EQ | NEQ) expr             # LogBinary
+    | expr op = BIT_AND expr                # binary
+    | expr op = BIT_XOR expr                # binary
+    | expr op = BIT_OR expr                 # binary
+    | expr op = LOG_AND expr                # LogBinary
+    | expr op = LOG_OR expr                 # LogBinary
     | <assoc=right>expr '=' expr            # Assign
     ;
 
+creationExpr:
+    NEW atomType dimExpr+    # ArrayCreate
+    | NEW atomType           # AtomCreate
+    ;
+
+dimExpr :
+    '[' expr ']'
+    ;
 
 exprList: expr (',' expr)* ;
 
@@ -142,7 +149,7 @@ MOD : '%';
 PLUS : '+';
 MINUS : '-';
 SHIFT_L : '<<';
-SHIFR_R : '>>';
+SHIFT_R : '>>';
 LESS : '<';
 LARGE : '>';
 LEQ : '<=';

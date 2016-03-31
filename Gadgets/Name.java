@@ -1,5 +1,7 @@
 package Gadgets;
 
+import Gadgets.Scope.Scope;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,7 +13,7 @@ import java.util.Map;
  */
 public class Name {
     String Name;
-    private static Map<String, Name> dict = new HashMap<String, Name>();
+    private static Map<String, Name> dict = new HashMap<>();
 
     private Name(String text) {
         Name = text;

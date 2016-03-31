@@ -1,12 +1,13 @@
 package AST;
 
 import Gadgets.Position;
-import Gadgets.Scope;
+import Gadgets.Scope.Scope;
 
 import java.util.List;
 
 /**
- * The compound statement("\{\}") node in AST
+ * The compound statement("{}") node in AST.
+ *
  * Created by Ficos on 16/3/31.
  */
 public class CompoundStmt extends Stmt {

@@ -1,7 +1,8 @@
-package Gadgets;
+package Gadgets.Scope;
 
 import CompileException.Redefine;
-import CompileException.Undefine;
+import CompileException.Undefined;
+import Gadgets.Name;
 import Gadgets.Symbol.Symbol;
 
 import java.util.HashMap;
@@ -44,16 +45,18 @@ public class Scope {
      *
      * @param key the {@link Name} to be looked up
      * @return the corresponding {@link Symbol}
-     * @throws Undefine
+     * @throws Undefined
      */
-    public Symbol resolve(Name key) throws Undefine {
+    public Symbol resolve(Name key) throws Undefined {
         Symbol value = dict.get(key);
-        if (value == null) value = getOuterScope().resolve(key);
-        // path compression
-        if (value != null) {
-            dict.put(key, value);
-            return value;
+        if (value == null) {
+            value = getOuterScope().resolve(key);
+            // path compression
+            if (value != null) {
+                dict.put(key, value);
+                return value;
+            } else throw new Undefined();
         }
-        throw new Undefine();
+        return value;
     }
 }

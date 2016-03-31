@@ -1,6 +1,6 @@
 package Gadgets.Symbol;
 
-import Gadgets.Scope;
+import Gadgets.Scope.Scope;
 
 /**
  * This abstract class serves as Value in {@link Scope} (which serves as a SymbolTable).
