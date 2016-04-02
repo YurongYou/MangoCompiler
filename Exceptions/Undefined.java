@@ -1,4 +1,4 @@
-package CompileException;
+package Exceptions;
 
 /**
  * Created by Ficos on 16/3/31.

@@ -1,4 +1,4 @@
-package CompileException;
+package Exceptions;
 
 /**
  * The error will be throw when AST come across an unexpected text

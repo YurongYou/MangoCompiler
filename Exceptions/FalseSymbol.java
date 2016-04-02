@@ -1,4 +1,4 @@
-package CompileException;
+package Exceptions;
 
 /**
  * This exception can be throw from SymbolTable.

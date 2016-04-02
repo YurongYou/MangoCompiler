@@ -1,9 +1,9 @@
 package Gadgets;
 
-import CompileException.FalseSymbol;
-import CompileException.Redefine;
-import CompileException.SymbolTableInitializationFault;
-import CompileException.Undefined;
+import Exceptions.FalseSymbol;
+import Exceptions.Redefine;
+import Exceptions.SymbolTableInitializationFault;
+import Exceptions.Undefined;
 import Gadgets.Symbol.FuncSymbol;
 import Gadgets.Symbol.Symbol;
 import Gadgets.Symbol.TypeSymbol;

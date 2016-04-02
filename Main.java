@@ -1,8 +1,10 @@
 import ASTBuilder.ClassCollector;
 import ASTBuilder.Field_FunctionCollector;
-import CompileException.Undefined;
+import Exceptions.Undefined;
 import Gadgets.Name;
 import Gadgets.Symbol.FuncSymbol;
+import Gadgets.Symbol.TypeSymbol;
+import Gadgets.Symbol.VarSymbol;
 import Gadgets.SymbolTable;
 import Syntax.MangoLexer;
 import Syntax.MangoParser;
@@ -36,16 +38,15 @@ public class Main {
         ParseTreeWalker walker = new ParseTreeWalker();
         walker.walk(collector1, tree);
 
-//        try{
-//            String[] testcase = {"RedBoy", "Mo", "invalid"};
-//            for (String s: testcase) {
-//                TypeSymbol type = (TypeSymbol) sb.resolve(Name.getName(s));
-//                System.out.println(type.getName());
-//            }
-//        }
-//        catch (Undefined u){
-//            System.out.println("Error: No such class");
-//        }
+        try {
+            String[] testcase = {"RedBoy", "Mo", "invalid"};
+            for (String s : testcase) {
+                TypeSymbol type = (TypeSymbol) sb.resolve(Name.getName(s));
+                System.out.println(type.getName());
+            }
+        } catch (Undefined u) {
+            System.out.println("Error: No such class");
+        }
         System.out.println(collector1.isAllCorrect());
 
         Field_FunctionCollector collector2 = new Field_FunctionCollector(sb);
@@ -63,5 +64,17 @@ public class Main {
         } catch (Undefined u) {
             System.out.println("Error: item not found");
         }
+
+        try {
+            String[] testcase = {"RedBoy.num", "Mo.sec", "age"};
+            for (String s : testcase) {
+                VarSymbol var = (VarSymbol) sb.resolve(Name.getName(s));
+                System.out.println("In-class variable " + var.getName());
+            }
+        } catch (Undefined u) {
+            System.out.println("Error: item not found");
+        }
+
+        System.out.println(collector2.isAllCorrect());
     }
 }

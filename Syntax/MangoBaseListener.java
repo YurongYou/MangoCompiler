@@ -737,7 +737,7 @@ public class MangoBaseListener implements MangoListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override
-	public void enterMemberDecl(MangoParser.MemberDeclContext ctx) {
+	public void enterClassField(MangoParser.ClassFieldContext ctx) {
 	}
 	/**
 	 * {@inheritDoc}
@@ -745,7 +745,25 @@ public class MangoBaseListener implements MangoListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override
-	public void exitMemberDecl(MangoParser.MemberDeclContext ctx) {
+	public void exitClassField(MangoParser.ClassFieldContext ctx) {
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * <p>
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override
+	public void enterClassFunction(MangoParser.ClassFunctionContext ctx) {
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * <p>
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override
+	public void exitClassFunction(MangoParser.ClassFunctionContext ctx) {
 	}
 
 	/**

@@ -1,6 +1,6 @@
 package AST;
 
-import CompileException.TextError;
+import Exceptions.TextError;
 import Gadgets.Position;
 import Gadgets.SymbolTable;
 

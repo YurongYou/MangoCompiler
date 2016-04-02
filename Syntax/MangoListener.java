@@ -522,13 +522,31 @@ public interface MangoListener extends ParseTreeListener {
 	 */
 	void exitClassBlock(MangoParser.ClassBlockContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link MangoParser#memberDecl}.
+	 * Enter a parse tree produced by the {@code ClassField}
+	 * labeled alternative in {@link MangoParser#memberDecl}.
 	 * @param ctx the parse tree
 	 */
-	void enterMemberDecl(MangoParser.MemberDeclContext ctx);
+	void enterClassField(MangoParser.ClassFieldContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link MangoParser#memberDecl}.
+	 * Exit a parse tree produced by the {@code ClassField}
+	 * labeled alternative in {@link MangoParser#memberDecl}.
 	 * @param ctx the parse tree
 	 */
-	void exitMemberDecl(MangoParser.MemberDeclContext ctx);
+	void exitClassField(MangoParser.ClassFieldContext ctx);
+
+	/**
+	 * Enter a parse tree produced by the {@code ClassFunction}
+	 * labeled alternative in {@link MangoParser#memberDecl}.
+	 *
+	 * @param ctx the parse tree
+	 */
+	void enterClassFunction(MangoParser.ClassFunctionContext ctx);
+
+	/**
+	 * Exit a parse tree produced by the {@code ClassFunction}
+	 * labeled alternative in {@link MangoParser#memberDecl}.
+	 *
+	 * @param ctx the parse tree
+	 */
+	void exitClassFunction(MangoParser.ClassFunctionContext ctx);
 }

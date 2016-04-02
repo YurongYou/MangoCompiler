@@ -1,7 +1,7 @@
 package ASTBuilder;
 
-import CompileException.Redefine;
-import CompileException.Undefined;
+import Exceptions.Redefine;
+import Exceptions.Undefined;
 import Gadgets.Name;
 import Gadgets.Symbol.FuncSymbol;
 import Gadgets.Symbol.VarSymbol;
@@ -64,10 +64,7 @@ public class Field_FunctionCollector extends MangoBaseListener {
     }
 
     @Override
-    public void enterVarDecl(MangoParser.VarDeclContext ctx) {
-        // ignore the inner scope varDecl
-        if (nowClass == null) return;
-
+    public void enterClassField(MangoParser.ClassFieldContext ctx) {
         // Analyse the type
         Type fieldType;
         try {

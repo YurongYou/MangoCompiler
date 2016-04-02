@@ -1,6 +1,6 @@
 package Gadgets.Type;
 
-import CompileException.FalseArrayInit;
+import Exceptions.FalseArrayInit;
 import Gadgets.Name;
 
 /**

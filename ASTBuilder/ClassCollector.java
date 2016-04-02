@@ -1,6 +1,6 @@
 package ASTBuilder;
 
-import CompileException.Redefine;
+import Exceptions.Redefine;
 import Gadgets.Name;
 import Gadgets.Symbol.TypeSymbol;
 import Gadgets.SymbolTable;

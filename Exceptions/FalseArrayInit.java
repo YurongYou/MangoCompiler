@@ -1,4 +1,4 @@
-package CompileException;
+package Exceptions;
 
 /**
  * This exception indicates that the an array type's base type is initialized by "null". see {@link Gadgets.Type.ArrayType}

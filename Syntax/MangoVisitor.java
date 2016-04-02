@@ -313,9 +313,19 @@ public interface MangoVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitClassBlock(MangoParser.ClassBlockContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link MangoParser#memberDecl}.
+	 * Visit a parse tree produced by the {@code ClassField}
+	 * labeled alternative in {@link MangoParser#memberDecl}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitMemberDecl(MangoParser.MemberDeclContext ctx);
+	T visitClassField(MangoParser.ClassFieldContext ctx);
+
+	/**
+	 * Visit a parse tree produced by the {@code ClassFunction}
+	 * labeled alternative in {@link MangoParser#memberDecl}.
+	 *
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitClassFunction(MangoParser.ClassFunctionContext ctx);
 }

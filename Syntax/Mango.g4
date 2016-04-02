@@ -108,8 +108,8 @@ classDecl: 'class' ID classBlock;
 classBlock: '{' memberDecl* '}';
 
 memberDecl:
-    type ID ';'
-    | funcDecl
+    type ID ';'     # ClassField
+    | funcDecl      # ClassFunction
     ;
 
 

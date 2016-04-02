@@ -166,8 +166,8 @@ public class MangoParser extends Parser {
 						}
 					}
 					setState(45);
-					_errHandler.sync(this);
-					_la = _input.LA(1);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
 			}
 			}
 		} catch (RecognitionException re) {
@@ -488,7 +488,7 @@ public class MangoParser extends Parser {
 						}
 				}
 					setState(74);
-					_errHandler.sync(this);
+				_errHandler.sync(this);
 					_alt = getInterpreter().adaptivePredict(_input, 3, _ctx);
 			}
 			}
@@ -515,7 +515,6 @@ public class MangoParser extends Parser {
 		public FormalParameterListContext formalParameterList() {
 			return getRuleContext(FormalParameterListContext.class, 0);
 		}
-
 		public FuncDeclContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -524,7 +523,6 @@ public class MangoParser extends Parser {
 		public int getRuleIndex() {
 			return RULE_funcDecl;
 		}
-
 		@Override
 		public void enterRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).enterFuncDecl(this);
@@ -577,7 +575,7 @@ public class MangoParser extends Parser {
 					{
 						setState(81);
 						formalParameterList();
-					}
+				}
 				}
 
 				setState(84);
@@ -644,12 +642,12 @@ public class MangoParser extends Parser {
 							setState(88);
 							match(T__8);
 							setState(89);
-							formalParameter();
+				formalParameter();
 						}
 					}
 					setState(94);
-					_errHandler.sync(this);
-					_la = _input.LA(1);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
 			}
 			}
 		} catch (RecognitionException re) {
@@ -765,8 +763,8 @@ public class MangoParser extends Parser {
 						}
 					}
 					setState(104);
-					_errHandler.sync(this);
-					_la = _input.LA(1);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
 			}
 				setState(105);
 				match(T__10);
@@ -1232,13 +1230,13 @@ public class MangoParser extends Parser {
 							{
 								setState(133);
 								subSelection();
-							}
-						}
 					}
+						}
+				}
 					setState(138);
 					_errHandler.sync(this);
 					_alt = getInterpreter().adaptivePredict(_input, 10, _ctx);
-				}
+			}
 				setState(141);
 				switch (getInterpreter().adaptivePredict(_input, 11, _ctx)) {
 					case 1: {
@@ -2139,12 +2137,12 @@ public class MangoParser extends Parser {
 										throw new FailedPredicateException(this, "precpred(_ctx, 11)");
 									setState(198);
 									((BinaryContext) _localctx).op = _input.LT(1);
-									_la = _input.LA(1);
+						_la = _input.LA(1);
 									if (!((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << MULT) | (1L << DIV) | (1L << MOD))) != 0))) {
 										((BinaryContext) _localctx).op = (Token) _errHandler.recoverInline(this);
-									} else {
-										consume();
-									}
+						} else {
+							consume();
+						}
 									setState(199);
 									expr(12);
 								}
@@ -2157,12 +2155,12 @@ public class MangoParser extends Parser {
 										throw new FailedPredicateException(this, "precpred(_ctx, 10)");
 									setState(201);
 									((BinaryContext) _localctx).op = _input.LT(1);
-									_la = _input.LA(1);
+						_la = _input.LA(1);
 									if (!(_la == PLUS || _la == MINUS)) {
 										((BinaryContext) _localctx).op = (Token) _errHandler.recoverInline(this);
-									} else {
-										consume();
-									}
+						} else {
+							consume();
+						}
 									setState(202);
 									expr(11);
 								}
@@ -2318,7 +2316,7 @@ public class MangoParser extends Parser {
 									setState(233);
 									match(T__11);
 									setState(234);
-									expr(0);
+						expr(0);
 									setState(235);
 									match(T__12);
 								}
@@ -2332,7 +2330,7 @@ public class MangoParser extends Parser {
 									setState(238);
 									match(T__13);
 									setState(239);
-									match(ID);
+						match(ID);
 								}
 								break;
 								case 15: {
@@ -2344,21 +2342,21 @@ public class MangoParser extends Parser {
 									setState(241);
 									match(T__13);
 									setState(242);
-									match(ID);
+						match(ID);
 									setState(243);
-									match(T__6);
+						match(T__6);
 									setState(245);
-									_la = _input.LA(1);
-									if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__6) | (1L << CONSTANT) | (1L << NEW) | (1L << PPLUS) | (1L << MMINUS) | (1L << PLUS) | (1L << MINUS) | (1L << BIT_NOT) | (1L << LOG_NOT) | (1L << ID))) != 0)) {
-										{
-											setState(244);
-											exprList();
+						_la = _input.LA(1);
+						if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__6) | (1L << CONSTANT) | (1L << NEW) | (1L << PPLUS) | (1L << MMINUS) | (1L << PLUS) | (1L << MINUS) | (1L << BIT_NOT) | (1L << LOG_NOT) | (1L << ID))) != 0)) {
+							{
+								setState(244);
+								exprList();
 							}
 						}
 
 									setState(247);
-									match(T__7);
-								}
+						match(T__7);
+						}
 								break;
 					}
 						}
@@ -2426,7 +2424,6 @@ public class MangoParser extends Parser {
 		public AtomContext atom() {
 			return getRuleContext(AtomContext.class, 0);
 		}
-
 		public ExprContext expr() {
 			return getRuleContext(ExprContext.class, 0);
 		}
@@ -2479,7 +2476,7 @@ public class MangoParser extends Parser {
 								{
 									setState(258);
 									match(DIM);
-								}
+						}
 							}
 						}
 						setState(263);
@@ -2557,12 +2554,12 @@ public class MangoParser extends Parser {
 							setState(269);
 							match(T__8);
 							setState(270);
-							expr(0);
+				expr(0);
 						}
 					}
 					setState(275);
-					_errHandler.sync(this);
-					_la = _input.LA(1);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
 			}
 			}
 		} catch (RecognitionException re) {
@@ -2678,8 +2675,8 @@ public class MangoParser extends Parser {
 						}
 					}
 					setState(286);
-					_errHandler.sync(this);
-					_la = _input.LA(1);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
 			}
 				setState(287);
 				match(T__10);
@@ -2695,17 +2692,6 @@ public class MangoParser extends Parser {
 	}
 
 	public static class MemberDeclContext extends ParserRuleContext {
-		public TypeContext type() {
-			return getRuleContext(TypeContext.class, 0);
-		}
-
-		public TerminalNode ID() {
-			return getToken(MangoParser.ID, 0);
-		}
-
-		public FuncDeclContext funcDecl() {
-			return getRuleContext(FuncDeclContext.class, 0);
-		}
 		public MemberDeclContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -2714,17 +2700,63 @@ public class MangoParser extends Parser {
 		public int getRuleIndex() {
 			return RULE_memberDecl;
 		}
+
+		public MemberDeclContext() {
+		}
+
+		public void copyFrom(MemberDeclContext ctx) {
+			super.copyFrom(ctx);
+		}
+	}
+
+	public static class ClassFunctionContext extends MemberDeclContext {
+		public FuncDeclContext funcDecl() {
+			return getRuleContext(FuncDeclContext.class, 0);
+		}
+
+		public ClassFunctionContext(MemberDeclContext ctx) {
+			copyFrom(ctx);
+		}
+
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if (listener instanceof MangoListener) ((MangoListener) listener).enterMemberDecl(this);
+			if (listener instanceof MangoListener) ((MangoListener) listener).enterClassFunction(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if (listener instanceof MangoListener) ((MangoListener) listener).exitMemberDecl(this);
+			if (listener instanceof MangoListener) ((MangoListener) listener).exitClassFunction(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof MangoVisitor) return ((MangoVisitor<? extends T>) visitor).visitMemberDecl(this);
+			if (visitor instanceof MangoVisitor) return ((MangoVisitor<? extends T>) visitor).visitClassFunction(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public static class ClassFieldContext extends MemberDeclContext {
+		public TypeContext type() {
+			return getRuleContext(TypeContext.class, 0);
+		}
+
+		public TerminalNode ID() {
+			return getToken(MangoParser.ID, 0);
+		}
+
+		public ClassFieldContext(MemberDeclContext ctx) {
+			copyFrom(ctx);
+		}
+
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if (listener instanceof MangoListener) ((MangoListener) listener).enterClassField(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if (listener instanceof MangoListener) ((MangoListener) listener).exitClassField(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if (visitor instanceof MangoVisitor) return ((MangoVisitor<? extends T>) visitor).visitClassField(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -2736,6 +2768,7 @@ public class MangoParser extends Parser {
 			setState(294);
 			switch (getInterpreter().adaptivePredict(_input, 26, _ctx)) {
 				case 1:
+					_localctx = new ClassFieldContext(_localctx);
 					enterOuterAlt(_localctx, 1);
 				{
 					setState(289);
@@ -2747,6 +2780,7 @@ public class MangoParser extends Parser {
 				}
 				break;
 				case 2:
+					_localctx = new ClassFunctionContext(_localctx);
 					enterOuterAlt(_localctx, 2);
 				{
 					setState(293);

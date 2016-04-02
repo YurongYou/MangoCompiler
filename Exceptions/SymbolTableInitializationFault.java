@@ -1,4 +1,4 @@
-package CompileException;
+package Exceptions;
 
 /**
  * This exception indicates there are problems when initializing the {@link Gadgets.SymbolTable}

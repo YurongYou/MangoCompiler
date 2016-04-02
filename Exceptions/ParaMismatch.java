@@ -1,4 +1,4 @@
-package CompileException;
+package Exceptions;
 
 /**
  * This exception indicates that function's AVT does not match its FNT.
