@@ -35,8 +35,7 @@ type:
 	;
 
 funcDecl:
-    type ID '(' formalParameterList? ')' block          # FuncWithReturn
-    | 'void' ID '(' formalParameterList? ')' block      # Prosedure
+    (type | 'void') ID '(' formalParameterList? ')' block
     ;
 
 formalParameterList: formalParameter (',' formalParameter)*;
@@ -98,12 +97,8 @@ expr:
     ;
 
 creationExpr:
-    NEW atom dimExpr+    # ArrayCreate
-    | NEW atom           # AtomCreate
-    ;
-
-dimExpr :
-    '[' expr ']'
+    NEW atom '[' expr ']' '[]'*   # ArrayCreate
+    | NEW atom                    # AtomCreate
     ;
 
 exprList: expr (',' expr)* ;
@@ -112,7 +107,10 @@ classDecl: 'class' ID classBlock;
 
 classBlock: '{' memberDecl* '}';
 
-memberDecl: type ID ';';
+memberDecl:
+    type ID ';'
+    | funcDecl
+    ;
 
 
 // Lexer for constants

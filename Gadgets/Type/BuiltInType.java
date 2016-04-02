@@ -1,10 +1,18 @@
 package Gadgets.Type;
 
+import Gadgets.Name;
+
 /**
  * BuiltIn Type, such as int, string, bool
  * Created by Ficos on 16/3/30.
  */
 public class BuiltInType extends Type {
+    private Name className;
+
+    public BuiltInType(Name _className) {
+        className = _className;
+    }
+
     /**
      * To check whether two BuiltIn Type is suitable
      * just compare the memory address of two type is OK, for every built-in type will only be created once
@@ -15,5 +23,10 @@ public class BuiltInType extends Type {
     @Override
     public Boolean isSuitableAs(Type rhs) {
         return rhs == this;
+    }
+
+    @Override
+    public String toString() {
+        return className.toString();
     }
 }

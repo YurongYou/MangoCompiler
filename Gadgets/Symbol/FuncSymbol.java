@@ -1,6 +1,5 @@
 package Gadgets.Symbol;
 
-import CompileException.Redefine;
 import Gadgets.Name;
 import Gadgets.Type.Type;
 
@@ -13,9 +12,9 @@ import java.util.ListIterator;
  * Created by Ficos on 16/3/30.
  */
 public class FuncSymbol extends Symbol {
-    Type returnType;
-    List<Type> formalParameterType;
-    List<Name> formalParameterName;
+    private Type returnType;
+    private List<Type> formalParameterType;
+    private List<Name> formalParameterName;
 
     /**
      * Creation function of funcSymbol. Define the formal parameters in the current scope
@@ -24,9 +23,9 @@ public class FuncSymbol extends Symbol {
      * @param FPN         the function's formal parameter Name List
      * @param FPT         the function's formal parameter Type List
      */
-    public FuncSymbol(int _ScopeID, Name _funcName, Type _returnType, List<Name> FPN, List<Type> FPT) throws Redefine {
+    public FuncSymbol(int _ScopeID, Name _funcName, Type _returnType, List<Name> FPN, List<Type> FPT) {
         super(_ScopeID, _funcName);
-//        Don't do this in symbol, extract it to outer
+//        Don't do this in symbol, extract it to the outer
 //        if (FPN != null) {
 //            ListIterator<Name> itrN = FPN.listIterator(0);
 //            ListIterator<Type> itrT = FPT.listIterator(0);

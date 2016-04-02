@@ -72,29 +72,15 @@ public interface MangoListener extends ParseTreeListener {
 	 */
 	void exitAtomType(MangoParser.AtomTypeContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code FuncWithReturn}
-	 * labeled alternative in {@link MangoParser#funcDecl}.
+	 * Enter a parse tree produced by {@link MangoParser#funcDecl}.
 	 * @param ctx the parse tree
 	 */
-	void enterFuncWithReturn(MangoParser.FuncWithReturnContext ctx);
+	void enterFuncDecl(MangoParser.FuncDeclContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code FuncWithReturn}
-	 * labeled alternative in {@link MangoParser#funcDecl}.
+	 * Exit a parse tree produced by {@link MangoParser#funcDecl}.
 	 * @param ctx the parse tree
 	 */
-	void exitFuncWithReturn(MangoParser.FuncWithReturnContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code Prosedure}
-	 * labeled alternative in {@link MangoParser#funcDecl}.
-	 * @param ctx the parse tree
-	 */
-	void enterProsedure(MangoParser.ProsedureContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code Prosedure}
-	 * labeled alternative in {@link MangoParser#funcDecl}.
-	 * @param ctx the parse tree
-	 */
-	void exitProsedure(MangoParser.ProsedureContext ctx);
+	void exitFuncDecl(MangoParser.FuncDeclContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MangoParser#formalParameterList}.
 	 * @param ctx the parse tree
@@ -373,23 +359,18 @@ public interface MangoListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitLogNot(MangoParser.LogNotContext ctx);
-
 	/**
 	 * Enter a parse tree produced by the {@code ConstantNode}
 	 * labeled alternative in {@link MangoParser#expr}.
-	 *
 	 * @param ctx the parse tree
 	 */
 	void enterConstantNode(MangoParser.ConstantNodeContext ctx);
-
 	/**
 	 * Exit a parse tree produced by the {@code ConstantNode}
 	 * labeled alternative in {@link MangoParser#expr}.
-	 *
 	 * @param ctx the parse tree
 	 */
 	void exitConstantNode(MangoParser.ConstantNodeContext ctx);
-
 	/**
 	 * Enter a parse tree produced by the {@code SelfOpPre}
 	 * labeled alternative in {@link MangoParser#expr}.
@@ -510,16 +491,6 @@ public interface MangoListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitAtomCreate(MangoParser.AtomCreateContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MangoParser#dimExpr}.
-	 * @param ctx the parse tree
-	 */
-	void enterDimExpr(MangoParser.DimExprContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MangoParser#dimExpr}.
-	 * @param ctx the parse tree
-	 */
-	void exitDimExpr(MangoParser.DimExprContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MangoParser#exprList}.
 	 * @param ctx the parse tree

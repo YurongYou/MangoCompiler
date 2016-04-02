@@ -78,17 +78,7 @@ public class MangoBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements 
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override
-	public T visitFuncWithReturn(MangoParser.FuncWithReturnContext ctx) {
-		return visitChildren(ctx);
-	}
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override
-	public T visitProsedure(MangoParser.ProsedureContext ctx) {
+	public T visitFuncDecl(MangoParser.FuncDeclContext ctx) {
 		return visitChildren(ctx);
 	}
 	/**
@@ -341,10 +331,9 @@ public class MangoBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements 
 	public T visitConstantNode(MangoParser.ConstantNodeContext ctx) {
 		return visitChildren(ctx);
 	}
-
 	/**
 	 * {@inheritDoc}
-	 * <p>
+	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
@@ -449,16 +438,6 @@ public class MangoBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements 
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override
-	public T visitDimExpr(MangoParser.DimExprContext ctx) {
-		return visitChildren(ctx);
-	}
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override
 	public T visitExprList(MangoParser.ExprListContext ctx) {
 		return visitChildren(ctx);
 	}
@@ -482,10 +461,9 @@ public class MangoBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements 
 	public T visitClassBlock(MangoParser.ClassBlockContext ctx) {
 		return visitChildren(ctx);
 	}
-
 	/**
 	 * {@inheritDoc}
-	 * <p>
+	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */

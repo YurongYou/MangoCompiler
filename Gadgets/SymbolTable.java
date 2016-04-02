@@ -2,12 +2,14 @@ package Gadgets;
 
 import CompileException.FalseSymbol;
 import CompileException.Redefine;
+import CompileException.SymbolTableInitializationFault;
 import CompileException.Undefined;
 import Gadgets.Symbol.FuncSymbol;
 import Gadgets.Symbol.Symbol;
 import Gadgets.Symbol.TypeSymbol;
 import Gadgets.Symbol.VarSymbol;
 import Gadgets.Type.BuiltInType;
+import Gadgets.Type.Type;
 
 import java.util.*;
 
@@ -19,15 +21,15 @@ public class SymbolTable {
     /**
      * this serves as reference to built-in type int
      */
-    public static BuiltInType INT = new BuiltInType();
+    public static BuiltInType INT = new BuiltInType(Name.getName("int"));
     /**
      * this serves as reference to built-in type string
      */
-    public static BuiltInType STRING = new BuiltInType();
+    public static BuiltInType STRING = new BuiltInType(Name.getName("string"));
     /**
      * this serves as reference to built-in type boll
      */
-    public static BuiltInType BOOL = new BuiltInType();
+    public static BuiltInType BOOL = new BuiltInType(Name.getName("bool"));
 
     //serve as a dictionary for symbol fetching
     private Map<Name, Stack<Symbol>> dict = new HashMap<>();
@@ -101,8 +103,12 @@ public class SymbolTable {
         define(name, string_ord);
     }
 
-    public SymbolTable() throws Redefine, FalseSymbol {
-        initialize();
+    public SymbolTable() {
+        try {
+            initialize();
+        } catch (Redefine err) {
+            throw new SymbolTableInitializationFault();
+        }
     }
 
 
@@ -138,6 +144,17 @@ public class SymbolTable {
         Stack<Symbol> entry = dict.get(key);
         if (entry == null) throw new Undefined();
         return entry.peek();
+    }
+
+    /**
+     * A shortcut for type looking up
+     *
+     * @param typeName the name of type to look up
+     * @return the required type
+     * @throws Undefined
+     */
+    public Type lookUpType(String typeName) throws Undefined {
+        return ((TypeSymbol) resolve(Name.getName(typeName))).getType();
     }
 
     /**

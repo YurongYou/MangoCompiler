@@ -49,19 +49,11 @@ public interface MangoVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAtomType(MangoParser.AtomTypeContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code FuncWithReturn}
-	 * labeled alternative in {@link MangoParser#funcDecl}.
+	 * Visit a parse tree produced by {@link MangoParser#funcDecl}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitFuncWithReturn(MangoParser.FuncWithReturnContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code Prosedure}
-	 * labeled alternative in {@link MangoParser#funcDecl}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitProsedure(MangoParser.ProsedureContext ctx);
+	T visitFuncDecl(MangoParser.FuncDeclContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MangoParser#formalParameterList}.
 	 * @param ctx the parse tree
@@ -225,16 +217,13 @@ public interface MangoVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitLogNot(MangoParser.LogNotContext ctx);
-
 	/**
 	 * Visit a parse tree produced by the {@code ConstantNode}
 	 * labeled alternative in {@link MangoParser#expr}.
-	 *
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitConstantNode(MangoParser.ConstantNodeContext ctx);
-
 	/**
 	 * Visit a parse tree produced by the {@code SelfOpPre}
 	 * labeled alternative in {@link MangoParser#expr}.
@@ -305,12 +294,6 @@ public interface MangoVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitAtomCreate(MangoParser.AtomCreateContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link MangoParser#dimExpr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitDimExpr(MangoParser.DimExprContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MangoParser#exprList}.
 	 * @param ctx the parse tree

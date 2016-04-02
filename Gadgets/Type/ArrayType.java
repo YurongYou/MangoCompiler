@@ -1,13 +1,15 @@
 package Gadgets.Type;
 
 import CompileException.FalseArrayInit;
+import Gadgets.Name;
 
 /**
  * Array Type, note that the base type can also be an ArrayType, and can not be null
+ * This is the only Type class that can be arbitrarily created
  * Created by Ficos on 16/3/30.
  */
 public class ArrayType extends Type {
-    Type baseType;
+    private Type baseType;
 
 
     public ArrayType(Type _base) {
@@ -29,7 +31,7 @@ public class ArrayType extends Type {
     }
 
     public static void main(String[] args) {
-        Type base1 = new BuiltInType();
+        Type base1 = new BuiltInType(Name.getName("ficos"));
         Type base2 = base1;
 
         ArrayType a1 = new ArrayType(base1);
@@ -38,5 +40,11 @@ public class ArrayType extends Type {
         ArrayType bb1 = new ArrayType(b1);
 
         System.out.println(aa1.isSuitableAs(bb1));
+        System.out.println(aa1.isSuitableAs(null));
+    }
+
+    @Override
+    public String toString() {
+        return baseType.toString() + "[]";
     }
 }

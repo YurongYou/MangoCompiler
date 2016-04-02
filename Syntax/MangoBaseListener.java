@@ -113,7 +113,7 @@ public class MangoBaseListener implements MangoListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override
-	public void enterFuncWithReturn(MangoParser.FuncWithReturnContext ctx) {
+	public void enterFuncDecl(MangoParser.FuncDeclContext ctx) {
 	}
 	/**
 	 * {@inheritDoc}
@@ -121,23 +121,7 @@ public class MangoBaseListener implements MangoListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override
-	public void exitFuncWithReturn(MangoParser.FuncWithReturnContext ctx) {
-	}
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override
-	public void enterProsedure(MangoParser.ProsedureContext ctx) {
-	}
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override
-	public void exitProsedure(MangoParser.ProsedureContext ctx) {
+	public void exitFuncDecl(MangoParser.FuncDeclContext ctx) {
 	}
 	/**
 	 * {@inheritDoc}
@@ -531,19 +515,17 @@ public class MangoBaseListener implements MangoListener {
 	@Override
 	public void enterConstantNode(MangoParser.ConstantNodeContext ctx) {
 	}
-
 	/**
 	 * {@inheritDoc}
-	 * <p>
+	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override
 	public void exitConstantNode(MangoParser.ConstantNodeContext ctx) {
 	}
-
 	/**
 	 * {@inheritDoc}
-	 * <p>
+	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override
@@ -707,22 +689,6 @@ public class MangoBaseListener implements MangoListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override
-	public void enterDimExpr(MangoParser.DimExprContext ctx) {
-	}
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override
-	public void exitDimExpr(MangoParser.DimExprContext ctx) {
-	}
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override
 	public void enterExprList(MangoParser.ExprListContext ctx) {
 	}
 	/**
@@ -765,19 +731,17 @@ public class MangoBaseListener implements MangoListener {
 	@Override
 	public void exitClassBlock(MangoParser.ClassBlockContext ctx) {
 	}
-
 	/**
 	 * {@inheritDoc}
-	 * <p>
+	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override
 	public void enterMemberDecl(MangoParser.MemberDeclContext ctx) {
 	}
-
 	/**
 	 * {@inheritDoc}
-	 * <p>
+	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override
