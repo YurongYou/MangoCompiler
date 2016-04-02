@@ -1,7 +1,6 @@
 package AST;
 
 import Gadgets.Position;
-import Gadgets.Scope.Scope;
 
 import java.util.List;
 
@@ -18,8 +17,8 @@ public class SelectionStmt extends Stmt {
     Stmt elseStmt;
 
     public SelectionStmt(ExprStmt _condition, Stmt _thenStmt, List<ExprStmt> _subSelectionConditions,
-                         List<Stmt> _subSelectionThenStmts, Scope _currScope, Position _pos) {
-        super(_currScope, _pos);
+                         List<Stmt> _subSelectionThenStmts, Position _pos) {
+        super(_pos);
         condition = _condition;
         thenStmt = _thenStmt;
         subSelectionConditions = _subSelectionConditions;

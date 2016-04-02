@@ -1,7 +1,6 @@
 package AST;
 
 import Gadgets.Position;
-import Gadgets.Scope.Scope;
 
 /**
  * The bitwise-not expression in AST.
@@ -10,8 +9,8 @@ import Gadgets.Scope.Scope;
 public class BitNotExpr extends ExprStmt {
     ExprStmt base;
 
-    public BitNotExpr(ExprStmt _base, Scope _currScope, Position _pos) {
-        super(_base.getType(), _currScope, _pos);
+    public BitNotExpr(ExprStmt _base, Position _pos) {
+        super(_base.getType(), _pos);
         base = _base;
     }
 }

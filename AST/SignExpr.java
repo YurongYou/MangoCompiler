@@ -1,7 +1,6 @@
 package AST;
 
 import Gadgets.Position;
-import Gadgets.Scope.Scope;
 
 /**
  * The sign expression in AST.
@@ -10,8 +9,8 @@ import Gadgets.Scope.Scope;
 public class SignExpr extends ExprStmt {
     ExprStmt base;
 
-    public SignExpr(ExprStmt _base, Scope _currScope, Position _pos) {
-        super(_base.getType(), _currScope, _pos);
+    public SignExpr(ExprStmt _base, Position _pos) {
+        super(_base.getType(), _pos);
         base = _base;
     }
 }

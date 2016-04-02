@@ -1,6 +1,6 @@
 package Gadgets.Symbol;
 
-import Gadgets.Scope.Scope;
+import Gadgets.Name;
 import Gadgets.Type.Type;
 
 /**
@@ -8,10 +8,10 @@ import Gadgets.Type.Type;
  * Created by Ficos on 16/3/30.
  */
 public class VarSymbol extends Symbol {
-    Type type;
+    private Type type;
 
-    VarSymbol(Scope _crrScope, Type _type) {
-        super(_crrScope);
+    public VarSymbol(int _scopeID, Name _varName, Type _type) {
+        super(_scopeID, _varName);
         type = _type;
     }
 
@@ -20,7 +20,7 @@ public class VarSymbol extends Symbol {
      *
      * @return the representing type
      */
-    Type getType() {
+    public Type getType() {
         return type;
     }
 }

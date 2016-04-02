@@ -1,16 +1,18 @@
 package Gadgets.Symbol;
 
-import Gadgets.Scope.Scope;
+import Gadgets.Name;
 import Gadgets.Type.Type;
 
 /**
+ * This derived class represents a type symbol
  * Created by Ficos on 16/3/30.
  */
 public class TypeSymbol extends Symbol {
     private Type type;
 
-    public TypeSymbol(Scope _crrScope, Type _type) {
-        super(_crrScope);
+    public TypeSymbol(Name _typeName, Type _type) {
+        //TypeSymbol's scope ID is default 0
+        super(0, _typeName);
         type = _type;
     }
 
@@ -19,7 +21,7 @@ public class TypeSymbol extends Symbol {
      *
      * @return the representing type
      */
-    Type getType() {
+    public Type getType() {
         return type;
     }
 }

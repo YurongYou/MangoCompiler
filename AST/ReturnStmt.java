@@ -1,7 +1,6 @@
 package AST;
 
 import Gadgets.Position;
-import Gadgets.Scope.Scope;
 
 /**
  * The return statement node in AST.
@@ -10,8 +9,8 @@ import Gadgets.Scope.Scope;
 public class ReturnStmt extends Stmt {
     ExprStmt returnExpr;
 
-    public ReturnStmt(ExprStmt _returnExpr, Scope _currScope, Position _pos) {
-        super(_currScope, _pos);
+    public ReturnStmt(ExprStmt _returnExpr, Position _pos) {
+        super(_pos);
         returnExpr = _returnExpr;
     }
 }

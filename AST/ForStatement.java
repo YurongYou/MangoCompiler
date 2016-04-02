@@ -1,7 +1,6 @@
 package AST;
 
 import Gadgets.Position;
-import Gadgets.Scope.Scope;
 
 /**
  * The for-loop statement node in AST.
@@ -14,8 +13,8 @@ public class ForStatement extends Stmt {
     ExprStmt after;
     Stmt loop;
 
-    public ForStatement(ExprStmt _init, ExprStmt _condition, ExprStmt _after, Stmt _loop, Scope _currScope, Position _pos) {
-        super(_currScope, _pos);
+    public ForStatement(ExprStmt _init, ExprStmt _condition, ExprStmt _after, Stmt _loop, Position _pos) {
+        super(_pos);
         init = _init;
         condition = _condition;
         after = _after;

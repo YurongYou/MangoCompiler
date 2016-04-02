@@ -32,13 +32,13 @@ public class MangoParser extends Parser {
 			BIT_NOT = 48, LOG_NOT = 49, LOG_AND = 50, LOG_OR = 51, DIM = 52, ID = 53, LINE_COMMENT = 54,
 			WS = 55;
 	public static final int
-			RULE_prog = 0, RULE_decl = 1, RULE_varDecl = 2, RULE_atomType = 3, RULE_type = 4,
+			RULE_prog = 0, RULE_decl = 1, RULE_varDecl = 2, RULE_atom = 3, RULE_type = 4,
 			RULE_funcDecl = 5, RULE_formalParameterList = 6, RULE_formalParameter = 7,
 			RULE_block = 8, RULE_stmt = 9, RULE_jump = 10, RULE_selection = 11, RULE_subSelection = 12,
 			RULE_iteration = 13, RULE_expr = 14, RULE_creationExpr = 15, RULE_dimExpr = 16,
 			RULE_exprList = 17, RULE_classDecl = 18, RULE_classBlock = 19, RULE_memberDecl = 20;
 	public static final String[] ruleNames = {
-			"prog", "decl", "varDecl", "atomType", "type", "funcDecl", "formalParameterList",
+			"prog", "decl", "varDecl", "atom", "type", "funcDecl", "formalParameterList",
 			"formalParameter", "block", "stmt", "jump", "selection", "subSelection",
 			"iteration", "expr", "creationExpr", "dimExpr", "exprList", "classDecl",
 			"classBlock", "memberDecl"
@@ -141,7 +141,6 @@ public class MangoParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).exitProg(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof MangoVisitor) return ((MangoVisitor<? extends T>) visitor).visitProg(this);
@@ -207,7 +206,6 @@ public class MangoParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).exitDecl(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof MangoVisitor) return ((MangoVisitor<? extends T>) visitor).visitDecl(this);
@@ -280,7 +278,6 @@ public class MangoParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).exitVarDecl(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof MangoVisitor) return ((MangoVisitor<? extends T>) visitor).visitVarDecl(this);
@@ -331,37 +328,37 @@ public class MangoParser extends Parser {
 		return _localctx;
 	}
 
-	public static class AtomTypeContext extends ParserRuleContext {
+	public static class AtomContext extends ParserRuleContext {
 		public TerminalNode ID() {
 			return getToken(MangoParser.ID, 0);
 		}
 
-		public AtomTypeContext(ParserRuleContext parent, int invokingState) {
+		public AtomContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 
 		@Override
 		public int getRuleIndex() {
-			return RULE_atomType;
+			return RULE_atom;
 		}
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if (listener instanceof MangoListener) ((MangoListener) listener).enterAtomType(this);
+			if (listener instanceof MangoListener) ((MangoListener) listener).enterAtom(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if (listener instanceof MangoListener) ((MangoListener) listener).exitAtomType(this);
+			if (listener instanceof MangoListener) ((MangoListener) listener).exitAtom(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof MangoVisitor) return ((MangoVisitor<? extends T>) visitor).visitAtomType(this);
+			if (visitor instanceof MangoVisitor) return ((MangoVisitor<? extends T>) visitor).visitAtom(this);
 			else return visitor.visitChildren(this);
 		}
 	}
 
-	public final AtomTypeContext atomType() throws RecognitionException {
-		AtomTypeContext _localctx = new AtomTypeContext(_ctx, getState());
-		enterRule(_localctx, 6, RULE_atomType);
+	public final AtomContext atom() throws RecognitionException {
+		AtomContext _localctx = new AtomContext(_ctx, getState());
+		enterRule(_localctx, 6, RULE_atom);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
@@ -427,25 +424,25 @@ public class MangoParser extends Parser {
 		}
 	}
 
-	public static class AtomContext extends TypeContext {
-		public AtomTypeContext atomType() {
-			return getRuleContext(AtomTypeContext.class, 0);
+	public static class AtomTypeContext extends TypeContext {
+		public AtomContext atom() {
+			return getRuleContext(AtomContext.class, 0);
 		}
 
-		public AtomContext(TypeContext ctx) {
+		public AtomTypeContext(TypeContext ctx) {
 			copyFrom(ctx);
 		}
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if (listener instanceof MangoListener) ((MangoListener) listener).enterAtom(this);
+			if (listener instanceof MangoListener) ((MangoListener) listener).enterAtomType(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if (listener instanceof MangoListener) ((MangoListener) listener).exitAtom(this);
+			if (listener instanceof MangoListener) ((MangoListener) listener).exitAtomType(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if (visitor instanceof MangoVisitor) return ((MangoVisitor<? extends T>) visitor).visitAtom(this);
+			if (visitor instanceof MangoVisitor) return ((MangoVisitor<? extends T>) visitor).visitAtomType(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -466,12 +463,12 @@ public class MangoParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 				{
-					_localctx = new AtomContext(_localctx);
+					_localctx = new AtomTypeContext(_localctx);
 					_ctx = _localctx;
 					_prevctx = _localctx;
 
 					setState(68);
-					atomType();
+					atom();
 				}
 				_ctx.stop = _input.LT(-1);
 				setState(74);
@@ -545,7 +542,6 @@ public class MangoParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).exitProsedure(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof MangoVisitor) return ((MangoVisitor<? extends T>) visitor).visitProsedure(this);
@@ -578,7 +574,6 @@ public class MangoParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).exitFuncWithReturn(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof MangoVisitor) return ((MangoVisitor<? extends T>) visitor).visitFuncWithReturn(this);
@@ -682,7 +677,6 @@ public class MangoParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).exitFormalParameterList(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof MangoVisitor)
@@ -751,7 +745,6 @@ public class MangoParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).exitFormalParameter(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof MangoVisitor)
@@ -804,7 +797,6 @@ public class MangoParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).exitBlock(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof MangoVisitor) return ((MangoVisitor<? extends T>) visitor).visitBlock(this);
@@ -860,12 +852,10 @@ public class MangoParser extends Parser {
 
 		public StmtContext() {
 		}
-
 		public void copyFrom(StmtContext ctx) {
 			super.copyFrom(ctx);
 		}
 	}
-
 	public static class ExprStmtContext extends StmtContext {
 		public ExprContext expr() {
 			return getRuleContext(ExprContext.class, 0);
@@ -874,24 +864,20 @@ public class MangoParser extends Parser {
 		public ExprStmtContext(StmtContext ctx) {
 			copyFrom(ctx);
 		}
-
 		@Override
 		public void enterRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).enterExprStmt(this);
 		}
-
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).exitExprStmt(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof MangoVisitor) return ((MangoVisitor<? extends T>) visitor).visitExprStmt(this);
 			else return visitor.visitChildren(this);
 		}
 	}
-
 	public static class JumpStmtContext extends StmtContext {
 		public JumpContext jump() {
 			return getRuleContext(JumpContext.class, 0);
@@ -900,24 +886,20 @@ public class MangoParser extends Parser {
 		public JumpStmtContext(StmtContext ctx) {
 			copyFrom(ctx);
 		}
-
 		@Override
 		public void enterRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).enterJumpStmt(this);
 		}
-
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).exitJumpStmt(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof MangoVisitor) return ((MangoVisitor<? extends T>) visitor).visitJumpStmt(this);
 			else return visitor.visitChildren(this);
 		}
 	}
-
 	public static class CompoundStmtContext extends StmtContext {
 		public BlockContext block() {
 			return getRuleContext(BlockContext.class, 0);
@@ -926,24 +908,20 @@ public class MangoParser extends Parser {
 		public CompoundStmtContext(StmtContext ctx) {
 			copyFrom(ctx);
 		}
-
 		@Override
 		public void enterRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).enterCompoundStmt(this);
 		}
-
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).exitCompoundStmt(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof MangoVisitor) return ((MangoVisitor<? extends T>) visitor).visitCompoundStmt(this);
 			else return visitor.visitChildren(this);
 		}
 	}
-
 	public static class VarDeclStmtContext extends StmtContext {
 		public VarDeclContext varDecl() {
 			return getRuleContext(VarDeclContext.class, 0);
@@ -952,24 +930,20 @@ public class MangoParser extends Parser {
 		public VarDeclStmtContext(StmtContext ctx) {
 			copyFrom(ctx);
 		}
-
 		@Override
 		public void enterRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).enterVarDeclStmt(this);
 		}
-
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).exitVarDeclStmt(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof MangoVisitor) return ((MangoVisitor<? extends T>) visitor).visitVarDeclStmt(this);
 			else return visitor.visitChildren(this);
 		}
 	}
-
 	public static class SelectionStmtContext extends StmtContext {
 		public SelectionContext selection() {
 			return getRuleContext(SelectionContext.class, 0);
@@ -978,46 +952,38 @@ public class MangoParser extends Parser {
 		public SelectionStmtContext(StmtContext ctx) {
 			copyFrom(ctx);
 		}
-
 		@Override
 		public void enterRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).enterSelectionStmt(this);
 		}
-
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).exitSelectionStmt(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof MangoVisitor) return ((MangoVisitor<? extends T>) visitor).visitSelectionStmt(this);
 			else return visitor.visitChildren(this);
 		}
 	}
-
 	public static class EmptyStmtContext extends StmtContext {
 		public EmptyStmtContext(StmtContext ctx) {
 			copyFrom(ctx);
 		}
-
 		@Override
 		public void enterRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).enterEmptyStmt(this);
 		}
-
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).exitEmptyStmt(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof MangoVisitor) return ((MangoVisitor<? extends T>) visitor).visitEmptyStmt(this);
 			else return visitor.visitChildren(this);
 		}
 	}
-
 	public static class IterationStmtContext extends StmtContext {
 		public IterationContext iteration() {
 			return getRuleContext(IterationContext.class, 0);
@@ -1026,17 +992,14 @@ public class MangoParser extends Parser {
 		public IterationStmtContext(StmtContext ctx) {
 			copyFrom(ctx);
 		}
-
 		@Override
 		public void enterRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).enterIterationStmt(this);
 		}
-
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).exitIterationStmt(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof MangoVisitor) return ((MangoVisitor<? extends T>) visitor).visitIterationStmt(this);
@@ -1131,12 +1094,10 @@ public class MangoParser extends Parser {
 
 		public JumpContext() {
 		}
-
 		public void copyFrom(JumpContext ctx) {
 			super.copyFrom(ctx);
 		}
 	}
-
 	public static class ContinueStmtContext extends JumpContext {
 		public TerminalNode CONTINUE() {
 			return getToken(MangoParser.CONTINUE, 0);
@@ -1153,14 +1114,12 @@ public class MangoParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).exitContinueStmt(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof MangoVisitor) return ((MangoVisitor<? extends T>) visitor).visitContinueStmt(this);
 			else return visitor.visitChildren(this);
 		}
 	}
-
 	public static class BreakStmtContext extends JumpContext {
 		public TerminalNode BREAK() {
 			return getToken(MangoParser.BREAK, 0);
@@ -1177,14 +1136,12 @@ public class MangoParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).exitBreakStmt(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof MangoVisitor) return ((MangoVisitor<? extends T>) visitor).visitBreakStmt(this);
 			else return visitor.visitChildren(this);
 		}
 	}
-
 	public static class ReturnStmtContext extends JumpContext {
 		public TerminalNode RETURN() {
 			return getToken(MangoParser.RETURN, 0);
@@ -1204,7 +1161,6 @@ public class MangoParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).exitReturnStmt(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof MangoVisitor) return ((MangoVisitor<? extends T>) visitor).visitReturnStmt(this);
@@ -1267,7 +1223,6 @@ public class MangoParser extends Parser {
 		public TerminalNode IF() {
 			return getToken(MangoParser.IF, 0);
 		}
-
 		public ExprContext expr() {
 			return getRuleContext(ExprContext.class, 0);
 		}
@@ -1277,11 +1232,9 @@ public class MangoParser extends Parser {
 		public StmtContext stmt(int i) {
 			return getRuleContext(StmtContext.class, i);
 		}
-
 		public List<SubSelectionContext> subSelection() {
 			return getRuleContexts(SubSelectionContext.class);
 		}
-
 		public SubSelectionContext subSelection(int i) {
 			return getRuleContext(SubSelectionContext.class, i);
 		}
@@ -1289,7 +1242,6 @@ public class MangoParser extends Parser {
 		public TerminalNode ELSE() {
 			return getToken(MangoParser.ELSE, 0);
 		}
-
 		public SelectionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -1306,7 +1258,6 @@ public class MangoParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).exitSelection(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof MangoVisitor) return ((MangoVisitor<? extends T>) visitor).visitSelection(this);
@@ -1372,15 +1323,12 @@ public class MangoParser extends Parser {
 		public TerminalNode ELSEIF() {
 			return getToken(MangoParser.ELSEIF, 0);
 		}
-
 		public ExprContext expr() {
 			return getRuleContext(ExprContext.class, 0);
 		}
-
 		public StmtContext stmt() {
 			return getRuleContext(StmtContext.class, 0);
 		}
-
 		public SubSelectionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -1389,17 +1337,14 @@ public class MangoParser extends Parser {
 		public int getRuleIndex() {
 			return RULE_subSelection;
 		}
-
 		@Override
 		public void enterRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).enterSubSelection(this);
 		}
-
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).exitSubSelection(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof MangoVisitor) return ((MangoVisitor<? extends T>) visitor).visitSubSelection(this);
@@ -1446,12 +1391,10 @@ public class MangoParser extends Parser {
 
 		public IterationContext() {
 		}
-
 		public void copyFrom(IterationContext ctx) {
 			super.copyFrom(ctx);
 		}
 	}
-
 	public static class ForLoopContext extends IterationContext {
 		public TerminalNode FOR() {
 			return getToken(MangoParser.FOR, 0);
@@ -1477,14 +1420,12 @@ public class MangoParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).exitForLoop(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof MangoVisitor) return ((MangoVisitor<? extends T>) visitor).visitForLoop(this);
 			else return visitor.visitChildren(this);
 		}
 	}
-
 	public static class WhileLoopContext extends IterationContext {
 		public TerminalNode WHILE() {
 			return getToken(MangoParser.WHILE, 0);
@@ -1507,7 +1448,6 @@ public class MangoParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).exitWhileLoop(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof MangoVisitor) return ((MangoVisitor<? extends T>) visitor).visitWhileLoop(this);
@@ -1635,7 +1575,6 @@ public class MangoParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).exitBracket(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof MangoVisitor) return ((MangoVisitor<? extends T>) visitor).visitBracket(this);
@@ -1683,7 +1622,6 @@ public class MangoParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).exitCreation(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof MangoVisitor) return ((MangoVisitor<? extends T>) visitor).visitCreation(this);
@@ -1715,19 +1653,13 @@ public class MangoParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).exitSelfOpPost(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof MangoVisitor) return ((MangoVisitor<? extends T>) visitor).visitSelfOpPost(this);
 			else return visitor.visitChildren(this);
 		}
 	}
-
 	public static class NodeContext extends ExprContext {
-		public TerminalNode CONSTANT() {
-			return getToken(MangoParser.CONSTANT, 0);
-		}
-
 		public TerminalNode ID() {
 			return getToken(MangoParser.ID, 0);
 		}
@@ -1743,7 +1675,6 @@ public class MangoParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).exitNode(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof MangoVisitor) return ((MangoVisitor<? extends T>) visitor).visitNode(this);
@@ -1775,10 +1706,8 @@ public class MangoParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
-
 	public static class LogNotContext extends ExprContext {
 		public Token op;
-
 		public ExprContext expr() {
 			return getRuleContext(ExprContext.class, 0);
 		}
@@ -1790,10 +1719,12 @@ public class MangoParser extends Parser {
 		public LogNotContext(ExprContext ctx) {
 			copyFrom(ctx);
 		}
+
 		@Override
 		public void enterRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).enterLogNot(this);
 		}
+
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).exitLogNot(this);
@@ -1805,6 +1736,31 @@ public class MangoParser extends Parser {
 		}
 	}
 
+	public static class ConstantNodeContext extends ExprContext {
+		public TerminalNode CONSTANT() {
+			return getToken(MangoParser.CONSTANT, 0);
+		}
+
+		public ConstantNodeContext(ExprContext ctx) {
+			copyFrom(ctx);
+		}
+
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if (listener instanceof MangoListener) ((MangoListener) listener).enterConstantNode(this);
+		}
+
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if (listener instanceof MangoListener) ((MangoListener) listener).exitConstantNode(this);
+		}
+
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if (visitor instanceof MangoVisitor) return ((MangoVisitor<? extends T>) visitor).visitConstantNode(this);
+			else return visitor.visitChildren(this);
+		}
+	}
 	public static class SelfOpPreContext extends ExprContext {
 		public Token op;
 		public ExprContext expr() {
@@ -1830,14 +1786,12 @@ public class MangoParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).exitSelfOpPre(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof MangoVisitor) return ((MangoVisitor<? extends T>) visitor).visitSelfOpPre(this);
 			else return visitor.visitChildren(this);
 		}
 	}
-
 	public static class LogBinaryContext extends ExprContext {
 		public Token op;
 		public List<ExprContext> expr() {
@@ -1890,14 +1844,12 @@ public class MangoParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).exitLogBinary(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof MangoVisitor) return ((MangoVisitor<? extends T>) visitor).visitLogBinary(this);
 			else return visitor.visitChildren(this);
 		}
 	}
-
 	public static class BinaryContext extends ExprContext {
 		public Token op;
 		public List<ExprContext> expr() {
@@ -1958,17 +1910,14 @@ public class MangoParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).exitBinary(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof MangoVisitor) return ((MangoVisitor<? extends T>) visitor).visitBinary(this);
 			else return visitor.visitChildren(this);
 		}
 	}
-
 	public static class SignContext extends ExprContext {
 		public Token op;
-
 		public ExprContext expr() {
 			return getRuleContext(ExprContext.class, 0);
 		}
@@ -1992,14 +1941,12 @@ public class MangoParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).exitSign(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof MangoVisitor) return ((MangoVisitor<? extends T>) visitor).visitSign(this);
 			else return visitor.visitChildren(this);
 		}
 	}
-
 	public static class AssignContext extends ExprContext {
 		public List<ExprContext> expr() {
 			return getRuleContexts(ExprContext.class);
@@ -2019,14 +1966,12 @@ public class MangoParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).exitAssign(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof MangoVisitor) return ((MangoVisitor<? extends T>) visitor).visitAssign(this);
 			else return visitor.visitChildren(this);
 		}
 	}
-
 	public static class BitNotContext extends ExprContext {
 		public Token op;
 		public ExprContext expr() {
@@ -2048,14 +1993,12 @@ public class MangoParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).exitBitNot(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof MangoVisitor) return ((MangoVisitor<? extends T>) visitor).visitBitNot(this);
 			else return visitor.visitChildren(this);
 		}
 	}
-
 	public static class FieldAccessContext extends ExprContext {
 		public ExprContext expr() {
 			return getRuleContext(ExprContext.class, 0);
@@ -2072,19 +2015,16 @@ public class MangoParser extends Parser {
 		public void enterRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).enterFieldAccess(this);
 		}
-
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).exitFieldAccess(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof MangoVisitor) return ((MangoVisitor<? extends T>) visitor).visitFieldAccess(this);
 			else return visitor.visitChildren(this);
 		}
 	}
-
 	public static class ClassFuncAccessContext extends ExprContext {
 		public ExprContext expr() {
 			return getRuleContext(ExprContext.class, 0);
@@ -2093,7 +2033,6 @@ public class MangoParser extends Parser {
 		public TerminalNode ID() {
 			return getToken(MangoParser.ID, 0);
 		}
-
 		public ExprListContext exprList() {
 			return getRuleContext(ExprListContext.class, 0);
 		}
@@ -2101,17 +2040,14 @@ public class MangoParser extends Parser {
 		public ClassFuncAccessContext(ExprContext ctx) {
 			copyFrom(ctx);
 		}
-
 		@Override
 		public void enterRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).enterClassFuncAccess(this);
 		}
-
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).exitClassFuncAccess(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof MangoVisitor)
@@ -2204,7 +2140,7 @@ public class MangoParser extends Parser {
 					}
 					break;
 					case 6: {
-						_localctx = new NodeContext(_localctx);
+						_localctx = new ConstantNodeContext(_localctx);
 						_ctx = _localctx;
 						_prevctx = _localctx;
 						setState(195);
@@ -2495,7 +2431,7 @@ public class MangoParser extends Parser {
 					setState(261);
 					_errHandler.sync(this);
 					_alt = getInterpreter().adaptivePredict(_input, 22, _ctx);
-				}
+			}
 			}
 		} catch (RecognitionException re) {
 			_localctx.exception = re;
@@ -2519,55 +2455,47 @@ public class MangoParser extends Parser {
 
 		public CreationExprContext() {
 		}
-
 		public void copyFrom(CreationExprContext ctx) {
 			super.copyFrom(ctx);
 		}
 	}
-
 	public static class AtomCreateContext extends CreationExprContext {
 		public TerminalNode NEW() {
 			return getToken(MangoParser.NEW, 0);
 		}
 
-		public AtomTypeContext atomType() {
-			return getRuleContext(AtomTypeContext.class, 0);
+		public AtomContext atom() {
+			return getRuleContext(AtomContext.class, 0);
 		}
 
 		public AtomCreateContext(CreationExprContext ctx) {
 			copyFrom(ctx);
 		}
-
 		@Override
 		public void enterRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).enterAtomCreate(this);
 		}
-
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).exitAtomCreate(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof MangoVisitor) return ((MangoVisitor<? extends T>) visitor).visitAtomCreate(this);
 			else return visitor.visitChildren(this);
 		}
 	}
-
 	public static class ArrayCreateContext extends CreationExprContext {
 		public TerminalNode NEW() {
 			return getToken(MangoParser.NEW, 0);
 		}
 
-		public AtomTypeContext atomType() {
-			return getRuleContext(AtomTypeContext.class, 0);
+		public AtomContext atom() {
+			return getRuleContext(AtomContext.class, 0);
 		}
-
 		public List<DimExprContext> dimExpr() {
 			return getRuleContexts(DimExprContext.class);
 		}
-
 		public DimExprContext dimExpr(int i) {
 			return getRuleContext(DimExprContext.class, i);
 		}
@@ -2575,17 +2503,14 @@ public class MangoParser extends Parser {
 		public ArrayCreateContext(CreationExprContext ctx) {
 			copyFrom(ctx);
 		}
-
 		@Override
 		public void enterRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).enterArrayCreate(this);
 		}
-
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).exitArrayCreate(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof MangoVisitor) return ((MangoVisitor<? extends T>) visitor).visitArrayCreate(this);
@@ -2607,7 +2532,7 @@ public class MangoParser extends Parser {
 					setState(262);
 					match(NEW);
 					setState(263);
-					atomType();
+					atom();
 					setState(265);
 					_errHandler.sync(this);
 					_alt = 1;
@@ -2636,7 +2561,7 @@ public class MangoParser extends Parser {
 					setState(269);
 					match(NEW);
 					setState(270);
-					atomType();
+					atom();
 				}
 				break;
 			}
@@ -2654,7 +2579,6 @@ public class MangoParser extends Parser {
 		public ExprContext expr() {
 			return getRuleContext(ExprContext.class, 0);
 		}
-
 		public DimExprContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -2663,17 +2587,14 @@ public class MangoParser extends Parser {
 		public int getRuleIndex() {
 			return RULE_dimExpr;
 		}
-
 		@Override
 		public void enterRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).enterDimExpr(this);
 		}
-
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).exitDimExpr(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof MangoVisitor) return ((MangoVisitor<? extends T>) visitor).visitDimExpr(this);
@@ -2727,7 +2648,6 @@ public class MangoParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).exitExprList(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof MangoVisitor) return ((MangoVisitor<? extends T>) visitor).visitExprList(this);
@@ -2794,7 +2714,6 @@ public class MangoParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).exitClassDecl(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof MangoVisitor) return ((MangoVisitor<? extends T>) visitor).visitClassDecl(this);
@@ -2848,7 +2767,6 @@ public class MangoParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).exitClassBlock(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof MangoVisitor) return ((MangoVisitor<? extends T>) visitor).visitClassBlock(this);
@@ -2916,7 +2834,6 @@ public class MangoParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if (listener instanceof MangoListener) ((MangoListener) listener).exitMemberDecl(this);
 		}
-
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if (visitor instanceof MangoVisitor) return ((MangoVisitor<? extends T>) visitor).visitMemberDecl(this);

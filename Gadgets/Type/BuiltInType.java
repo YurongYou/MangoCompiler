@@ -10,7 +10,7 @@ public class BuiltInType extends Type {
      * just compare the memory address of two type is OK, for every built-in type will only be created once
      *
      * @param rhs the other type
-     * @return
+     * @return whether or not this is suitable to be as rhs
      */
     @Override
     public Boolean isSuitableAs(Type rhs) {

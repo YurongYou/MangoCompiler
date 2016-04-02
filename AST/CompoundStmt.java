@@ -1,7 +1,6 @@
 package AST;
 
 import Gadgets.Position;
-import Gadgets.Scope.Scope;
 
 import java.util.List;
 
@@ -13,8 +12,8 @@ import java.util.List;
 public class CompoundStmt extends Stmt {
     List<Stmt> stmts;
 
-    public CompoundStmt(List<Stmt> _stmts, Scope _currScope, Position _pos) {
-        super(_currScope, _pos);
+    public CompoundStmt(List<Stmt> _stmts, Position _pos) {
+        super(_pos);
         stmts = _stmts;
     }
 }

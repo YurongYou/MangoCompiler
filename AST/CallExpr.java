@@ -2,7 +2,6 @@ package AST;
 
 import Gadgets.Name;
 import Gadgets.Position;
-import Gadgets.Scope.Scope;
 import Gadgets.Symbol.FuncSymbol;
 import Gadgets.Type.Type;
 
@@ -20,8 +19,8 @@ public class CallExpr extends ExprStmt {
 
     public CallExpr(FuncSymbol _funcInfo, List<Name> _actualParameterName,
                     List<Type> _actualParameterType,
-                    Scope _currScope, Position _pos) {
-        super(_funcInfo.getReturnType(), _currScope, _pos);
+                    Position _pos) {
+        super(_funcInfo.getReturnType(), _pos);
         funcInfo = _funcInfo;
         actualParameterName = _actualParameterName;
         actualParameterType = _actualParameterType;

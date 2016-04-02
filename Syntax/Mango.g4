@@ -22,7 +22,7 @@ varDecl:
 
 
 
-atomType:
+atom:
     'bool'
     | 'int'
     | 'string'
@@ -30,7 +30,7 @@ atomType:
     ;
 
 type:
-    atomType               # atom
+    atom                   # AtomType
     |type DIM              # ArrayType
 	;
 
@@ -72,7 +72,7 @@ iteration:
 
 expr:
     '(' expr ')'                            # Bracket
-    | CONSTANT                              # Node
+    | CONSTANT                              # ConstantNode
     | ID                                    # Node
     | expr op = (PPLUS|MMINUS)              # SelfOpPost
     | ID '(' exprList? ')'                  # Call
@@ -98,8 +98,8 @@ expr:
     ;
 
 creationExpr:
-    NEW atomType dimExpr+    # ArrayCreate
-    | NEW atomType           # AtomCreate
+    NEW atom dimExpr+    # ArrayCreate
+    | NEW atom           # AtomCreate
     ;
 
 dimExpr :

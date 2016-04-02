@@ -3,13 +3,14 @@ package Gadgets.Type;
 import CompileException.FalseArrayInit;
 
 /**
- * Array Type, note that the base type can also be an ArrayType
+ * Array Type, note that the base type can also be an ArrayType, and can not be null
  * Created by Ficos on 16/3/30.
  */
 public class ArrayType extends Type {
     Type baseType;
 
-    public ArrayType(Type _base) throws FalseArrayInit {
+
+    public ArrayType(Type _base) {
         baseType = _base;
         if (baseType == null) throw new FalseArrayInit();
     }
@@ -23,12 +24,11 @@ public class ArrayType extends Type {
     public Boolean isSuitableAs(Type rhs) {
         //since an array can be null
         if (rhs == null) return true;
-        if (rhs instanceof ArrayType
-                && ((ArrayType) rhs).baseType.isSuitableAs(baseType)) return true;
-        return false;
+        return rhs instanceof ArrayType
+                && baseType.isSuitableAs(((ArrayType) rhs).baseType);
     }
 
-    public static void main(String[] args) throws FalseArrayInit {
+    public static void main(String[] args) {
         Type base1 = new BuiltInType();
         Type base2 = base1;
 

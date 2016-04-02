@@ -1,7 +1,6 @@
 package AST;
 
 import Gadgets.Position;
-import Gadgets.Scope.Scope;
 
 /**
  * The postfix self increase/decrease expression (e.g. a++, a--) in AST.
@@ -10,8 +9,8 @@ import Gadgets.Scope.Scope;
 public class SelfOpPostExpr extends ExprStmt {
     ExprStmt base;
 
-    public SelfOpPostExpr(ExprStmt _base, Scope _currScope, Position _pos) {
-        super(_base.getType(), _currScope, _pos);
+    public SelfOpPostExpr(ExprStmt _base, Position _pos) {
+        super(_base.getType(), _pos);
         base = _base;
     }
 }

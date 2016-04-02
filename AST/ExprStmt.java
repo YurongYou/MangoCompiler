@@ -1,7 +1,6 @@
 package AST;
 
 import Gadgets.Position;
-import Gadgets.Scope.Scope;
 import Gadgets.Type.Type;
 
 /**
@@ -12,8 +11,8 @@ import Gadgets.Type.Type;
 public abstract class ExprStmt extends Stmt {
     private Type type;
 
-    public ExprStmt(Type _type, Scope _currScope, Position _pos) {
-        super(_currScope, _pos);
+    public ExprStmt(Type _type, Position _pos) {
+        super(_pos);
         type = _type;
     }
 

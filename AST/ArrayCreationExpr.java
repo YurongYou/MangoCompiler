@@ -1,7 +1,6 @@
 package AST;
 
 import Gadgets.Position;
-import Gadgets.Scope.Scope;
 import Gadgets.Type.ArrayType;
 
 import java.util.List;
@@ -13,8 +12,8 @@ import java.util.List;
 public class ArrayCreationExpr extends ExprStmt {
     List<ExprStmt> dimList;
 
-    public ArrayCreationExpr(ArrayType _type, List<ExprStmt> _dimList, Scope _currScope, Position _pos) {
-        super(_type, _currScope, _pos);
+    public ArrayCreationExpr(ArrayType _type, List<ExprStmt> _dimList, Position _pos) {
+        super(_type, _pos);
         dimList = _dimList;
     }
 }

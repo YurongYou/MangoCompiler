@@ -2,7 +2,6 @@ package AST;
 
 import Gadgets.Name;
 import Gadgets.Position;
-import Gadgets.Scope.Scope;
 import Gadgets.Symbol.FuncSymbol;
 
 /**
@@ -15,8 +14,8 @@ public class ClassFuncAccessExpr extends ExprStmt {
     FuncSymbol funcInfo;
 
     public ClassFuncAccessExpr(ExprStmt _classExpr, Name _funcName, FuncSymbol _funcInfo,
-                               Scope _currScope, Position _pos) {
-        super(_funcInfo.getReturnType(), _currScope, _pos);
+                               Position _pos) {
+        super(_funcInfo.getReturnType(), _pos);
         classExpr = _classExpr;
         funcName = _funcName;
         funcInfo = _funcInfo;

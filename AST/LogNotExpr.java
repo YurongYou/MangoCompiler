@@ -1,8 +1,7 @@
 package AST;
 
 import Gadgets.Position;
-import Gadgets.Scope.GlobalScope;
-import Gadgets.Scope.Scope;
+import Gadgets.SymbolTable;
 
 /**
  * The logical-not expression in AST.
@@ -11,8 +10,8 @@ import Gadgets.Scope.Scope;
 public class LogNotExpr extends ExprStmt {
     ExprStmt base;
 
-    public LogNotExpr(ExprStmt _base, Scope _currScope, Position _pos) {
-        super(GlobalScope.BOOL, _currScope, _pos);
+    public LogNotExpr(ExprStmt _base, Position _pos) {
+        super(SymbolTable.BOOL, _pos);
         base = _base;
     }
 }
