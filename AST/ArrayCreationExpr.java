@@ -6,7 +6,7 @@ import Gadgets.Type.ArrayType;
 import java.util.List;
 
 /**
- * The array creation expression (e.g. new int) node in AST
+ * The array creation expression (e.g. new int[2][]) node in AST
  * Created by Ficos on 16/3/31.
  */
 public class ArrayCreationExpr extends ExprStmt {

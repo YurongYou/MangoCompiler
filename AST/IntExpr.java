@@ -20,7 +20,7 @@ public class IntExpr extends ExprStmt {
     }
 
     public static void main(String[] args) {
-        IntExpr i = new IntExpr("233333333", new Position());
+        IntExpr i = new IntExpr("233333333", new Position(1));
         System.out.println(i.getValue());
     }
 }

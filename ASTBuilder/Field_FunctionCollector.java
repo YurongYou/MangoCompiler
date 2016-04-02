@@ -6,7 +6,6 @@ import Gadgets.Name;
 import Gadgets.Symbol.FuncSymbol;
 import Gadgets.Symbol.VarSymbol;
 import Gadgets.SymbolTable;
-import Gadgets.Type.ArrayType;
 import Gadgets.Type.Type;
 import Syntax.MangoBaseListener;
 import Syntax.MangoParser;
@@ -14,6 +13,8 @@ import Syntax.MangoParser;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+
+import static Gadgets.TypeParser.parseType;
 
 /**
  * This class is intended to collect all global functions,
@@ -25,29 +26,6 @@ public class Field_FunctionCollector extends MangoBaseListener {
     private SymbolTable global;
     private String nowClass = null;
     private Boolean correct = true;
-
-    //help to count a type definition's dimension
-    private Type parseType(String type) throws Undefined {
-        if (type.lastIndexOf('[') == -1) {
-            return global.lookUpType(type);
-        }
-
-        //count the dimension of the array type;
-        int count = 0;
-        int pos;
-        while ((pos = type.lastIndexOf('[')) != -1) {
-            ++count;
-            type = type.substring(0, pos);
-        }
-
-        // create the corresponding ArrayType
-        ArrayType ans = new ArrayType(global.lookUpType(type));
-        for (int i = 1; i < count; ++i) {
-            ans = new ArrayType(ans);
-        }
-
-        return ans;
-    }
 
     public Field_FunctionCollector(SymbolTable _global) {
         global = _global;
@@ -68,7 +46,7 @@ public class Field_FunctionCollector extends MangoBaseListener {
         // Analyse the type
         Type fieldType;
         try {
-            fieldType = parseType(ctx.type().getText());
+            fieldType = parseType(ctx.type().getText(), global);
         } catch (Undefined err) {
             System.err.println("Used undefined class " + ctx.type().getText() +
                     " at line " + ctx.getStart().getLine());
@@ -99,7 +77,7 @@ public class Field_FunctionCollector extends MangoBaseListener {
         Type funcReturnType = null;
         if (ctx.type() != null) {
             try {
-                funcReturnType = parseType(ctx.type().getText());
+                funcReturnType = parseType(ctx.type().getText(), global);
             } catch (Undefined err) {
                 System.err.println("Used undefined function return type " +
                         ctx.type().getText() + " at line " + ctx.getStart().getLine());
@@ -134,7 +112,7 @@ public class Field_FunctionCollector extends MangoBaseListener {
             try {
                 while (sourceItr.hasNext()) {
                     source = sourceItr.next();
-                    formalParameterType.add(parseType(source.type().getText()));
+                    formalParameterType.add(parseType(source.type().getText(), global));
                     formalParameterName.add(Name.getName(source.ID().getText()));
                 }
             } catch (Undefined err) {

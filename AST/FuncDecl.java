@@ -22,4 +22,12 @@ public class FuncDecl extends Decl {
         block = _block;
         info = _info;
     }
+
+    public void fillBlock(CompoundStmt _block) {
+        block = _block;
+    }
+
+    public FuncSymbol getFuncInfo() {
+        return info;
+    }
 }

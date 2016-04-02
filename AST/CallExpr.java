@@ -1,9 +1,7 @@
 package AST;
 
-import Gadgets.Name;
 import Gadgets.Position;
 import Gadgets.Symbol.FuncSymbol;
-import Gadgets.Type.Type;
 
 import java.util.List;
 
@@ -12,17 +10,13 @@ import java.util.List;
  * Created by Ficos on 16/3/31.
  */
 public class CallExpr extends ExprStmt {
-    Name funcName;
     FuncSymbol funcInfo;
-    List<Name> actualParameterName;
-    List<Type> actualParameterType;
+    List<ExprStmt> actualParameter;
 
-    public CallExpr(FuncSymbol _funcInfo, List<Name> _actualParameterName,
-                    List<Type> _actualParameterType,
+    public CallExpr(FuncSymbol _funcInfo, List<ExprStmt> _actualParameter,
                     Position _pos) {
         super(_funcInfo.getReturnType(), _pos);
         funcInfo = _funcInfo;
-        actualParameterName = _actualParameterName;
-        actualParameterType = _actualParameterType;
+        actualParameter = _actualParameter;
     }
 }

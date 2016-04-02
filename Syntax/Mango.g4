@@ -30,8 +30,8 @@ atom:
     ;
 
 type:
-    atom                   # AtomType
-    |type DIM              # ArrayType
+    atom
+    |type DIM
 	;
 
 funcDecl:
@@ -65,14 +65,14 @@ selection: IF '(' expr ')' stmt (subSelection)* (ELSE stmt)?;
 subSelection: ELSEIF '(' expr ')' stmt;
 
 iteration:
-    WHILE '(' expr? ')' stmt                        # WhileLoop
-    | FOR '(' expr? ';' expr? ';' expr? ')' stmt    # ForLoop
+    WHILE '(' expr ')' stmt                                                    # WhileLoop
+    | FOR '(' init = expr? ';' condition = expr? ';' after = expr? ')' stmt    # ForLoop
     ;
 
 expr:
     '(' expr ')'                            # Bracket
-    | CONSTANT                              # ConstantNode
-    | ID                                    # Node
+    | tp = (NULL|INT|STRING|BOOL)           # ConstantLeaf
+    | ID                                    # IDLeaf
     | expr op = (PPLUS|MMINUS)              # SelfOpPost
     | ID '(' exprList? ')'                  # Call
     | expr '[' expr ']'                     # Index
@@ -97,8 +97,8 @@ expr:
     ;
 
 creationExpr:
-    NEW atom '[' expr ']' '[]'*   # ArrayCreate
-    | NEW atom                    # AtomCreate
+    NEW atom '[' expr ']' ('[]')*   # ArrayCreate
+    | NEW atom                      # AtomCreate
     ;
 
 exprList: expr (',' expr)* ;

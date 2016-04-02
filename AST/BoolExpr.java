@@ -1,6 +1,6 @@
 package AST;
 
-import Exceptions.TextError;
+import Exceptions.Bug_TextError;
 import Gadgets.Position;
 import Gadgets.SymbolTable;
 
@@ -11,11 +11,11 @@ import Gadgets.SymbolTable;
 public class BoolExpr extends ExprStmt {
     Boolean value;
 
-    public BoolExpr(String text, Position _pos) throws TextError {
+    public BoolExpr(String text, Position _pos) throws Bug_TextError {
         super(SymbolTable.BOOL, _pos);
         if (text.equals("true")) value = true;
         else if (text.equals("false")) value = false;
-        else throw new TextError();
+        else throw new Bug_TextError();
     }
 
     public Boolean getValue() {
@@ -23,7 +23,7 @@ public class BoolExpr extends ExprStmt {
     }
 
     public static void main(String[] args) {
-        BoolExpr test = new BoolExpr("false", new Position());
+        BoolExpr test = new BoolExpr("false", new Position(0));
         System.out.println(test.getValue());
     }
 }

@@ -8,9 +8,11 @@ import Gadgets.Position;
  */
 public class ReturnStmt extends Stmt {
     ExprStmt returnExpr;
+    FuncDecl returnTo;
 
-    public ReturnStmt(ExprStmt _returnExpr, Position _pos) {
+    public ReturnStmt(ExprStmt _returnExpr, FuncDecl _returnTo, Position _pos) {
         super(_pos);
         returnExpr = _returnExpr;
+        returnTo = _returnTo;
     }
 }

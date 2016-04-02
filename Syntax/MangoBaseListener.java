@@ -81,7 +81,7 @@ public class MangoBaseListener implements MangoListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override
-	public void enterArrayType(MangoParser.ArrayTypeContext ctx) {
+	public void enterType(MangoParser.TypeContext ctx) {
 	}
 	/**
 	 * {@inheritDoc}
@@ -89,23 +89,7 @@ public class MangoBaseListener implements MangoListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override
-	public void exitArrayType(MangoParser.ArrayTypeContext ctx) {
-	}
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override
-	public void enterAtomType(MangoParser.AtomTypeContext ctx) {
-	}
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override
-	public void exitAtomType(MangoParser.AtomTypeContext ctx) {
+	public void exitType(MangoParser.TypeContext ctx) {
 	}
 	/**
 	 * {@inheritDoc}
@@ -465,22 +449,6 @@ public class MangoBaseListener implements MangoListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override
-	public void enterNode(MangoParser.NodeContext ctx) {
-	}
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override
-	public void exitNode(MangoParser.NodeContext ctx) {
-	}
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override
 	public void enterIndex(MangoParser.IndexContext ctx) {
 	}
 	/**
@@ -497,6 +465,22 @@ public class MangoBaseListener implements MangoListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override
+	public void enterIDLeaf(MangoParser.IDLeafContext ctx) {
+	}
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override
+	public void exitIDLeaf(MangoParser.IDLeafContext ctx) {
+	}
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override
 	public void enterLogNot(MangoParser.LogNotContext ctx) {
 	}
 	/**
@@ -506,22 +490,6 @@ public class MangoBaseListener implements MangoListener {
 	 */
 	@Override
 	public void exitLogNot(MangoParser.LogNotContext ctx) {
-	}
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override
-	public void enterConstantNode(MangoParser.ConstantNodeContext ctx) {
-	}
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override
-	public void exitConstantNode(MangoParser.ConstantNodeContext ctx) {
 	}
 	/**
 	 * {@inheritDoc}
@@ -554,6 +522,22 @@ public class MangoBaseListener implements MangoListener {
 	 */
 	@Override
 	public void exitLogBinary(MangoParser.LogBinaryContext ctx) {
+	}
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override
+	public void enterConstantLeaf(MangoParser.ConstantLeafContext ctx) {
+	}
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override
+	public void exitConstantLeaf(MangoParser.ConstantLeafContext ctx) {
 	}
 	/**
 	 * {@inheritDoc}
@@ -747,19 +731,17 @@ public class MangoBaseListener implements MangoListener {
 	@Override
 	public void exitClassField(MangoParser.ClassFieldContext ctx) {
 	}
-
 	/**
 	 * {@inheritDoc}
-	 * <p>
+	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override
 	public void enterClassFunction(MangoParser.ClassFunctionContext ctx) {
 	}
-
 	/**
 	 * {@inheritDoc}
-	 * <p>
+	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override

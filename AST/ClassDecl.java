@@ -14,8 +14,10 @@ public class ClassDecl extends Decl {
     private List<VarDecl> variables;
     private List<FuncDecl> functions;
 
-    public ClassDecl(ClassType _classType, Position _pos) {
+    public ClassDecl(List<VarDecl> _variables, List<FuncDecl> _functions, ClassType _classType, Position _pos) {
         super(_pos);
         classType = _classType;
+        variables = _variables;
+        functions = _functions;
     }
 }

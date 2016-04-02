@@ -7,7 +7,10 @@ import Gadgets.Position;
  * Created by Ficos on 16/3/31.
  */
 public class BreakStmt extends Stmt {
-    public BreakStmt(Position _pos) {
+    LoopScope breakTo;
+
+    public BreakStmt(LoopScope _breakTo, Position _pos) {
         super(_pos);
+        breakTo = _breakTo;
     }
 }

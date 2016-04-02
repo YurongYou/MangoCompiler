@@ -35,19 +35,11 @@ public interface MangoVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAtom(MangoParser.AtomContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code ArrayType}
-	 * labeled alternative in {@link MangoParser#type}.
+	 * Visit a parse tree produced by {@link MangoParser#type}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitArrayType(MangoParser.ArrayTypeContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code AtomType}
-	 * labeled alternative in {@link MangoParser#type}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitAtomType(MangoParser.AtomTypeContext ctx);
+	T visitType(MangoParser.TypeContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MangoParser#funcDecl}.
 	 * @param ctx the parse tree
@@ -197,13 +189,6 @@ public interface MangoVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitSelfOpPost(MangoParser.SelfOpPostContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code Node}
-	 * labeled alternative in {@link MangoParser#expr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitNode(MangoParser.NodeContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code Index}
 	 * labeled alternative in {@link MangoParser#expr}.
 	 * @param ctx the parse tree
@@ -211,19 +196,19 @@ public interface MangoVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitIndex(MangoParser.IndexContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code IDLeaf}
+	 * labeled alternative in {@link MangoParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIDLeaf(MangoParser.IDLeafContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code LogNot}
 	 * labeled alternative in {@link MangoParser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitLogNot(MangoParser.LogNotContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code ConstantNode}
-	 * labeled alternative in {@link MangoParser#expr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitConstantNode(MangoParser.ConstantNodeContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code SelfOpPre}
 	 * labeled alternative in {@link MangoParser#expr}.
@@ -238,6 +223,13 @@ public interface MangoVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitLogBinary(MangoParser.LogBinaryContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code ConstantLeaf}
+	 * labeled alternative in {@link MangoParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitConstantLeaf(MangoParser.ConstantLeafContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code binary}
 	 * labeled alternative in {@link MangoParser#expr}.
@@ -319,11 +311,9 @@ public interface MangoVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitClassField(MangoParser.ClassFieldContext ctx);
-
 	/**
 	 * Visit a parse tree produced by the {@code ClassFunction}
 	 * labeled alternative in {@link MangoParser#memberDecl}.
-	 *
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
