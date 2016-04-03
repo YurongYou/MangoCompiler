@@ -19,4 +19,16 @@ public class LogBinaryExpr extends ExprStmt {
         lhs = _lhs;
         rhs = _rhs;
     }
+
+    public LogBinaryOp getOp() {
+        return op;
+    }
+
+    public ExprStmt getLhs() {
+        return lhs;
+    }
+
+    public ExprStmt getRhs() {
+        return rhs;
+    }
 }

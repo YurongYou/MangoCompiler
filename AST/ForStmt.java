@@ -24,4 +24,20 @@ public class ForStmt extends Stmt implements LoopScope {
     public void fillLoop(Stmt _loop) {
         loop = _loop;
     }
+
+    public ExprStmt getInit() {
+        return init;
+    }
+
+    public ExprStmt getCondition() {
+        return condition;
+    }
+
+    public ExprStmt getAfter() {
+        return after;
+    }
+
+    public Stmt getLoop() {
+        return loop;
+    }
 }

@@ -13,4 +13,8 @@ public class BitNotExpr extends ExprStmt {
         super(_base.getType(), _pos);
         base = _base;
     }
+
+    public ExprStmt getBase() {
+        return base;
+    }
 }

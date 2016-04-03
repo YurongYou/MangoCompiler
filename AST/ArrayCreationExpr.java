@@ -14,4 +14,8 @@ public class ArrayCreationExpr extends ExprStmt {
         super(_type, _pos);
         dim = _dim;
     }
+
+    public IntExpr getDim() {
+        return dim;
+    }
 }

@@ -15,4 +15,12 @@ public class ReturnStmt extends Stmt {
         returnExpr = _returnExpr;
         returnTo = _returnTo;
     }
+
+    public ExprStmt getReturnExpr() {
+        return returnExpr;
+    }
+
+    public FuncDecl getReturnTo() {
+        return returnTo;
+    }
 }

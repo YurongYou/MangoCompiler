@@ -13,4 +13,12 @@ public class IndexExpr extends ExprStmt implements LValue {
     public IndexExpr(ExprStmt _base, ExprStmt _index, Position _pos) {
         super(_base.getType(), _pos);
     }
+
+    public ExprStmt getIndex() {
+        return index;
+    }
+
+    public ExprStmt getBase() {
+        return base;
+    }
 }

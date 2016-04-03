@@ -8,12 +8,20 @@ import Gadgets.Symbol.VarSymbol;
  * Created by Ficos on 16/3/31.
  */
 public class VarDecl extends Decl {
-    VarSymbol var;
-    ExprStmt creation;
+    private VarSymbol var;
+    private ExprStmt creation;
 
     public VarDecl(VarSymbol _var, ExprStmt _creation, Position _pos) {
         super(_pos);
         var = _var;
         creation = _creation;
+    }
+
+    public VarSymbol getVar() {
+        return var;
+    }
+
+    public ExprStmt getCreation() {
+        return creation;
     }
 }

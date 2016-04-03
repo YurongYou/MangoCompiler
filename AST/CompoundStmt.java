@@ -16,4 +16,8 @@ public class CompoundStmt extends Stmt {
         super(_pos);
         stmts = _stmts;
     }
+
+    public List<Stmt> getStmts() {
+        return stmts;
+    }
 }

@@ -30,4 +30,12 @@ public class FuncDecl extends Decl {
     public FuncSymbol getFuncInfo() {
         return info;
     }
+
+    public FuncSymbol getInfo() {
+        return info;
+    }
+
+    public CompoundStmt getBlock() {
+        return block;
+    }
 }

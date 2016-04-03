@@ -16,4 +16,12 @@ public class VarDeclStmt extends Stmt {
         varInfo = _varInfo;
         creation = _creation;
     }
+
+    public VarSymbol getVarInfo() {
+        return varInfo;
+    }
+
+    public ExprStmt getCreation() {
+        return creation;
+    }
 }

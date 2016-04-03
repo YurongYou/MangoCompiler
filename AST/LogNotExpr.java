@@ -14,4 +14,8 @@ public class LogNotExpr extends ExprStmt {
         super(SymbolTable.BOOL, _pos);
         base = _base;
     }
+
+    public ExprStmt getBase() {
+        return base;
+    }
 }

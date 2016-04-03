@@ -3,7 +3,6 @@ package Gadgets.Type;
 import Gadgets.Name;
 import Gadgets.Symbol.FuncSymbol;
 import Gadgets.Symbol.VarSymbol;
-import Gadgets.SymbolTable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,33 +36,8 @@ public class ClassType extends Type {
         return className.toString();
     }
 
-    public void includeFields(Name fieldName, VarSymbol fieldSymbol) {
-        varDict.put(fieldName, fieldSymbol);
-    }
-
-    public void includeFunc(Name funcName, FuncSymbol funcSymbol) {
-        funcDict.put(funcName, funcSymbol);
-    }
-
-    public VarSymbol getField(Name field) {
-        return varDict.get(field);
-    }
-
-    public FuncSymbol getFunc(Name func) {
-        return funcDict.get(func);
-    }
-
     @Override
     public Boolean isSuitableAs(Type rhs) {
         return (this == rhs);
-    }
-
-
-    public static void main(String[] args) {
-        ClassType ficos = new ClassType(Name.getName("ficos"));
-        Name lv = Name.getName("lv");
-        VarSymbol lv_info = new VarSymbol(0, lv, SymbolTable.STRING);
-        ficos.includeFields(lv, lv_info);
-        System.out.println(ficos.getField(lv) != null);
     }
 }

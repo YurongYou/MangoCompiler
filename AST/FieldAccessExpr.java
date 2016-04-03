@@ -17,4 +17,12 @@ public class FieldAccessExpr extends ExprStmt implements LValue {
         lhs = _lhs;
         field = _field;
     }
+
+    public ExprStmt getLhs() {
+        return lhs;
+    }
+
+    public Name getField() {
+        return field;
+    }
 }

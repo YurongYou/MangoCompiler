@@ -19,4 +19,12 @@ public class CallExpr extends ExprStmt {
         funcInfo = _funcInfo;
         actualParameter = _actualParameter;
     }
+
+    public FuncSymbol getFuncInfo() {
+        return funcInfo;
+    }
+
+    public List<ExprStmt> getActualParameter() {
+        return actualParameter;
+    }
 }

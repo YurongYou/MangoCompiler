@@ -19,4 +19,12 @@ public class WhileStmt extends Stmt implements LoopScope {
     public void fillLoop(Stmt _loop) {
         loop = _loop;
     }
+
+    public ExprStmt getCondition() {
+        return condition;
+    }
+
+    public Stmt getLoop() {
+        return loop;
+    }
 }

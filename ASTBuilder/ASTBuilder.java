@@ -70,15 +70,15 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
         try {
             varType = parseType(ctx.type().getText(), global);
         } catch (Undefined err) {
-            System.err.println("Used undefined class type" +
-                    ctx.type().getText() + " at line " + ctx.getStart().getLine());
+            System.err.println("line " + ctx.getStart().getLine() + ": Using undefined class type <" +
+                    ctx.type().getText() + '>');
             throw new SemanticError();
         }
         if (ctx.expr() != null) {
             rhs = (ExprStmt) visit(ctx.expr());
             if (!suit(varType, rhs.getType())) {
-                System.err.println("Unsuitable type in variable declaration, expect " +
-                        varType + " but get " + rhs.getType() + ", at line " + ctx.getStart().getLine());
+                System.err.println("line " + ctx.getStart().getLine() + ": Unsuitable type in variable declaration, expect <" +
+                        varType + "> but meet <" + rhs.getType() + ">");
                 throw new SemanticError();
             }
         }
@@ -88,8 +88,8 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
         try {
             global.define(varName, varInfo);
         } catch (Redefine err) {
-            System.err.println("Redefined variable " + ctx.ID().getText() +
-                    ", at line " + ctx.getStart().getLine());
+            System.err.println("line " + ctx.getStart().getLine() + ": Redefining variable <" + ctx.ID().getText() +
+                    ">");
             throw new SemanticError();
         }
         // scopeID == 0 means it's now in global
@@ -143,8 +143,8 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
                             varName, APTitr.next()));
                 }
             } catch (Redefine err) {
-                System.err.println("Redefined variable " + varName +
-                        " at line " + ctx.getStart().getLine());
+                System.err.println("line " + ctx.getStart().getLine() + ": Redefined variable <" + varName +
+                        ">");
                 throw new SemanticError();
             }
         }
@@ -157,7 +157,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
         CompoundStmt block = (CompoundStmt) visit(ctx.block());
 
         if (funcInfo.getReturnType() != null && !finelyReturned) {
-            System.err.println("Function return not found, expecting return type " + funcInfo.getReturnType() + ", at " + func.getPosition());
+            System.err.println("line " + ctx.getStart().getLine() + ": Function return not found, expecting return type <" + funcInfo.getReturnType() + ">");
             throw new SemanticError();
         }
         global.endScope();
@@ -260,33 +260,33 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
         // Checking whether the return type is suitable
         if (returnExpr == null) {
             if (nowFunc.getFuncInfo().getReturnType() != null) {
-                System.err.println("a non-\"void\" function expecting return of type " + nowFunc.getFuncInfo().getReturnType() +
-                        ", but found a pure return, at line " + ctx.getStart().getLine());
+                System.err.println("line " + ctx.getStart().getLine() + ": Non-<void> function <" + nowFunc.getFuncInfo().getName() + "> expecting a return of type <" + nowFunc.getFuncInfo().getReturnType() +
+                        ">, but found a pure return");
                 throw new SemanticError();
             }
         } else if (returnExpr.getType() == null) {
             if (nowFunc.getFuncInfo().getReturnType() == null) {
-                System.err.println("a \"void\" function , but found a    \"null\"   return, at line " + ctx.getStart().getLine());
+                System.err.println("line " + ctx.getStart().getLine() + ": <void> function <" + nowFunc.getFuncInfo().getName() + "> found a <null> return");
                 throw new SemanticError();
             } else {
                 if (!((nowFunc.getFuncInfo().getReturnType() instanceof ArrayType) ||
                         (nowFunc.getFuncInfo().getReturnType() instanceof ClassType))) {
-                    System.err.println("Improper function return, expecting return of type " +
+                    System.err.println("line " + ctx.getStart().getLine() + ": Improper function return, expecting a return of type <" +
                             nowFunc.getFuncInfo().getReturnType() +
-                            ", but found a return of null, at line " + ctx.getStart().getLine());
+                            ">, but found a return of <null>");
                     throw new SemanticError();
                 }
             }
         } else {
             if (nowFunc.getFuncInfo().getReturnType() == null) {
-                System.err.println("\"void\" function, but found a return of type " + returnExpr.getType() +
-                        ", at line " + ctx.getStart().getLine());
+                System.err.println("line " + ctx.getStart().getLine() + ": <void> function <" + nowFunc.getFuncInfo().getName() + "> found a return of type <" + returnExpr.getType() +
+                        ">");
                 throw new SemanticError();
             } else {
                 if (!returnExpr.getType().isSuitableAs(nowFunc.getFuncInfo().getReturnType())) {
-                    System.err.println("Improper function return, expecting type " +
+                    System.err.println("line " + ctx.getStart().getLine() + ": Improper function return, expecting type <" +
                             nowFunc.getFuncInfo().getReturnType() +
-                            ", but found a return of type " + returnExpr.getType() + ", at line " + ctx.getStart().getLine());
+                            ">, but found a return of type <" + returnExpr.getType() + ">");
                     throw new SemanticError();
                 }
             }
@@ -307,7 +307,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
     @Override
     public AST visitContinueStmt(MangoParser.ContinueStmtContext ctx) {
         if (nowLoop.isEmpty()) {
-            System.err.println("Unexpected continue statement, at line " + ctx.getStart().getLine());
+            System.err.println("line " + ctx.getStart().getLine() + ": Unexpected <continue> statement");
             throw new SemanticError();
         }
         return new ContinueStmt(nowLoop.peek(), new Position(ctx.getStart().getLine()));
@@ -327,7 +327,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
     public AST visitWhileLoop(MangoParser.WhileLoopContext ctx) {
         ExprStmt condition = (ExprStmt) visit(ctx.expr());
         if (!condition.getType().isSuitableAs(SymbolTable.BOOL)) {
-            System.err.println("False type " + condition.getType() + ", expecting bool type, at " + condition.getPosition());
+            System.err.println("line " + ctx.getStart().getLine() + ": False while-loop condition of type <" + condition.getType() + ">, expecting bool type");
             throw new SemanticError();
         }
         WhileStmt whileLoop = new WhileStmt(condition, null, new Position(ctx.getStart().getLine()));
@@ -346,7 +346,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
         ExprStmt init = (ExprStmt) visit(ctx.init);
         ExprStmt condition = (ExprStmt) visit(ctx.condition);
         if (!condition.getType().isSuitableAs(SymbolTable.BOOL)) {
-            System.err.println("False type " + condition.getType() + ", expecting bool type, at " + condition.getPosition());
+            System.err.println("line " + ctx.getStart().getLine() + ": False for-loop condition of type <" + condition.getType() + ">, expecting bool type");
             throw new SemanticError();
         }
         ExprStmt after = (ExprStmt) visit(ctx.after);
@@ -381,8 +381,8 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
                 funcInfo = (FuncSymbol) global.resolve(getName(ctx.ID().getText()));
             }
         } catch (Undefined err) {
-            System.err.println("Used undefined function" +
-                    ctx.ID().getText() + " at line " + ctx.getStart().getLine());
+            System.err.println("line " + ctx.getStart().getLine() + ": Using undefined function <" +
+                    ctx.ID().getText() + ">");
             throw new SemanticError();
         }
 
@@ -395,21 +395,18 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
             }
             // P nn, A n,Fault
             else {
-                System.err.println("Wrong function call at line " + ctx.getStart().getLine() +
-                        ", see function declaration at " + funcInfo);
+                System.err.println("line " + ctx.getStart().getLine() + ": Wrong function call, see function declaration at <" + funcInfo.getName() + ">");
                 throw new SemanticError();
             }
         }
         // P n, A nn, fault
         if (funcInfo.getFormalParametersName() == null && ctx.exprList() != null) {
-            System.err.println("Wrong function call at line " + ctx.getStart().getLine() +
-                    ", see function declaration at " + funcInfo);
+            System.err.println("line " + ctx.getStart().getLine() + ": Wrong function call, see function declaration at <" + funcInfo.getName() + ">");
             throw new SemanticError();
         }
         // check P nn, A nn
         if (ctx.exprList().expr().size() != funcInfo.getFormalParametersName().size()) {
-            System.err.println("Function call parameter mismatch at line " + ctx.getStart().getLine() +
-                    ", see function declaration at " + funcInfo);
+            System.err.println("line " + ctx.getStart().getLine() + ": Function call parameter mismatching, see function declaration at <" + funcInfo + ">");
             throw new SemanticError();
         }
         // compare AP and FP
@@ -423,8 +420,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
             APT.add(APItr.previous().getType());
         }
         if (!funcInfo.isValidParameters(APT)) {
-            System.err.println("Function call parameter mismatch at line " + ctx.getStart().getLine() +
-                    ", see function declaration at " + funcInfo);
+            System.err.println("line " + ctx.getStart().getLine() + ": Function call parameter mismatching, see function declaration at <" + funcInfo.getName() + ">");
             throw new SemanticError();
         }
 
@@ -440,12 +436,14 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
     public AST visitSelfOpPost(MangoParser.SelfOpPostContext ctx) {
         ExprStmt lv = (ExprStmt) visit(ctx.expr());
         if (!(lv instanceof LValue)) {
-            System.out.println("Wrong operation on non-lvalue " +
-                    ctx.expr().getText() + ", at line " +
-                    ctx.getStart().getLine());
+            System.out.println("line " + ctx.getStart().getLine() + ": Wrong operation on non-Lvalue <" +
+                    ctx.expr().getText() + ">");
             throw new SemanticError();
         }
-        return new SelfOpPostExpr(lv, new Position(ctx.getStart().getLine()));
+        Boolean op;
+        if (ctx.op.getType() == MangoParser.PPLUS) op = true;
+        else op = false;
+        return new SelfOpPostExpr(op, lv, new Position(ctx.getStart().getLine()));
     }
 
     @Override
@@ -465,8 +463,8 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
                 varInfo = (VarSymbol) global.resolve(getName(ctx.ID().getText()));
             }
         } catch (Undefined err) {
-            System.err.println("Used undefined variable" +
-                    ctx.ID().getText() + " at line " + ctx.getStart().getLine());
+            System.err.println("line " + ctx.getStart().getLine() + ": Using undefined variable <" +
+                    ctx.ID().getText() + ">");
             throw new SemanticError();
         }
         return new VarExpr(varInfo, new Position(ctx.getStart().getLine()));
@@ -476,16 +474,12 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
     public AST visitIndex(MangoParser.IndexContext ctx) {
         ExprStmt base = (ExprStmt) visit(ctx.expr(0));
         if (!(base.getType() instanceof ArrayType)) {
-            System.out.println("Wrong indexing " +
-                    ctx.getText() + ", at line " +
-                    ctx.getStart().getLine());
+            System.out.println("line " + ctx.getStart().getLine() + ": Wrong indexing <" + ctx.getText() + ">");
             throw new SemanticError();
         }
         ExprStmt index = (ExprStmt) visit(ctx.expr(1));
         if (!(index.getType().isSuitableAs(SymbolTable.INT))) {
-            System.out.println("Wrong indexing " +
-                    ctx.getText() + ", at line " +
-                    ctx.getStart().getLine());
+            System.out.println("line " + ctx.getStart().getLine() + ": Wrong indexing <" + ctx.getText() + ">");
             throw new SemanticError();
         }
         return new IndexExpr(base, index, new Position(ctx.getStart().getLine()));
@@ -495,9 +489,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
     public AST visitLogNot(MangoParser.LogNotContext ctx) {
         ExprStmt context = (ExprStmt) visit(ctx.expr());
         if (!context.getType().isSuitableAs(SymbolTable.BOOL)) {
-            System.out.println("Wrong Logical Not Expression " +
-                    ctx.getText() + ", at line " +
-                    ctx.getStart().getLine());
+            System.out.println("line " + ctx.getStart().getLine() + ": Wrong Logical-Not Expression <" + ctx.getText() + ">");
             throw new SemanticError();
         }
         return new LogNotExpr(context, new Position(ctx.getStart().getLine()));
@@ -526,12 +518,13 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
     public AST visitSelfOpPre(MangoParser.SelfOpPreContext ctx) {
         ExprStmt lv = (ExprStmt) visit(ctx.expr());
         if (!(lv instanceof LValue)) {
-            System.out.println("Wrong operation on non-lvalue " +
-                    ctx.expr().getText() + ", at line " +
-                    ctx.getStart().getLine());
+            System.out.println("line " + ctx.getStart().getLine() + ": Wrong operation on non-Lvalue <" + ctx.expr().getText() + ">");
             throw new SemanticError();
         }
-        return new SelfOpPreExpr(lv, new Position(ctx.getStart().getLine()));
+        Boolean op;
+        if (ctx.op.getType() == MangoParser.PPLUS) op = true;
+        else op = false;
+        return new SelfOpPreExpr(op, lv, new Position(ctx.getStart().getLine()));
 
     }
 
@@ -573,9 +566,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
             case MangoParser.NEQ: {
                 if (!(lhs.getType().isSuitableAs(SymbolTable.INT) &&
                         rhs.getType().isSuitableAs(SymbolTable.INT))) {
-                    System.out.println("Logical operation on wrong operands " +
-                            ctx.getText() + ", at line " +
-                            ctx.getStart().getLine());
+                    System.out.println("line " + ctx.getStart().getLine() + ": Logical operation on wrong operands <" + ctx.getText() + ">");
                     throw new SemanticError();
                 }
             }
@@ -586,9 +577,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
                         rhs.getType().isSuitableAs(SymbolTable.INT)) &&
                         !(lhs.getType().isSuitableAs(SymbolTable.STRING) &&
                                 rhs.getType().isSuitableAs(SymbolTable.STRING))) {
-                    System.out.println("Logical operation on wrong operands " +
-                            ctx.getText() + ", at line " +
-                            ctx.getStart().getLine());
+                    System.out.println("line " + ctx.getStart().getLine() + ": Logical operation on wrong operands " + ctx.getText() + ">");
                     throw new SemanticError();
                 }
             }
@@ -597,9 +586,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
             case MangoParser.LOG_OR: {
                 if (!(lhs.getType().isSuitableAs(SymbolTable.BOOL) &&
                         rhs.getType().isSuitableAs(SymbolTable.BOOL))) {
-                    System.out.println("Logical operation on wrong operands " +
-                            ctx.getText() + ", at line " +
-                            ctx.getStart().getLine());
+                    System.out.println("line " + ctx.getStart().getLine() + ": Logical operation on wrong operands " + ctx.getText() + ">");
                     throw new SemanticError();
                 }
             }
@@ -656,9 +643,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
             case MangoParser.BIT_OR: {
                 if (!(lhs.getType().isSuitableAs(SymbolTable.INT) &&
                         rhs.getType().isSuitableAs(SymbolTable.INT))) {
-                    System.out.println("operation on wrong operands " +
-                            ctx.getText() + ", at line " +
-                            ctx.getStart().getLine());
+                    System.out.println("line " + ctx.getStart().getLine() + ": Operation on wrong operands <" + ctx.getText() + ">");
                     throw new SemanticError();
                 }
             }
@@ -668,9 +653,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
                         rhs.getType().isSuitableAs(SymbolTable.INT)) &&
                         !(lhs.getType().isSuitableAs(SymbolTable.STRING) &&
                                 rhs.getType().isSuitableAs(SymbolTable.STRING))) {
-                    System.out.println("operation on wrong operands " +
-                            ctx.getText() + ", at line " +
-                            ctx.getStart().getLine());
+                    System.out.println("line " + ctx.getStart().getLine() + ": Operation on wrong operands <" + ctx.getText() + ">");
                     throw new SemanticError();
                 }
             }
@@ -682,21 +665,20 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
     public AST visitSign(MangoParser.SignContext ctx) {
         ExprStmt base = (ExprStmt) visit(ctx.expr());
         if (!base.getType().isSuitableAs(SymbolTable.INT)) {
-            System.out.println("Wrong sign operation " +
-                    ctx.expr().getText() + ", at line " +
-                    ctx.getStart().getLine());
+            System.out.println("line " + ctx.getStart().getLine() + ": Wrong sign operation <" + ctx.expr().getText() + ">");
             throw new SemanticError();
         }
-        return new SignExpr(base, new Position(ctx.getStart().getLine()));
+        Boolean op;
+        if (ctx.op.getType() == MangoParser.PLUS) op = true;
+        else op = false;
+        return new SignExpr(op, base, new Position(ctx.getStart().getLine()));
     }
 
     @Override
     public AST visitAssign(MangoParser.AssignContext ctx) {
         ExprStmt lv = (ExprStmt) visit(ctx.expr(0));
         if (!(lv instanceof LValue)) {
-            System.out.println("Wrong assignment operation on non-Lvalue" +
-                    ctx.getText() + ", at line " +
-                    ctx.getStart().getLine());
+            System.out.println("line " + ctx.getStart().getLine() + ": Wrong assignment operation on non-Lvalue <" + ctx.getText() + ">");
             throw new SemanticError();
         }
         ExprStmt rhs = (ExprStmt) visit(ctx.expr(1));
@@ -707,7 +689,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
     public AST visitBitNot(MangoParser.BitNotContext ctx) {
         ExprStmt context = (ExprStmt) visit(ctx.expr());
         if (!context.getType().isSuitableAs(SymbolTable.INT)) {
-            System.err.println("Invalid operation operand " + ctx.getText() + ", at line " + ctx.getStart().getLine());
+            System.err.println("line " + ctx.getStart().getLine() + ": Invalid operation operand <" + ctx.getText() + ">");
             throw new SemanticError();
         }
         return visitChildren(ctx);
@@ -717,7 +699,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
     public AST visitFieldAccess(MangoParser.FieldAccessContext ctx) {
         ExprStmt lhs = (ExprStmt) visit(ctx.expr());
         if (!(lhs.getType() instanceof ClassType)) {
-            System.err.println("Wrong class Field Access at line " + ctx.getStart().getLine());
+            System.err.println("line " + ctx.getStart().getLine() + ": Wrong class field accessing");
             throw new SemanticError();
         }
         Name func = getName(lhs.getType().toString() +
@@ -726,7 +708,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
         try {
             funcInfo = (FuncSymbol) global.resolve(func);
         } catch (Undefined err) {
-            System.err.println("Used class function " + ctx.getText() + ", at line " + ctx.getStart().getLine());
+            System.err.println("line " + ctx.getStart().getLine() + ": Using undefined class function <" + ctx.getText() + ">");
             throw new SemanticError();
         }
         return new ClassFuncAccessExpr(lhs, funcInfo, new Position(ctx.getStart().getLine()));
@@ -736,7 +718,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
     public AST visitClassFuncAccess(MangoParser.ClassFuncAccessContext ctx) {
         ExprStmt lhs = (ExprStmt) visit(ctx.expr());
         if (!(lhs.getType() instanceof ClassType)) {
-            System.err.println("Wrong class Field Access at line " + ctx.getStart().getLine());
+            System.err.println("line " + ctx.getStart().getLine() + ": Wrong class field access");
             throw new SemanticError();
         }
         Name func = getName(lhs.getType() + "." + ctx.ID().getText());
@@ -744,7 +726,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
         try {
             funcInfo = (FuncSymbol) global.resolve(func);
         } catch (Undefined err) {
-            System.err.println("Used undefined class function   " + func + "    , at line " + ctx.getStart().getLine());
+            System.err.println("line " + ctx.getStart().getLine() + ": Using undefined class function <" + func + ">");
         }
         return new ClassFuncAccessExpr(lhs, funcInfo, new Position(ctx.getStart().getLine()));
     }
@@ -755,12 +737,12 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
         try {
             base = (ArrayType) parseType(ctx.getText().substring(3), global);
         } catch (Undefined err) {
-            System.err.println("Using undefined type to create new variable at line " + ctx.getStart().getLine());
+            System.err.println("line " + ctx.getStart().getLine() + ": Using undefined type to create new variable");
             throw new SemanticError();
         }
         ExprStmt index = (ExprStmt) visit(ctx.expr());
         if (!index.getType().isSuitableAs(SymbolTable.INT)) {
-            System.err.println("Unexpected index" + ctx.expr().getText() + " at line " + ctx.getStart().getLine());
+            System.err.println("line " + ctx.getStart().getLine() + ": Unexpected indexing <" + ctx.expr().getText() + ">");
             throw new SemanticError();
         }
         return new ArrayCreationExpr(base, (IntExpr) index, new Position(ctx.getStart().getLine()));
@@ -772,7 +754,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
         try {
             base = global.lookUpType(ctx.atom().getText());
         } catch (Undefined err) {
-            System.err.println("Using undefined type to create new variable at line " + ctx.getStart().getLine());
+            System.err.println("line " + ctx.getStart().getLine() + ": Using undefined type to create new variable");
             throw new SemanticError();
         }
         return new AtomCreationExpr(base, new Position(ctx.getStart().getLine()));

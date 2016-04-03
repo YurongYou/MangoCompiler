@@ -14,4 +14,8 @@ public class StringExpr extends ExprStmt {
         super(SymbolTable.STRING, _pos);
         text = _text;
     }
+
+    public String getText() {
+        return text;
+    }
 }

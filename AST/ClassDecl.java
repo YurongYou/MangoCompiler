@@ -20,4 +20,16 @@ public class ClassDecl extends Decl {
         variables = _variables;
         functions = _functions;
     }
+
+    public ClassType getClassType() {
+        return classType;
+    }
+
+    public List<VarDecl> getVariables() {
+        return variables;
+    }
+
+    public List<FuncDecl> getFunctions() {
+        return functions;
+    }
 }

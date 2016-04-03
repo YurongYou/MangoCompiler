@@ -8,9 +8,20 @@ import Gadgets.Position;
  */
 public class SignExpr extends ExprStmt {
     ExprStmt base;
+    Boolean op;
 
-    public SignExpr(ExprStmt _base, Position _pos) {
+    public ExprStmt getBase() {
+        return base;
+    }
+
+    public Boolean getOp() {
+        return op;
+    }
+
+    public SignExpr(Boolean _op, ExprStmt _base, Position _pos) {
         super(_base.getType(), _pos);
         base = _base;
+        op = _op;
+
     }
 }

@@ -19,4 +19,16 @@ public class BinaryExpr extends ExprStmt {
         lhs = _lhs;
         rhs = _rhs;
     }
+
+    public BinaryOp getOp() {
+        return op;
+    }
+
+    public ExprStmt getLhs() {
+        return lhs;
+    }
+
+    public ExprStmt getRhs() {
+        return rhs;
+    }
 }

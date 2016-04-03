@@ -1,5 +1,6 @@
 import AST.AST;
 import ASTBuilder.ASTBuilder;
+import ASTVisitor.Printer;
 import Gadgets.SymbolTable;
 import Syntax.MangoLexer;
 import Syntax.MangoParser;
@@ -73,5 +74,7 @@ public class Main {
 
         ASTBuilder builder = new ASTBuilder(tree);
         AST root = builder.visit(tree);
+        Printer print = new Printer(root, System.out);
+        print.print();
     }
 }

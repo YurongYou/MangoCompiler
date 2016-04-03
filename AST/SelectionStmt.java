@@ -25,4 +25,24 @@ public class SelectionStmt extends Stmt {
         subSelectionThenStmts = _subSelectionThenStmts;
         elseStmt = _elseStmt;
     }
+
+    public ExprStmt getCondition() {
+        return condition;
+    }
+
+    public Stmt getThenStmt() {
+        return thenStmt;
+    }
+
+    public List<ExprStmt> getSubSelectionConditions() {
+        return subSelectionConditions;
+    }
+
+    public List<Stmt> getSubSelectionThenStmts() {
+        return subSelectionThenStmts;
+    }
+
+    public Stmt getElseStmt() {
+        return elseStmt;
+    }
 }

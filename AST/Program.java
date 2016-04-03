@@ -9,10 +9,14 @@ import java.util.List;
  * Created by Ficos on 16/3/31.
  */
 public class Program extends AST {
-    List<Decl> decls;
+    private List<Decl> decls;
 
     public Program(List<Decl> _decls, Position _pos) {
         super(_pos);
         decls = _decls;
+    }
+
+    public List<Decl> getDecls() {
+        return decls;
     }
 }

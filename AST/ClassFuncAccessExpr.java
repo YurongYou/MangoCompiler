@@ -17,4 +17,12 @@ public class ClassFuncAccessExpr extends ExprStmt {
         classExpr = _classExpr;
         funcInfo = _funcInfo;
     }
+
+    public ExprStmt getClassExpr() {
+        return classExpr;
+    }
+
+    public FuncSymbol getFuncInfo() {
+        return funcInfo;
+    }
 }
