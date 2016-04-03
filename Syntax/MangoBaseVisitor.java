@@ -471,4 +471,15 @@ public class MangoBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements 
 	public T visitClassFunction(MangoParser.ClassFunctionContext ctx) {
 		return visitChildren(ctx);
 	}
+
+	/**
+	 * {@inheritDoc}
+	 * <p>
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override
+	public T visitConstant(MangoParser.ConstantContext ctx) {
+		return visitChildren(ctx);
+	}
 }

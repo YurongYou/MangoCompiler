@@ -71,7 +71,7 @@ iteration:
 
 expr:
     '(' expr ')'                            # Bracket
-    | tp = (NULL|INT|STRING|BOOL)           # ConstantLeaf
+    | constant                              # ConstantLeaf
     | ID                                    # IDLeaf
     | expr op = (PPLUS|MMINUS)              # SelfOpPost
     | ID '(' exprList? ')'                  # Call
@@ -114,7 +114,7 @@ memberDecl:
 
 
 // Lexer for constants
-CONSTANT : NULL
+constant : NULL
     | INT
     | STRING
     | BOOL

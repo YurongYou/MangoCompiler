@@ -3,17 +3,15 @@ package AST;
 import Gadgets.Position;
 import Gadgets.Type.ArrayType;
 
-import java.util.List;
-
 /**
  * The array creation expression (e.g. new int[2][]) node in AST
  * Created by Ficos on 16/3/31.
  */
 public class ArrayCreationExpr extends ExprStmt {
-    List<ExprStmt> dimList;
+    IntExpr dim;
 
-    public ArrayCreationExpr(ArrayType _type, List<ExprStmt> _dimList, Position _pos) {
+    public ArrayCreationExpr(ArrayType _type, IntExpr _dim, Position _pos) {
         super(_type, _pos);
-        dimList = _dimList;
+        dim = _dim;
     }
 }

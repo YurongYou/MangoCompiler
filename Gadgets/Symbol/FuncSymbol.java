@@ -13,8 +13,8 @@ import java.util.ListIterator;
  */
 public class FuncSymbol extends Symbol {
     private Type returnType;
-    private List<Type> formalParameterType;
-    private List<Name> formalParameterName;
+    private List<Type> formalParameterType = null;
+    private List<Name> formalParameterName = null;
 
     /**
      * Creation function of funcSymbol. Define the formal parameters in the current scope

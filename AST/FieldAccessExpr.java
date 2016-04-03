@@ -1,6 +1,8 @@
 package AST;
 
+import Gadgets.Name;
 import Gadgets.Position;
+import Gadgets.Type.Type;
 
 /**
  * The field-access expression in AST.
@@ -8,11 +10,11 @@ import Gadgets.Position;
  */
 public class FieldAccessExpr extends ExprStmt implements LValue {
     ExprStmt lhs;
-    ExprStmt rhs;
+    Name field;
 
-    public FieldAccessExpr(ExprStmt _lhs, ExprStmt _rhs, Position _pos) {
-        super(_rhs.getType(), _pos);
+    public FieldAccessExpr(Type _type, ExprStmt _lhs, Name _field, Position _pos) {
+        super(_type, _pos);
         lhs = _lhs;
-        rhs = _rhs;
+        field = _field;
     }
 }

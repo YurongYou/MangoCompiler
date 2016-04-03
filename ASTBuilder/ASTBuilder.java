@@ -2,13 +2,10 @@ package ASTBuilder;
 
 import AST.*;
 import Exceptions.*;
-import Gadgets.Name;
-import Gadgets.Position;
-import Gadgets.Stack;
+import Gadgets.*;
 import Gadgets.Symbol.FuncSymbol;
 import Gadgets.Symbol.Symbol;
 import Gadgets.Symbol.VarSymbol;
-import Gadgets.SymbolTable;
 import Gadgets.Type.ArrayType;
 import Gadgets.Type.ClassType;
 import Gadgets.Type.Type;
@@ -33,7 +30,6 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
     private SymbolTable global = new SymbolTable();
     private String nowClass = null;
     private Stack<LoopScope> nowLoop = new Stack<>();
-    private Boolean isInLoop = false;
     private FuncDecl nowFunc = null;
     private Boolean finelyReturned = false;
 
@@ -208,7 +204,10 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
     public AST visitSelectionStmt(MangoParser.SelectionStmtContext ctx) {
         MangoParser.SelectionContext info = ctx.selection();
         ExprStmt condition = (ExprStmt) visit(info.expr());
+
+        finelyReturned = false;
         Stmt then = (Stmt) visit(info.stmt(0));
+
         List<ExprStmt> subSelectionConditions = new LinkedList<>();
         List<Stmt> subSelectionThenStmts = new LinkedList<>();
 
@@ -226,6 +225,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
         Stmt elseStmt = null;
         // if there is a else expression at the end
         if (info.stmt().size() > 1) {
+            finelyReturned = false;
             elseStmt = (Stmt) visit(info.stmt(1));
         }
 
@@ -287,7 +287,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
 
     @Override
     public AST visitBreakStmt(MangoParser.BreakStmtContext ctx) {
-        if (!isInLoop) {
+        if (nowLoop.isEmpty()) {
             System.err.println("Unexpected break statement, at line " + ctx.getStart().getLine());
             throw new SemanticError();
         }
@@ -296,7 +296,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
 
     @Override
     public AST visitContinueStmt(MangoParser.ContinueStmtContext ctx) {
-        if (!isInLoop) {
+        if (nowLoop.isEmpty()) {
             System.err.println("Unexpected continue statement, at line " + ctx.getStart().getLine());
             throw new SemanticError();
         }
@@ -316,17 +316,16 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
     @Override
     public AST visitWhileLoop(MangoParser.WhileLoopContext ctx) {
         ExprStmt condition = (ExprStmt) visit(ctx.expr());
-        if (condition.getType() != global.BOOL) {
+        if (!condition.getType().isSuitableAs(global.BOOL)) {
             System.err.println("False type " + condition.getType() + ", expecting bool type, at " + condition.getPosition());
             throw new SemanticError();
         }
         WhileStmt whileLoop = new WhileStmt(condition, null, new Position(ctx.getStart().getLine()));
 
         nowLoop.push(whileLoop);
-        isInLoop = true;
         Stmt loop = (Stmt) visit(ctx.stmt());
         nowLoop.pop();
-        isInLoop = false;
+
 
         whileLoop.fillLoop(loop);
         return whileLoop;
@@ -336,7 +335,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
     public AST visitForLoop(MangoParser.ForLoopContext ctx) {
         ExprStmt init = (ExprStmt) visit(ctx.init);
         ExprStmt condition = (ExprStmt) visit(ctx.condition);
-        if (condition.getType() != global.BOOL) {
+        if (!condition.getType().isSuitableAs(global.BOOL)) {
             System.err.println("False type " + condition.getType() + ", expecting bool type, at " + condition.getPosition());
             throw new SemanticError();
         }
@@ -344,10 +343,8 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
         ForStmt forLoop = new ForStmt(init, condition, after, null, new Position(ctx.getStart().getLine()));
 
         nowLoop.push(forLoop);
-        isInLoop = true;
         Stmt loop = (Stmt) visit(ctx.stmt());
         nowLoop.pop();
-        isInLoop = false;
 
         forLoop.fillLoop(loop);
         return forLoop;
@@ -377,15 +374,31 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
             throw new SemanticError();
         }
 
-        // if the function call have no parameters
+        // if the actual function call have no parameters
+        // note that exprList might be null
         if (ctx.exprList() == null) {
+            // P n, A n
             if (funcInfo.getFormalParametersName() == null) {
                 return new CallExpr(funcInfo, null, new Position(ctx.getStart().getLine()));
-            } else {
+            }
+            // P nn, A n,Fault
+            else {
                 System.err.println("Wrong function call at line " + ctx.getStart().getLine() +
                         ", see function declaration at " + funcInfo);
                 throw new SemanticError();
             }
+        }
+        // P n, A nn, fault
+        if (funcInfo.getFormalParametersName() == null && ctx.exprList() != null) {
+            System.err.println("Wrong function call at line " + ctx.getStart().getLine() +
+                    ", see function declaration at " + funcInfo);
+            throw new SemanticError();
+        }
+        // check P nn, A nn
+        if (ctx.exprList().expr().size() != funcInfo.getFormalParametersName().size()) {
+            System.err.println("Function call parameter mismatch at line " + ctx.getStart().getLine() +
+                    ", see function declaration at " + funcInfo);
+            throw new SemanticError();
         }
         // compare AP and FP
         List<MangoParser.ExprContext> APc = ctx.exprList().expr();
@@ -413,7 +426,14 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
 
     @Override
     public AST visitSelfOpPost(MangoParser.SelfOpPostContext ctx) {
-        return visitChildren(ctx);
+        ExprStmt lv = (ExprStmt) visit(ctx.expr());
+        if (!(lv instanceof LValue)) {
+            System.out.println("Wrong operation on non-lvalue " +
+                    ctx.expr().getText() + ", at line " +
+                    ctx.getStart().getLine());
+            throw new SemanticError();
+        }
+        return new SelfOpPostExpr(lv, new Position(ctx.getStart().getLine()));
     }
 
     @Override
@@ -442,80 +462,307 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
 
     @Override
     public AST visitIndex(MangoParser.IndexContext ctx) {
-        return visitChildren(ctx);
+        ExprStmt base = (ExprStmt) visit(ctx.expr(0));
+        if (!(base.getType() instanceof ArrayType)) {
+            System.out.println("Wrong indexing " +
+                    ctx.getText() + ", at line " +
+                    ctx.getStart().getLine());
+            throw new SemanticError();
+        }
+        ExprStmt index = (ExprStmt) visit(ctx.expr(1));
+        if (!(index.getType().isSuitableAs(SymbolTable.INT))) {
+            System.out.println("Wrong indexing " +
+                    ctx.getText() + ", at line " +
+                    ctx.getStart().getLine());
+            throw new SemanticError();
+        }
+        return new IndexExpr(base, index, new Position(ctx.getStart().getLine()));
     }
 
     @Override
     public AST visitLogNot(MangoParser.LogNotContext ctx) {
-        return visitChildren(ctx);
+        ExprStmt context = (ExprStmt) visit(ctx.expr());
+        if (!context.getType().isSuitableAs(SymbolTable.BOOL)) {
+            System.out.println("Wrong Logical Not Expression " +
+                    ctx.getText() + ", at line " +
+                    ctx.getStart().getLine());
+            throw new SemanticError();
+        }
+        return new LogNotExpr(context, new Position(ctx.getStart().getLine()));
     }
 
+//    @Override
+//    public AST visitConstantLeaf(MangoParser.ConstantLeafContext ctx) {
+//        return visitChildren(ctx);
+//    }
+
+
     @Override
-    public AST visitConstantLeaf(MangoParser.ConstantLeafContext ctx) {
-        if (ctx.tp.getType() == MangoParser.NULL) {
-            return new NullExpr(new Position(ctx.getStart().getLine()));
-        } else if (ctx.tp.getLine() == MangoParser.INT) {
-            return new IntExpr(ctx.getText(), new Position(ctx.getStart().getLine()));
-        } else if (ctx.tp.getType() == MangoParser.STRING) {
-            return new StringExpr(ctx.getText(), new Position(ctx.getStart().getLine()));
-        } else {
+    public AST visitConstant(MangoParser.ConstantContext ctx) {
+        if (ctx.BOOL() != null) {
             return new BoolExpr(ctx.getText(), new Position(ctx.getStart().getLine()));
-        }
+        } else if (ctx.STRING() != null) {
+            return new StringExpr(ctx.getText(), new Position(ctx.getStart().getLine()));
+        } else if (ctx.INT() != null) {
+            return new IntExpr(ctx.getText(), new Position(ctx.getStart().getLine()));
+        } else if (ctx.NULL() != null) {
+            return new NullExpr(new Position(ctx.getStart().getLine()));
+        } else throw new Bug_TextError();
     }
 
     @Override
     public AST visitSelfOpPre(MangoParser.SelfOpPreContext ctx) {
-        return visitChildren(ctx);
+        ExprStmt lv = (ExprStmt) visit(ctx.expr());
+        if (!(lv instanceof LValue)) {
+            System.out.println("Wrong operation on non-lvalue " +
+                    ctx.expr().getText() + ", at line " +
+                    ctx.getStart().getLine());
+            throw new SemanticError();
+        }
+        return new SelfOpPreExpr(lv, new Position(ctx.getStart().getLine()));
+
     }
 
     @Override
     public AST visitLogBinary(MangoParser.LogBinaryContext ctx) {
-        return visitChildren(ctx);
+        ExprStmt lhs = (ExprStmt) visit(ctx.expr(0));
+        ExprStmt rhs = (ExprStmt) visit(ctx.expr(1));
+        LogBinaryOp op = null;
+        switch (ctx.op.getType()) {
+            case MangoParser.LESS:
+                op = LogBinaryOp.LESS;
+                break;
+            case MangoParser.LARGE:
+                op = LogBinaryOp.LARGE;
+                break;
+            case MangoParser.LEQ:
+                op = LogBinaryOp.LEQ;
+                break;
+            case MangoParser.GEQ:
+                op = LogBinaryOp.GEQ;
+                break;
+            case MangoParser.EQ:
+                op = LogBinaryOp.EQ;
+                break;
+            case MangoParser.NEQ:
+                op = LogBinaryOp.NEQ;
+                break;
+            case MangoParser.LOG_AND:
+                op = LogBinaryOp.LOG_AND;
+                break;
+            case MangoParser.LOG_OR:
+                op = LogBinaryOp.LOG_OR;
+                break;
+        }
+        switch (ctx.op.getType()) {
+            case MangoParser.LARGE:
+            case MangoParser.LEQ:
+            case MangoParser.GEQ:
+            case MangoParser.NEQ: {
+                if (!(lhs.getType().isSuitableAs(SymbolTable.INT) &&
+                        rhs.getType().isSuitableAs(SymbolTable.INT))) {
+                    System.out.println("Logical operation on wrong operands " +
+                            ctx.getText() + ", at line " +
+                            ctx.getStart().getLine());
+                    throw new SemanticError();
+                }
+            }
+            break;
+            case MangoParser.EQ:
+            case MangoParser.LESS: {
+                if (!(lhs.getType().isSuitableAs(SymbolTable.INT) &&
+                        rhs.getType().isSuitableAs(SymbolTable.INT)) &&
+                        !(lhs.getType().isSuitableAs(SymbolTable.STRING) &&
+                                rhs.getType().isSuitableAs(SymbolTable.STRING))) {
+                    System.out.println("Logical operation on wrong operands " +
+                            ctx.getText() + ", at line " +
+                            ctx.getStart().getLine());
+                    throw new SemanticError();
+                }
+            }
+            break;
+            case MangoParser.LOG_AND:
+            case MangoParser.LOG_OR: {
+                if (!(lhs.getType().isSuitableAs(SymbolTable.BOOL) &&
+                        rhs.getType().isSuitableAs(SymbolTable.BOOL))) {
+                    System.out.println("Logical operation on wrong operands " +
+                            ctx.getText() + ", at line " +
+                            ctx.getStart().getLine());
+                    throw new SemanticError();
+                }
+            }
+        }
+        return new LogBinaryExpr(lhs, op, rhs, new Position(ctx.getStart().getLine()));
     }
 
     @Override
     public AST visitBinary(MangoParser.BinaryContext ctx) {
-        return visitChildren(ctx);
+        ExprStmt lhs = (ExprStmt) visit(ctx.expr(0));
+        ExprStmt rhs = (ExprStmt) visit(ctx.expr(1));
+        BinaryOp op = null;
+        switch (ctx.op.getType()) {
+            case MangoParser.MULT:
+                op = BinaryOp.MULT;
+                break;
+            case MangoParser.DIV:
+                op = BinaryOp.DIV;
+                break;
+            case MangoParser.MOD:
+                op = BinaryOp.MOD;
+                break;
+            case MangoParser.PLUS:
+                op = BinaryOp.PLUS;
+                break;
+            case MangoParser.MINUS:
+                op = BinaryOp.MINUS;
+                break;
+            case MangoParser.SHIFT_L:
+                op = BinaryOp.SHIFT_L;
+                break;
+            case MangoParser.SHIFT_R:
+                op = BinaryOp.SHIFT_R;
+                break;
+            case MangoParser.BIT_AND:
+                op = BinaryOp.BIT_AND;
+                break;
+            case MangoParser.BIT_XOR:
+                op = BinaryOp.BIT_XOR;
+                break;
+            case MangoParser.BIT_OR:
+                op = BinaryOp.BIT_OR;
+                break;
+        }
+        switch (ctx.op.getType()) {
+            case MangoParser.MULT:
+            case MangoParser.DIV:
+            case MangoParser.MOD:
+            case MangoParser.MINUS:
+            case MangoParser.SHIFT_L:
+            case MangoParser.SHIFT_R:
+            case MangoParser.BIT_AND:
+            case MangoParser.BIT_XOR:
+            case MangoParser.BIT_OR: {
+                if (!(lhs.getType().isSuitableAs(SymbolTable.INT) &&
+                        rhs.getType().isSuitableAs(SymbolTable.INT))) {
+                    System.out.println("operation on wrong operands " +
+                            ctx.getText() + ", at line " +
+                            ctx.getStart().getLine());
+                    throw new SemanticError();
+                }
+            }
+            break;
+            case MangoParser.PLUS: {
+                if (!(lhs.getType().isSuitableAs(SymbolTable.INT) &&
+                        rhs.getType().isSuitableAs(SymbolTable.INT)) &&
+                        !(lhs.getType().isSuitableAs(SymbolTable.STRING) &&
+                                rhs.getType().isSuitableAs(SymbolTable.STRING))) {
+                    System.out.println("operation on wrong operands " +
+                            ctx.getText() + ", at line " +
+                            ctx.getStart().getLine());
+                    throw new SemanticError();
+                }
+            }
+        }
+        return new BinaryExpr(lhs, op, rhs, new Position(ctx.getStart().getLine()));
     }
 
     @Override
     public AST visitSign(MangoParser.SignContext ctx) {
-        return visitChildren(ctx);
+        ExprStmt base = (ExprStmt) visit(ctx.expr());
+        if (!base.getType().isSuitableAs(SymbolTable.INT)) {
+            System.out.println("Wrong sign operation " +
+                    ctx.expr().getText() + ", at line " +
+                    ctx.getStart().getLine());
+            throw new SemanticError();
+        }
+        return new SignExpr(base, new Position(ctx.getStart().getLine()));
     }
 
     @Override
     public AST visitAssign(MangoParser.AssignContext ctx) {
-        return visitChildren(ctx);
+        ExprStmt lv = (ExprStmt) visit(ctx.expr(0));
+        if (!(lv instanceof LValue)) {
+            System.out.println("Wrong assignment operation on non-Lvalue" +
+                    ctx.getText() + ", at line " +
+                    ctx.getStart().getLine());
+            throw new SemanticError();
+        }
+        ExprStmt rhs = (ExprStmt) visit(ctx.expr(1));
+        return new AssignExpr(lv, rhs, new Position(ctx.getStart().getLine()));
     }
 
     @Override
     public AST visitBitNot(MangoParser.BitNotContext ctx) {
+        ExprStmt context = (ExprStmt) visit(ctx.expr());
+        if (!context.getType().isSuitableAs(SymbolTable.INT)) {
+            System.err.println("Invalid operation operand " + ctx.getText() + ", at line " + ctx.getStart().getLine());
+            throw new SemanticError();
+        }
         return visitChildren(ctx);
     }
 
     @Override
     public AST visitFieldAccess(MangoParser.FieldAccessContext ctx) {
-        return visitChildren(ctx);
+        ExprStmt lhs = (ExprStmt) visit(ctx.expr());
+        if (!(lhs.getType() instanceof ClassType)) {
+            System.err.println("Wrong class Field Access at line " + ctx.getStart().getLine());
+            throw new SemanticError();
+        }
+        Name func = getName(lhs.getType().toString() +
+                '.' + ctx.ID().getText());
+        FuncSymbol funcInfo = null;
+        try {
+            funcInfo = (FuncSymbol) global.resolve(func);
+        } catch (Undefined err) {
+            System.err.println("Used class function " + ctx.getText() + ", at line " + ctx.getStart().getLine());
+            throw new SemanticError();
+        }
+        return new ClassFuncAccessExpr(lhs, funcInfo, new Position(ctx.getStart().getLine()));
     }
 
     @Override
     public AST visitClassFuncAccess(MangoParser.ClassFuncAccessContext ctx) {
+        ExprStmt lhs = (ExprStmt) visit(ctx.expr());
+        if (!(lhs.getType() instanceof ClassType)) {
+            System.err.println("Wrong class Field Access at line " + ctx.getStart().getLine());
+            throw new SemanticError();
+        }
+        Name func = getName(ctx.ID().getText());
         return visitChildren(ctx);
     }
 
     @Override
     public AST visitArrayCreate(MangoParser.ArrayCreateContext ctx) {
-
-        return visitChildren(ctx);
+        ArrayType base;
+        try {
+            base = (ArrayType) parseType(ctx.getText().substring(3), global);
+        } catch (Undefined err) {
+            System.err.println("Using undefined type to create new variable at line " + ctx.getStart().getLine());
+            throw new SemanticError();
+        }
+        ExprStmt index = (ExprStmt) visit(ctx.expr());
+        if (!index.getType().isSuitableAs(SymbolTable.INT)) {
+            System.err.println("Unexpected index" + ctx.expr().getText() + " at line " + ctx.getStart().getLine());
+            throw new SemanticError();
+        }
+        return new ArrayCreationExpr(base, (IntExpr) index, new Position(ctx.getStart().getLine()));
     }
 
     @Override
     public AST visitAtomCreate(MangoParser.AtomCreateContext ctx) {
-        return visitChildren(ctx);
+        Type base;
+        try {
+            base = global.lookUpType(ctx.atom().getText());
+        } catch (Undefined err) {
+            System.err.println("Using undefined type to create new variable at line " + ctx.getStart().getLine());
+            throw new SemanticError();
+        }
+        return new AtomCreationExpr(base, new Position(ctx.getStart().getLine()));
     }
 
 //    @Override
 //    public AST visitExprList(MangoParser.ExprListContext ctx) {
+//
 //        return visitChildren(ctx);
 //    }
 
@@ -558,7 +805,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
     // remember to return a VarDecl
     @Override
     public AST visitClassField(MangoParser.ClassFieldContext ctx) {
-        VarSymbol classVar = null;
+        VarSymbol classVar;
         try {
             classVar = (VarSymbol) global.resolve(getName(nowClass + '.' + ctx.ID().getText()));
         } catch (Undefined err) {

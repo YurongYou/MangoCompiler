@@ -30,4 +30,10 @@ public class TypeParser {
 
         return ans;
     }
+
+    public static void main(String[] args) throws Undefined {
+        SymbolTable sb = new SymbolTable();
+        Type test = parseType("int[][][]", sb);
+        System.out.println(test);
+    }
 }
