@@ -25,15 +25,6 @@ public class FuncSymbol extends Symbol {
      */
     public FuncSymbol(int _ScopeID, Name _funcName, Type _returnType, List<Name> FPN, List<Type> FPT) {
         super(_ScopeID, _funcName);
-//        Don't do this in symbol, extract it to the outer
-//        if (FPN != null) {
-//            ListIterator<Name> itrN = FPN.listIterator(0);
-//            ListIterator<Type> itrT = FPT.listIterator(0);
-//            while (itrN.hasNext()) {
-//                VarSymbol var = new VarSymbol(_crrScope, itrT.next());
-//                _crrScope.define(itrN.next(), var);
-//            }
-//        }
         returnType = _returnType;
 
         formalParameterName = FPN;

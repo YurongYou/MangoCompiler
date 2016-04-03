@@ -77,8 +77,8 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
         if (ctx.expr() != null) {
             rhs = (ExprStmt) visit(ctx.expr());
             if (!suit(varType, rhs.getType())) {
-                System.err.println("Unsuitable type in variable declaration. Expect " +
-                        varType + " but get " + rhs.getType());
+                System.err.println("Unsuitable type in variable declaration, expect " +
+                        varType + " but get " + rhs.getType() + ", at line " + ctx.getStart().getLine());
                 throw new SemanticError();
             }
         }
@@ -89,7 +89,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
             global.define(varName, varInfo);
         } catch (Redefine err) {
             System.err.println("Redefined variable " + ctx.ID().getText() +
-                    " at line " + ctx.getStart().getLine());
+                    ", at line " + ctx.getStart().getLine());
             throw new SemanticError();
         }
         // scopeID == 0 means it's now in global
@@ -131,20 +131,22 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
         }
 
         global.beginScope();
-        ListIterator<Type> APTitr = funcInfo.getFormalParametersType().listIterator();
-        ListIterator<Name> APNitr = funcInfo.getFormalParametersName().listIterator();
+        if (funcInfo.getFormalParametersType() != null) {
+            ListIterator<Type> APTitr = funcInfo.getFormalParametersType().listIterator();
+            ListIterator<Name> APNitr = funcInfo.getFormalParametersName().listIterator();
 
-        Name varName = null;
-        try {
-            while (APTitr.hasNext()) {
-                varName = APNitr.next();
-                global.define(varName, new VarSymbol(global.getCurrentScope(),
-                        varName, APTitr.next()));
+            Name varName = null;
+            try {
+                while (APTitr.hasNext()) {
+                    varName = APNitr.next();
+                    global.define(varName, new VarSymbol(global.getCurrentScope(),
+                            varName, APTitr.next()));
+                }
+            } catch (Redefine err) {
+                System.err.println("Redefined variable " + varName +
+                        " at line " + ctx.getStart().getLine());
+                throw new SemanticError();
             }
-        } catch (Redefine err) {
-            System.err.println("Redefined variable " + varName +
-                    " at line " + ctx.getStart().getLine());
-            throw new SemanticError();
         }
         FuncDecl func = new FuncDecl(funcInfo, null, new Position(ctx.getStart().getLine()));
 
@@ -251,36 +253,44 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
 
     @Override
     public AST visitReturnStmt(MangoParser.ReturnStmtContext ctx) {
-        ExprStmt returnExpr = (ExprStmt) visit(ctx.expr());
-
-        // Checking whether the return type is suitable
-        // when now function is "void" return
-        if (nowFunc.getFuncInfo().getReturnType() == null &&
-                returnExpr != null) {
-            System.err.println("\"void\" function, but found a return of type " + returnExpr.getType() +
-                    ", at line " + ctx.getStart().getLine());
-            throw new SemanticError();
-        } else if (returnExpr == null && nowFunc.getFuncInfo().getReturnType() != null) {
-            System.err.println("a non-\"void\" function expecting return of type " + nowFunc.getFuncInfo().getReturnType() +
-                    ", but found a pure return, at line " + ctx.getStart().getLine());
-            throw new SemanticError();
+        ExprStmt returnExpr = null;
+        if (ctx.expr() != null) {
+            returnExpr = (ExprStmt) visit(ctx.expr());
         }
-        // when now function is a function with return type requirement
-        else {
-            if (returnExpr.getType() == null && !((nowFunc.getFuncInfo().getReturnType() instanceof ArrayType) ||
-                    (nowFunc.getFuncInfo().getReturnType() instanceof ClassType))) {
-                System.err.println("Improper function return, expecting return of type " +
-                        nowFunc.getFuncInfo().getReturnType() +
-                        ", but found a return of null, at line " + ctx.getStart().getLine());
-                throw new SemanticError();
-            } else if (!returnExpr.getType().isSuitableAs(nowFunc.getFuncInfo().getReturnType())) {
-                System.err.println("Improper function return, expecting type " +
-                        nowFunc.getFuncInfo().getReturnType() +
-                        ", but found a return of type " + returnExpr.getType() + ", at line " + ctx.getStart().getLine());
+        // Checking whether the return type is suitable
+        if (returnExpr == null) {
+            if (nowFunc.getFuncInfo().getReturnType() != null) {
+                System.err.println("a non-\"void\" function expecting return of type " + nowFunc.getFuncInfo().getReturnType() +
+                        ", but found a pure return, at line " + ctx.getStart().getLine());
                 throw new SemanticError();
             }
+        } else if (returnExpr.getType() == null) {
+            if (nowFunc.getFuncInfo().getReturnType() == null) {
+                System.err.println("a \"void\" function , but found a    \"null\"   return, at line " + ctx.getStart().getLine());
+                throw new SemanticError();
+            } else {
+                if (!((nowFunc.getFuncInfo().getReturnType() instanceof ArrayType) ||
+                        (nowFunc.getFuncInfo().getReturnType() instanceof ClassType))) {
+                    System.err.println("Improper function return, expecting return of type " +
+                            nowFunc.getFuncInfo().getReturnType() +
+                            ", but found a return of null, at line " + ctx.getStart().getLine());
+                    throw new SemanticError();
+                }
+            }
+        } else {
+            if (nowFunc.getFuncInfo().getReturnType() == null) {
+                System.err.println("\"void\" function, but found a return of type " + returnExpr.getType() +
+                        ", at line " + ctx.getStart().getLine());
+                throw new SemanticError();
+            } else {
+                if (!returnExpr.getType().isSuitableAs(nowFunc.getFuncInfo().getReturnType())) {
+                    System.err.println("Improper function return, expecting type " +
+                            nowFunc.getFuncInfo().getReturnType() +
+                            ", but found a return of type " + returnExpr.getType() + ", at line " + ctx.getStart().getLine());
+                    throw new SemanticError();
+                }
+            }
         }
-
         finelyReturned = true;
         return new ReturnStmt(returnExpr, nowFunc, new Position(ctx.getStart().getLine()));
     }
@@ -316,7 +326,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
     @Override
     public AST visitWhileLoop(MangoParser.WhileLoopContext ctx) {
         ExprStmt condition = (ExprStmt) visit(ctx.expr());
-        if (!condition.getType().isSuitableAs(global.BOOL)) {
+        if (!condition.getType().isSuitableAs(SymbolTable.BOOL)) {
             System.err.println("False type " + condition.getType() + ", expecting bool type, at " + condition.getPosition());
             throw new SemanticError();
         }
@@ -335,7 +345,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
     public AST visitForLoop(MangoParser.ForLoopContext ctx) {
         ExprStmt init = (ExprStmt) visit(ctx.init);
         ExprStmt condition = (ExprStmt) visit(ctx.condition);
-        if (!condition.getType().isSuitableAs(global.BOOL)) {
+        if (!condition.getType().isSuitableAs(SymbolTable.BOOL)) {
             System.err.println("False type " + condition.getType() + ", expecting bool type, at " + condition.getPosition());
             throw new SemanticError();
         }
@@ -357,7 +367,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
 
     @Override
     public AST visitCall(MangoParser.CallContext ctx) {
-        FuncSymbol funcInfo = null;
+        FuncSymbol funcInfo;
         try {
             if (nowClass != null) {
                 try {
@@ -367,6 +377,8 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
                     if (!(test instanceof FuncSymbol)) throw new Undefined();
                     else funcInfo = (FuncSymbol) test;
                 }
+            } else {
+                funcInfo = (FuncSymbol) global.resolve(getName(ctx.ID().getText()));
             }
         } catch (Undefined err) {
             System.err.println("Used undefined function" +
@@ -438,7 +450,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
 
     @Override
     public AST visitIDLeaf(MangoParser.IDLeafContext ctx) {
-        VarSymbol varInfo = null;
+        VarSymbol varInfo;
         try {
             if (nowClass != null) {
                 try {
@@ -710,7 +722,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
         }
         Name func = getName(lhs.getType().toString() +
                 '.' + ctx.ID().getText());
-        FuncSymbol funcInfo = null;
+        FuncSymbol funcInfo;
         try {
             funcInfo = (FuncSymbol) global.resolve(func);
         } catch (Undefined err) {
@@ -727,8 +739,14 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
             System.err.println("Wrong class Field Access at line " + ctx.getStart().getLine());
             throw new SemanticError();
         }
-        Name func = getName(ctx.ID().getText());
-        return visitChildren(ctx);
+        Name func = getName(lhs.getType() + "." + ctx.ID().getText());
+        FuncSymbol funcInfo = null;
+        try {
+            funcInfo = (FuncSymbol) global.resolve(func);
+        } catch (Undefined err) {
+            System.err.println("Used undefined class function   " + func + "    , at line " + ctx.getStart().getLine());
+        }
+        return new ClassFuncAccessExpr(lhs, funcInfo, new Position(ctx.getStart().getLine()));
     }
 
     @Override
@@ -785,7 +803,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
                 functions.add((FuncDecl) temp);
             } else throw new Bug_WrongReturn();
         }
-        ClassDecl classDecl = null;
+        ClassDecl classDecl;
         try {
             classDecl = new ClassDecl(variables, functions,
                     (ClassType) global.lookUpType(nowClass), new Position(ctx.getStart().getLine()));

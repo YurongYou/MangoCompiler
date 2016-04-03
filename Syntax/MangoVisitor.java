@@ -318,10 +318,8 @@ public interface MangoVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitClassFunction(MangoParser.ClassFunctionContext ctx);
-
 	/**
 	 * Visit a parse tree produced by {@link MangoParser#constant}.
-	 *
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */

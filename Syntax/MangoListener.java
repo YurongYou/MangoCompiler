@@ -531,17 +531,13 @@ public interface MangoListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitClassFunction(MangoParser.ClassFunctionContext ctx);
-
 	/**
 	 * Enter a parse tree produced by {@link MangoParser#constant}.
-	 *
 	 * @param ctx the parse tree
 	 */
 	void enterConstant(MangoParser.ConstantContext ctx);
-
 	/**
 	 * Exit a parse tree produced by {@link MangoParser#constant}.
-	 *
 	 * @param ctx the parse tree
 	 */
 	void exitConstant(MangoParser.ConstantContext ctx);

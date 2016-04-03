@@ -55,7 +55,7 @@ stmt:
     ;
 
 jump:
-    RETURN expr ';'     # ReturnStmt
+    RETURN expr? ';'     # ReturnStmt
     | BREAK ';'         # BreakStmt
     | CONTINUE ';'      # ContinueStmt
     ;

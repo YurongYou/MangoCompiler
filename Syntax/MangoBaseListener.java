@@ -747,19 +747,17 @@ public class MangoBaseListener implements MangoListener {
 	@Override
 	public void exitClassFunction(MangoParser.ClassFunctionContext ctx) {
 	}
-
 	/**
 	 * {@inheritDoc}
-	 * <p>
+	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override
 	public void enterConstant(MangoParser.ConstantContext ctx) {
 	}
-
 	/**
 	 * {@inheritDoc}
-	 * <p>
+	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override

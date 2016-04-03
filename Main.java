@@ -1,3 +1,4 @@
+import AST.AST;
 import ASTBuilder.ASTBuilder;
 import Gadgets.SymbolTable;
 import Syntax.MangoLexer;
@@ -19,7 +20,7 @@ import java.io.IOException;
 public class Main {
     public static void main(String[] args) throws IOException {
         // File Read In
-        FileInputStream FileInput = new FileInputStream("MangoTestCase/Parser/basic_test.mx");
+        FileInputStream FileInput = new FileInputStream("MangoTestCase/Parser/test.mango");
         ANTLRInputStream input = new ANTLRInputStream(FileInput);
         MangoLexer lexer = new MangoLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -71,6 +72,6 @@ public class Main {
 //        System.out.println(collector2.isAllCorrect());
 
         ASTBuilder builder = new ASTBuilder(tree);
-        builder.visit(tree);
+        AST root = builder.visit(tree);
     }
 }
