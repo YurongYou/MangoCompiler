@@ -206,6 +206,7 @@ public class Printer {
             }
         }
         if (node.getFunctions() != null) {
+            indent(d + 1);
             out.print("Functions:\n");
             for (FuncDecl e : node.getFunctions()) {
                 visit(e, d + 2);

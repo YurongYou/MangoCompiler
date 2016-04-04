@@ -24,6 +24,8 @@ public class LineCounter {
         countLine(file);
         file = new File("/Users/youyurong/Dropbox/课程/Compiler/Mango/src/Exceptions");
         countLine(file);
+        file = new File("/Users/youyurong/Dropbox/课程/Compiler/Mango/src/Syntax/Mango.g4");
+        countLine(file);
         System.out.println("有效代码行数: " + normalLine);
         System.out.println("注释行数: " + commentLine);
         System.out.println("空白行数: " + whiteLine);
@@ -36,7 +38,7 @@ public class LineCounter {
      * @param child
      */
     private static void countLine(File child) { // 遍历子目录
-        if (child.getName().matches(".*\\.java$") || child.getName().matches(".*\\.xml$") || child.getName().matches(".*\\.properties") || child.getName().matches(".*\\.json")) { // 只查询java文件
+        if (child.getName().matches(".*\\.java$") || child.getName().matches(".*\\.g4")) {
             try {
                 BufferedReader br = new BufferedReader(new FileReader(child));
                 String line = "";
