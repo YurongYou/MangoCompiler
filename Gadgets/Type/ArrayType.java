@@ -47,4 +47,8 @@ public class ArrayType extends Type {
     public String toString() {
         return baseType.toString() + "[]";
     }
+
+    public Type getBaseType() {
+        return baseType;
+    }
 }

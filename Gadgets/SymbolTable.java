@@ -142,7 +142,7 @@ public class SymbolTable {
      */
     public Symbol resolve(Name key) throws Undefined {
         Stack<Symbol> entry = dict.get(key);
-        if (entry == null) throw new Undefined();
+        if (entry == null || entry.isEmpty()) throw new Undefined();
         return entry.peek();
     }
 

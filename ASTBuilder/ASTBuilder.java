@@ -192,10 +192,10 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
         return null;
     }
 
-//    @Override
-//    public AST visitExprStmt(MangoParser.ExprStmtContext ctx) {
-//        return visitChildren(ctx);
-//    }
+    @Override
+    public AST visitExprStmt(MangoParser.ExprStmtContext ctx) {
+        return visit(ctx.expr());
+    }
 
 //    @Override
 //    public AST visitCompoundStmt(MangoParser.CompoundStmtContext ctx) {
@@ -360,10 +360,10 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
         return forLoop;
     }
 
-//    @Override
-//    public AST visitBracket(MangoParser.BracketContext ctx) {
-//        return visitChildren(ctx);
-//    }
+    @Override
+    public AST visitBracket(MangoParser.BracketContext ctx) {
+        return visit(ctx.expr());
+    }
 
     @Override
     public AST visitCall(MangoParser.CallContext ctx) {
@@ -474,15 +474,20 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
     public AST visitIndex(MangoParser.IndexContext ctx) {
         ExprStmt base = (ExprStmt) visit(ctx.expr(0));
         if (!(base.getType() instanceof ArrayType)) {
-            System.out.println("line " + ctx.getStart().getLine() + ": Wrong indexing <" + ctx.getText() + ">");
+            System.err.println("line " + ctx.getStart().getLine() + ": Wrong indexing <" + ctx.getText() + ">");
             throw new SemanticError();
         }
         ExprStmt index = (ExprStmt) visit(ctx.expr(1));
         if (!(index.getType().isSuitableAs(SymbolTable.INT))) {
-            System.out.println("line " + ctx.getStart().getLine() + ": Wrong indexing <" + ctx.getText() + ">");
+            System.err.println("line " + ctx.getStart().getLine() + ": Wrong indexing <" + ctx.getText() + ">");
             throw new SemanticError();
         }
-        return new IndexExpr(base, index, new Position(ctx.getStart().getLine()));
+
+//        System.out.println("detected index on ");
+//        System.out.print(base.getType());
+//        System.out.print(((IntExpr)index).getValue());
+
+        return new IndexExpr(base, (IntExpr) index, new Position(ctx.getStart().getLine()));
     }
 
     @Override
@@ -495,10 +500,10 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
         return new LogNotExpr(context, new Position(ctx.getStart().getLine()));
     }
 
-//    @Override
-//    public AST visitConstantLeaf(MangoParser.ConstantLeafContext ctx) {
-//        return visitChildren(ctx);
-//    }
+    @Override
+    public AST visitConstantLeaf(MangoParser.ConstantLeafContext ctx) {
+        return visit(ctx.constant());
+    }
 
 
     @Override
@@ -678,7 +683,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
     public AST visitAssign(MangoParser.AssignContext ctx) {
         ExprStmt lv = (ExprStmt) visit(ctx.expr(0));
         if (!(lv instanceof LValue)) {
-            System.out.println("line " + ctx.getStart().getLine() + ": Wrong assignment operation on non-Lvalue <" + ctx.getText() + ">");
+            System.err.println("line " + ctx.getStart().getLine() + ": Wrong assignment operation on non-Lvalue <" + ctx.expr(0).getText() + ">");
             throw new SemanticError();
         }
         ExprStmt rhs = (ExprStmt) visit(ctx.expr(1));
@@ -689,7 +694,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
     public AST visitBitNot(MangoParser.BitNotContext ctx) {
         ExprStmt context = (ExprStmt) visit(ctx.expr());
         if (!context.getType().isSuitableAs(SymbolTable.INT)) {
-            System.err.println("line " + ctx.getStart().getLine() + ": Invalid operation operand <" + ctx.getText() + ">");
+            System.err.println("line " + ctx.getStart().getLine() + ": Invalid operation operand <" + ctx.expr().getText() + ">");
             throw new SemanticError();
         }
         return visitChildren(ctx);
