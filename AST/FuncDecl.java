@@ -3,28 +3,35 @@ package AST;
 import Gadgets.Position;
 import Gadgets.Symbol.FuncSymbol;
 
+import java.util.List;
+
 /**
  * The function declaration node in AST.
  * Created by Ficos on 16/3/31.
  */
 public class FuncDecl extends Decl {
     FuncSymbol info;
-    CompoundStmt block;
+    List<Stmt> stmts;
+
+    public List<Stmt> getStmts() {
+        return stmts;
+    }
+
     /**
      * FuncDelc node initializer
      *
-     * @param _block the block subAST
-     * @param _pos       the position of the function declaration in the original file
-     * @param _info function information
+     * @param _stmts all statements in the function
+     * @param _pos   the position of the function declaration in the original file
+     * @param _info  function information
      */
-    public FuncDecl(FuncSymbol _info, CompoundStmt _block, Position _pos) {
+    public FuncDecl(FuncSymbol _info, List<Stmt> _stmts, Position _pos) {
         super(_pos);
-        block = _block;
+        stmts = _stmts;
         info = _info;
     }
 
-    public void fillBlock(CompoundStmt _block) {
-        block = _block;
+    public void fillStmts(List<Stmt> _stmts) {
+        stmts = _stmts;
     }
 
     public FuncSymbol getFuncInfo() {
@@ -33,9 +40,5 @@ public class FuncDecl extends Decl {
 
     public FuncSymbol getInfo() {
         return info;
-    }
-
-    public CompoundStmt getBlock() {
-        return block;
     }
 }

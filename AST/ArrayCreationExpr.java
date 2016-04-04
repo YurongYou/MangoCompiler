@@ -8,14 +8,14 @@ import Gadgets.Type.ArrayType;
  * Created by Ficos on 16/3/31.
  */
 public class ArrayCreationExpr extends ExprStmt {
-    IntExpr dim;
+    ExprStmt dim;
 
-    public ArrayCreationExpr(ArrayType _type, IntExpr _dim, Position _pos) {
+    public ArrayCreationExpr(ArrayType _type, ExprStmt _dim, Position _pos) {
         super(_type, _pos);
         dim = _dim;
     }
 
-    public IntExpr getDim() {
+    public ExprStmt getDim() {
         return dim;
     }
 }

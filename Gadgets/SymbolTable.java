@@ -101,6 +101,11 @@ public class SymbolTable {
         name = Name.getName("string.ord");
         FuncSymbol string_ord = new FuncSymbol(name, INT, Arrays.asList(Name.getName("pos")), Arrays.asList(INT));
         define(name, string_ord);
+
+        //int ~array.size()
+        name = Name.getName("~array.size");
+        FuncSymbol _array_size = new FuncSymbol(name, INT, null, null);
+        define(name, _array_size);
     }
 
     public SymbolTable() {

@@ -229,7 +229,7 @@ public class Printer {
                 out.print("Type: " + Titr.next() + ", Name: " + Nitr.next() + "\n");
             }
         }
-        for (Stmt s : node.getBlock().getStmts()) {
+        for (Stmt s : node.getStmts()) {
             visit(s, d + 1);
             out.print("\n");
         }
@@ -278,7 +278,9 @@ public class Printer {
 
     void visit(ArrayCreationExpr node, int d) {
         indent(d);
-        out.print("<New:" + node.getType() + "| dim = " + node.getDim().getValue() + ">");
+        out.print("<New:" + node.getType() + "| dim = ");
+        visit(node.getDim(), 0);
+        out.print(">");
     }
 
     void visit(SignExpr node, int d) {
@@ -414,8 +416,7 @@ public class Printer {
             out.print("<SelfIncreasePre:");
             visit(node.getBase(), 0);
             out.print(">");
-        }
-        if (node.getOp()) {
+        } else {
             out.print("<SelfDecreasePre:");
             visit(node.getBase(), 0);
             out.print(">");
@@ -428,9 +429,8 @@ public class Printer {
             out.print("<SelfIncreasePost:");
             visit(node.getBase(), 0);
             out.print(">");
-        }
-        if (node.getOp()) {
-            out.print("<SelfDecreasePost:");
+        } else {
+            out.print("<SelfIecreasePost:");
             visit(node.getBase(), 0);
             out.print(">");
         }
@@ -458,29 +458,29 @@ public class Printer {
     void visit(SelectionStmt node, int d) {
         indent(d);
         out.print("IF conditional Statement\n");
-        indent(d);
+        indent(d + 1);
         out.print("Condition:");
         visit(node.getCondition(), 0);
         out.print("\n");
-        indent(d);
+        indent(d + 1);
         out.print("Then:\n");
-        visit(node.getThenStmt(), d);
+        visit(node.getThenStmt(), d + 2);
         out.print("\n");
         if (node.getSubSelectionConditions() != null) {
             ListIterator<ExprStmt> elseif = node.getSubSelectionConditions().listIterator();
             ListIterator<Stmt> elseifthen = node.getSubSelectionThenStmts().listIterator();
             while (elseif.hasNext()) {
-                indent(d);
+                indent(d + 1);
                 out.print("Else If Condition: ");
                 visit(elseif.next(), 0);
                 out.print("\n");
-                visit(elseifthen.next(), d + 1);
+                visit(elseifthen.next(), d + 2);
             }
         }
         if (node.getElseStmt() != null) {
-            indent(d);
+            indent(d + 1);
             out.print("Else:\n");
-            visit(node.getElseStmt(), d);
+            visit(node.getElseStmt(), d + 2);
         }
     }
 
@@ -513,10 +513,9 @@ public class Printer {
     }
 
     void visit(CompoundStmt node, int d) {
-        indent(d);
         if (node.getStmts() != null) {
             for (Stmt s : node.getStmts()) {
-                visit(s, d + 1);
+                visit(s, d);
                 out.print('\n');
             }
         }

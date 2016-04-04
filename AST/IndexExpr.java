@@ -9,9 +9,9 @@ import Gadgets.Type.ArrayType;
  */
 public class IndexExpr extends ExprStmt implements LValue {
     ExprStmt base;
-    IntExpr index;
+    ExprStmt index;
 
-    public IndexExpr(ExprStmt _base, IntExpr _index, Position _pos) {
+    public IndexExpr(ExprStmt _base, ExprStmt _index, Position _pos) {
         super(((ArrayType) _base.getType()).getBaseType(), _pos);
         base = _base;
         index = _index;
@@ -21,7 +21,7 @@ public class IndexExpr extends ExprStmt implements LValue {
         return base;
     }
 
-    public IntExpr getIndex() {
+    public ExprStmt getIndex() {
         return index;
     }
 }

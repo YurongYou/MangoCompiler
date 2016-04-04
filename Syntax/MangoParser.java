@@ -1090,7 +1090,7 @@ public class MangoParser extends Parser {
 						{
 					setState(121);
 					expr(0);
-						}
+					}
 					}
 
 					setState(124);

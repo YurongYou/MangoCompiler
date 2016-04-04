@@ -120,7 +120,7 @@ constant : NULL
     | BOOL
     ;
 
-INT : '-'? DIGIT+;
+INT : DIGIT+;
 STRING : '"' (~["\\]| ESC)* '"';
 fragment ESC : '\\' ["\\n];
 BOOL : 'true' | 'false';
