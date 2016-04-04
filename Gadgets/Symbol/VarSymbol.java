@@ -10,8 +10,8 @@ import Gadgets.Type.Type;
 public class VarSymbol extends Symbol {
     private Type type;
 
-    public VarSymbol(int _scopeID, Name _varName, Type _type) {
-        super(_scopeID, _varName);
+    public VarSymbol(Name _varName, Type _type) {
+        super(_varName);
         type = _type;
     }
 

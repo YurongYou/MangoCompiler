@@ -12,7 +12,7 @@ public class TypeSymbol extends Symbol {
 
     public TypeSymbol(Name _typeName, Type _type) {
         //TypeSymbol's scope ID is default 0
-        super(0, _typeName);
+        super(_typeName);
         type = _type;
     }
 

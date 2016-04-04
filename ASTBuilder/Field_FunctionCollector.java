@@ -57,12 +57,12 @@ public class Field_FunctionCollector extends MangoBaseListener {
         //The in-class name is <classname>.<varName>
         Name fieldName = Name.getName(nowClass + '.' + ctx.ID().getText());
         if (fieldType != null) {
-            VarSymbol fieldInfo = new VarSymbol(0, fieldName, fieldType);
+            VarSymbol fieldInfo = new VarSymbol(fieldName, fieldType);
         }
 
         //define the variable
         try {
-            VarSymbol fieldInfo = new VarSymbol(0, fieldName, fieldType);
+            VarSymbol fieldInfo = new VarSymbol(fieldName, fieldType);
             global.define(fieldName, fieldInfo);
         } catch (Redefine err) {
             System.err.println("Redefined variable " + ctx.ID().getText()
@@ -124,7 +124,7 @@ public class Field_FunctionCollector extends MangoBaseListener {
         }
 
         //create the function info symbol
-        FuncSymbol funcInfo = new FuncSymbol(0, funcName, funcReturnType,
+        FuncSymbol funcInfo = new FuncSymbol(funcName, funcReturnType,
                 formalParameterName, formalParameterType);
 
         //define the function in global SymbolTable

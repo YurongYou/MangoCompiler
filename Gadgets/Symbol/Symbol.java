@@ -9,16 +9,10 @@ import Gadgets.SymbolTable;
  * Created by Ficos on 16/3/30.
  */
 public abstract class Symbol {
-    private int scopeID;
     private Name name;
 
-    public Symbol(int _scopeID, Name _name) {
-        scopeID = _scopeID;
+    public Symbol(Name _name) {
         name = _name;
-    }
-
-    public int getScopeID() {
-        return scopeID;
     }
 
     public Name getName() {

@@ -82,9 +82,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
                 throw new SemanticError();
             }
         }
-        VarSymbol varInfo = new VarSymbol(global.getCurrentScope(),
-                varName,
-                varType);
+        VarSymbol varInfo = new VarSymbol(varName, varType);
         try {
             global.define(varName, varInfo);
         } catch (Redefine err) {
@@ -92,8 +90,8 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
                     ">");
             throw new SemanticError();
         }
-        // scopeID == 0 means it's now in global
-        if (varInfo.getScopeID() == 0) {
+        // currentScope == 0 means it's now in global
+        if (global.getCurrentScope() == 0) {
             return new VarDecl(varInfo, rhs, new Position(ctx.getStart().getLine()));
         } else {
             return new VarDeclStmt(varInfo, rhs, new Position(ctx.getStart().getLine()));
@@ -139,8 +137,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
             try {
                 while (APTitr.hasNext()) {
                     varName = APNitr.next();
-                    global.define(varName, new VarSymbol(global.getCurrentScope(),
-                            varName, APTitr.next()));
+                    global.define(varName, new VarSymbol(varName, APTitr.next()));
                 }
             } catch (Redefine err) {
                 System.err.println("line " + ctx.getStart().getLine() + ": Redefined variable <" + varName +

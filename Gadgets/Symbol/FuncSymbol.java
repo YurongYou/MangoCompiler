@@ -23,8 +23,8 @@ public class FuncSymbol extends Symbol {
      * @param FPN         the function's formal parameter Name List
      * @param FPT         the function's formal parameter Type List
      */
-    public FuncSymbol(int _ScopeID, Name _funcName, Type _returnType, List<Name> FPN, List<Type> FPT) {
-        super(_ScopeID, _funcName);
+    public FuncSymbol(Name _funcName, Type _returnType, List<Name> FPN, List<Type> FPT) {
+        super(_funcName);
         returnType = _returnType;
 
         formalParameterName = FPN;
