@@ -26,10 +26,10 @@ public class LineCounter {
         countLine(file);
         file = new File("/Users/youyurong/Dropbox/课程/Compiler/Mango/src/Syntax/Mango.g4");
         countLine(file);
-        System.out.println("有效代码行数: " + normalLine);
-        System.out.println("注释行数: " + commentLine);
-        System.out.println("空白行数: " + whiteLine);
-        System.out.println("总代码行数: " + totalLine);
+        System.out.println("Effective Line: " + normalLine);
+        System.out.println("Comments: " + commentLine);
+        System.out.println("Blank: " + whiteLine);
+        System.out.println("Total: " + totalLine);
     }
 
     /**
