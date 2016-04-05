@@ -224,7 +224,14 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
             throw new SemanticError();
         }
         finelyReturned = false;
-        Stmt then = (Stmt) visit(info.stmt(0));
+        Stmt then;
+        if (info.stmt(0) instanceof MangoParser.CompoundStmtContext)
+            then = (Stmt) visit(info.stmt(0));
+        else {
+            global.beginScope();
+            then = (Stmt) visit(info.stmt(0));
+            global.endScope();
+        }
 
         List<ExprStmt> subSelectionConditions = new LinkedList<>();
         List<Stmt> subSelectionThenStmts = new LinkedList<>();
@@ -242,14 +249,26 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
                 throw new SemanticError();
             }
             subSelectionConditions.add(elseIfCondition);
-            subSelectionThenStmts.add((Stmt) visit(tempElseIf.stmt()));
+            if (tempElseIf.stmt() instanceof MangoParser.CompoundStmtContext)
+                subSelectionThenStmts.add((Stmt) visit(tempElseIf.stmt()));
+            else {
+                global.beginScope();
+                subSelectionThenStmts.add((Stmt) visit(tempElseIf.stmt()));
+                global.endScope();
+            }
         }
 
         Stmt elseStmt = null;
         // if there is a else expression at the end
         if (info.stmt().size() > 1) {
             finelyReturned = false;
-            elseStmt = (Stmt) visit(info.stmt(1));
+            if (info.stmt(1) instanceof MangoParser.CompoundStmtContext)
+                elseStmt = (Stmt) visit(info.stmt(1));
+            else {
+                global.beginScope();
+                elseStmt = (Stmt) visit(info.stmt(1));
+                global.endScope();
+            }
         }
 
         return new SelectionStmt(condition, then,
@@ -353,8 +372,19 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
         }
         WhileStmt whileLoop = new WhileStmt(condition, null, new Position(ctx.getStart().getLine()));
 
+
+        // The following code intends to avoid
+        // while(condition) int a = 1;
+        // if in-while is not compound-statement, the declaration will occur in wrong scope
         nowLoop.push(whileLoop);
-        Stmt loop = (Stmt) visit(ctx.stmt());
+        Stmt loop;
+        if (ctx.stmt() instanceof MangoParser.CompoundStmtContext)
+            loop = (Stmt) visit(ctx.stmt());
+        else {
+            global.beginScope();
+            loop = (Stmt) visit(ctx.stmt());
+            global.endScope();
+        }
         nowLoop.pop();
 
 
@@ -382,8 +412,18 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
         }
         ForStmt forLoop = new ForStmt(init, condition, after, null, new Position(ctx.getStart().getLine()));
 
+        // The following code intends to avoid
+        // for(conditions) int a = 1;
+        // if in-for is not compound-statement, the declaration will occur in wrong scope
         nowLoop.push(forLoop);
-        Stmt loop = (Stmt) visit(ctx.stmt());
+        Stmt loop;
+        if (ctx.stmt() instanceof MangoParser.CompoundStmtContext)
+            loop = (Stmt) visit(ctx.stmt());
+        else {
+            global.beginScope();
+            loop = (Stmt) visit(ctx.stmt());
+            global.endScope();
+        }
         nowLoop.pop();
 
         forLoop.fillLoop(loop);
@@ -511,6 +551,10 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
             System.err.println("line " + ctx.getStart().getLine() + ": Wrong indexing <" + ctx.getText() + ">");
             throw new SemanticError();
         }
+        if (!(base instanceof LValue)) {
+            System.err.println("line " + ctx.getStart().getLine() + ": Wrong operation on non-Lvalue <" + ctx.getText() + ">");
+            throw new SemanticError();
+        }
         ExprStmt index = (ExprStmt) visit(ctx.expr(1));
         if (!(suit(SymbolTable.INT, index.getType()))) {
             System.err.println("line " + ctx.getStart().getLine() + ": Wrong indexing <" + ctx.getText() + ">");
@@ -545,7 +589,9 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
         if (ctx.BOOL() != null) {
             return new BoolExpr(ctx.getText(), new Position(ctx.getStart().getLine()));
         } else if (ctx.STRING() != null) {
-            return new StringExpr(ctx.getText(), new Position(ctx.getStart().getLine()));
+            String temp = ctx.getText();
+            temp = temp.substring(1, temp.lastIndexOf('"'));
+            return new StringExpr(temp, new Position(ctx.getStart().getLine()));
         } else if (ctx.INT() != null) {
             return new IntExpr(ctx.getText(), new Position(ctx.getStart().getLine()));
         } else if (ctx.NULL() != null) {
@@ -755,6 +801,10 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
         ExprStmt lhs = (ExprStmt) visit(ctx.expr());
         if (!(lhs.getType() instanceof ClassType)) {
             System.err.println("line " + ctx.getStart().getLine() + ": Wrong class field accessing");
+            throw new SemanticError();
+        }
+        if (!(lhs instanceof LValue)) {
+            System.err.println("line " + ctx.getStart().getLine() + ": Wrong operation on non-Lvalue <" + ctx.getText() + ">");
             throw new SemanticError();
         }
         Name field = getName(lhs.getType().toString() +
