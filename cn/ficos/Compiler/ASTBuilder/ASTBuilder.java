@@ -164,7 +164,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
         }
 
 
-        if (funcInfo.getReturnType() != null && !finelyReturned) {
+        if (funcInfo.getReturnType() != null && !finelyReturned && !(funcInfo.getReturnType() == SymbolTable.INT && funcName.toString().equals("main"))) {
             System.err.println("line " + ctx.getStart().getLine() + ": Function return not found, expecting return type <" + funcInfo.getReturnType() + ">");
             throw new SemanticError();
         }

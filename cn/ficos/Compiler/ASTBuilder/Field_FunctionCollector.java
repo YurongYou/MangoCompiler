@@ -48,8 +48,7 @@ public class Field_FunctionCollector extends MangoBaseListener {
         try {
             fieldType = parseType(ctx.type().getText(), global);
         } catch (Undefined err) {
-            System.err.println("Used undefined class " + ctx.type().getText() +
-                    " at line " + ctx.getStart().getLine());
+            System.err.println("line " + ctx.getStart().getLine() + ": Using undefined class " + ctx.type().getText());
             correct = false;
             return;
         }
@@ -65,8 +64,8 @@ public class Field_FunctionCollector extends MangoBaseListener {
             VarSymbol fieldInfo = new VarSymbol(fieldName, fieldType);
             global.define(fieldName, fieldInfo);
         } catch (Redefine err) {
-            System.err.println("Redefined variable " + ctx.ID().getText()
-                    + " in class " + nowClass + " at line " + ctx.getStart().getLine());
+            System.err.println("line " + ctx.getStart().getLine() + ": Redefining class field " + ctx.ID().getText()
+                    + " in class " + nowClass);
             correct = false;
         }
     }
@@ -79,8 +78,8 @@ public class Field_FunctionCollector extends MangoBaseListener {
             try {
                 funcReturnType = parseType(ctx.type().getText(), global);
             } catch (Undefined err) {
-                System.err.println("Used undefined function return type " +
-                        ctx.type().getText() + " at line " + ctx.getStart().getLine());
+                System.err.println("line " + ctx.getStart().getLine() + ": Using undefined function return type " +
+                        ctx.type().getText());
                 correct = false;
                 return;
             }
@@ -116,8 +115,7 @@ public class Field_FunctionCollector extends MangoBaseListener {
                     formalParameterName.add(Name.getName(source.ID().getText()));
                 }
             } catch (Undefined err) {
-                System.err.println("Used undefined class " + source.type().getText()
-                        + " at line " + ctx2.getStart().getLine());
+                System.err.println("line " + ctx.getStart().getLine() + ": Using undefined class " + source.type().getText());
                 correct = false;
                 return;
             }
@@ -131,7 +129,7 @@ public class Field_FunctionCollector extends MangoBaseListener {
         try {
             global.define(funcName, funcInfo);
         } catch (Redefine err) {
-            System.err.println("Redefined function " + funcName + " at line " + ctx.getStart().getLine());
+            System.err.println("line " + ctx.getStart().getLine() + ": Redefining function " + funcName);
             correct = false;
         }
     }
