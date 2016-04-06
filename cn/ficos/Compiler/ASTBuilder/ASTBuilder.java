@@ -31,7 +31,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
     private String nowClass = null;
     private Stack<LoopScope> nowLoop = new Stack<>();
     private FuncDecl nowFunc = null;
-    private Boolean finelyReturned = false;
+//    private Boolean finelyReturned = false;
 
     public ASTBuilder(org.antlr.v4.runtime.tree.ParseTree ctx) {
         // collect information before visit.
@@ -151,7 +151,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
 
 
         nowFunc = func;
-        finelyReturned = false;
+//        finelyReturned = false;
         List<Stmt> stmts = null;
         if (ctx.block().stmt() != null) {
             stmts = new LinkedList<>();
@@ -164,10 +164,10 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
         }
 
 
-        if (funcInfo.getReturnType() != null && !finelyReturned && !(funcInfo.getReturnType() == SymbolTable.INT && funcName.toString().equals("main"))) {
-            System.err.println("line " + ctx.getStart().getLine() + ": Function return not found, expecting return type <" + funcInfo.getReturnType() + ">");
-            throw new SemanticError();
-        }
+//        if (funcInfo.getReturnType() != null && !finelyReturned && !(funcInfo.getReturnType() == SymbolTable.INT && funcName.toString().equals("main"))) {
+//            System.err.println("line " + ctx.getStart().getLine() + ": Function return not found, expecting return type <" + funcInfo.getReturnType() + ">");
+//            throw new SemanticError();
+//        }
         global.endScope();
         nowFunc = null;
 
@@ -222,7 +222,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
             System.err.println("line " + ctx.getStart().getLine() + ": False if condition of type <" + condition.getType() + ">, expecting bool type");
             throw new SemanticError();
         }
-        finelyReturned = false;
+//        finelyReturned = false;
         Stmt then;
         if (info.stmt(0) instanceof MangoParser.CompoundStmtContext)
             then = (Stmt) visit(info.stmt(0));
@@ -241,7 +241,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
         MangoParser.SubSelectionContext tempElseIf;
         while (elseifItr.hasNext()) {
             tempElseIf = elseifItr.next();
-            finelyReturned = false;
+//            finelyReturned = false;
             ExprStmt elseIfCondition = (ExprStmt) visit(tempElseIf.expr());
             if (!suit(condition.getType(), SymbolTable.BOOL)) {
                 System.err.println("line " + tempElseIf.getStart().getLine() + ": False else-if condition of type <" + elseIfCondition.getType() + ">, expecting bool type");
@@ -260,7 +260,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
         Stmt elseStmt = null;
         // if there is a else expression at the end
         if (info.stmt().size() > 1) {
-            finelyReturned = false;
+//            finelyReturned = false;
             if (info.stmt(1) instanceof MangoParser.CompoundStmtContext)
                 elseStmt = (Stmt) visit(info.stmt(1));
             else {
@@ -330,7 +330,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
                 }
             }
         }
-        finelyReturned = true;
+//        finelyReturned = true;
         return new ReturnStmt(returnExpr, nowFunc, new Position(ctx.getStart().getLine()));
     }
 

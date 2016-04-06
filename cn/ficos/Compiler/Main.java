@@ -24,9 +24,9 @@ public class Main {
         MangoLexer lexer = new MangoLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         MangoParser parser = new MangoParser(tokens);
-        ParseTree tree = parser.prog();
 
         try {
+            ParseTree tree = parser.prog();
             ASTBuilder builder = new ASTBuilder(tree);
             builder.visit(tree);
         } catch (Error e) {
