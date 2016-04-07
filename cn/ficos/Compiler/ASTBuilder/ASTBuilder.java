@@ -130,6 +130,17 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
             throw new Bug_FuncNotDefine();
         }
 
+
+        if (funcName.toString().equals("main")) {
+            if (funcInfo.getReturnType() != SymbolTable.INT) {
+                System.err.println("line " + ctx.getStart().getLine() + ": Wrong main function return type");
+                throw new SemanticError();
+            }
+            if (funcInfo.getFormalParametersName() != null) {
+                System.err.println("line " + ctx.getStart().getLine() + ": Main function should not have any formal parameters");
+                throw new SemanticError();
+            }
+        }
         global.beginScope();
         if (funcInfo.getFormalParametersType() != null) {
             ListIterator<Type> APTitr = funcInfo.getFormalParametersType().listIterator();

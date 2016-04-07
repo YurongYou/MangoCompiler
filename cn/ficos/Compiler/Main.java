@@ -19,7 +19,7 @@ import java.io.IOException;
 public class Main {
     public static void main(String[] args) throws IOException {
         // File Read In
-//        FileInputStream FileInput = new FileInputStream("MangoTestCase/compile_error/ctrflow-3-5100379071-puyouer.mx");
+//        FileInputStream FileInput = new FileInputStream("MangoTestCase/semantic/compile_error/func-7-5140309552-wancheng.mx");
         ANTLRInputStream input = new ANTLRInputStream(System.in);
         MangoLexer lexer = new MangoLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
