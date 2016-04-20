@@ -9,4 +9,6 @@ public abstract class Type {
     public abstract Boolean isSuitableAs(Type rhs);
 
     public abstract String toString();
+
+    public abstract int sizeOf();
 }

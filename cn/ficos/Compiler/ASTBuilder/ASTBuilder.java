@@ -3,6 +3,9 @@ package cn.ficos.Compiler.ASTBuilder;
 import cn.ficos.Compiler.AST.*;
 import cn.ficos.Compiler.Exceptions.*;
 import cn.ficos.Compiler.Gadgets.*;
+import cn.ficos.Compiler.Gadgets.Operand.GlobalRegister;
+import cn.ficos.Compiler.Gadgets.Operand.LocalRegister;
+import cn.ficos.Compiler.Gadgets.Operand.ParameterRegister;
 import cn.ficos.Compiler.Gadgets.Symbol.FuncSymbol;
 import cn.ficos.Compiler.Gadgets.Symbol.Symbol;
 import cn.ficos.Compiler.Gadgets.Symbol.VarSymbol;
@@ -41,11 +44,9 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
         ParseTreeWalker walker = new ParseTreeWalker();
 
         walker.walk(classCollector, ctx);
+        if (!classCollector.isAllCorrect()) throw new SemanticError();
         walker.walk(field_functionCollector, ctx);
-
-        if (!(classCollector.isAllCorrect() &&
-                field_functionCollector.isAllCorrect()))
-            throw new SemanticError();
+        if (!field_functionCollector.isAllCorrect()) throw new SemanticError();
     }
 
     private Boolean suit(Type base, Type rhs) {
@@ -84,7 +85,12 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
                 throw new SemanticError();
             }
         }
-        VarSymbol varInfo = new VarSymbol(varName, varType);
+        VarSymbol varInfo;
+        if (global.getCurrentScope() == 0) {
+            varInfo = new VarSymbol(varName, varType, new GlobalRegister());
+        } else {
+            varInfo = new VarSymbol(varName, varType, new LocalRegister());
+        }
         try {
             global.define(varName, varInfo);
         } catch (Redefine err) {
@@ -150,7 +156,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
             try {
                 while (APTitr.hasNext()) {
                     varName = APNitr.next();
-                    global.define(varName, new VarSymbol(varName, APTitr.next()));
+                    global.define(varName, new VarSymbol(varName, APTitr.next(), new ParameterRegister()));
                 }
             } catch (Redefine err) {
                 System.err.println("line " + ctx.getStart().getLine() + ": Redefined variable <" + varName +
@@ -561,10 +567,10 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
             System.err.println("line " + ctx.getStart().getLine() + ": Wrong indexing <" + ctx.getText() + ">");
             throw new SemanticError();
         }
-        if (!(base instanceof LValue)) {
-            System.err.println("line " + ctx.getStart().getLine() + ": Wrong operation on non-Lvalue <" + ctx.getText() + ">");
-            throw new SemanticError();
-        }
+//        if (!(base instanceof LValue)) {
+//            System.err.println("line " + ctx.getStart().getLine() + ": Wrong operation on non-Lvalue <" + ctx.getText() + ">");
+//            throw new SemanticError();
+//        }
         ExprStmt index = (ExprStmt) visit(ctx.expr(1));
         if (!(suit(SymbolTable.INT, index.getType()))) {
             System.err.println("line " + ctx.getStart().getLine() + ": Wrong indexing <" + ctx.getText() + ">");
@@ -813,10 +819,10 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
             System.err.println("line " + ctx.getStart().getLine() + ": Wrong class field accessing");
             throw new SemanticError();
         }
-        if (!(lhs instanceof LValue)) {
-            System.err.println("line " + ctx.getStart().getLine() + ": Wrong operation on non-Lvalue <" + ctx.getText() + ">");
-            throw new SemanticError();
-        }
+//        if (!(lhs instanceof LValue)) {
+//            System.err.println("line " + ctx.getStart().getLine() + ": Wrong operation on non-Lvalue <" + ctx.getText() + ">");
+//            throw new SemanticError();
+//        }
         Name field = getName(lhs.getType().toString() +
                 '.' + ctx.ID().getText());
         VarSymbol varInfo;
@@ -876,7 +882,11 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
             System.err.println("line " + ctx.getStart().getLine() + ": Using undefined type to create new variable");
             throw new SemanticError();
         }
-        return new AtomCreationExpr(base, new Position(ctx.getStart().getLine()));
+        if (!(base instanceof ClassType)) {
+            System.err.println("line " + ctx.getStart().getLine() + ": New a variable of built-in Type");
+            throw new SemanticError();
+        }
+        return new AtomCreationExpr((ClassType) base, new Position(ctx.getStart().getLine()));
     }
 
 //    @Override

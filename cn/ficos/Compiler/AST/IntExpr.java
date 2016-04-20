@@ -1,5 +1,6 @@
 package cn.ficos.Compiler.AST;
 
+import cn.ficos.Compiler.Gadgets.Operand.Constant;
 import cn.ficos.Compiler.Gadgets.Position;
 import cn.ficos.Compiler.Gadgets.SymbolTable;
 
@@ -11,12 +12,12 @@ public class IntExpr extends ExprStmt {
     private int value;
 
     public IntExpr(String text, Position _pos) {
-        super(SymbolTable.INT, _pos);
+        super(SymbolTable.INT, _pos, new Constant(Integer.parseInt(text)));
         value = Integer.parseInt(text);
     }
 
     public static void main(String[] args) {
-        IntExpr i = new IntExpr("233333333", new Position(1));
+        IntExpr i = new IntExpr("2147483648", new Position(1));
         System.out.println(i.getValue());
     }
 

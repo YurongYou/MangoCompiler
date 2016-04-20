@@ -3,6 +3,7 @@ package cn.ficos.Compiler.Gadgets;
 import cn.ficos.Compiler.Exceptions.Bug_SymbolTableInitializationFault;
 import cn.ficos.Compiler.Exceptions.Redefine;
 import cn.ficos.Compiler.Exceptions.Undefined;
+import cn.ficos.Compiler.Gadgets.Operand.GlobalRegister;
 import cn.ficos.Compiler.Gadgets.Symbol.FuncSymbol;
 import cn.ficos.Compiler.Gadgets.Symbol.Symbol;
 import cn.ficos.Compiler.Gadgets.Symbol.TypeSymbol;
@@ -47,10 +48,10 @@ public class SymbolTable {
 
     public static void main(String[] args) throws Redefine, Undefined {
         SymbolTable test = new SymbolTable();
-        test.define(Name.getName("ficos"), new VarSymbol(Name.getName("ficos"), INT));
+        test.define(Name.getName("ficos"), new VarSymbol(Name.getName("ficos"), INT, new GlobalRegister()));
         Symbol yyr1 = test.resolve(Name.getName("ficos"));
         test.beginScope();
-        test.define(Name.getName("ficos"), new VarSymbol(Name.getName("ficos"), INT));
+        test.define(Name.getName("ficos"), new VarSymbol(Name.getName("ficos"), INT, new GlobalRegister()));
         Symbol yyr2 = test.resolve(Name.getName("ficos"));
         System.out.println(yyr1 == yyr2);
         test.endScope();

@@ -14,17 +14,17 @@ public class LineCounter {
     static boolean comment = false;
 
     public static void main(String[] args) {
-        File file = new File("/Users/youyurong/Dropbox/课程/Compiler/Mango/src/AST");
+        File file = new File("/Users/youyurong/Dropbox/course/Compiler/Mango/src/cn/ficos/Compiler/AST");
         countLine(file);
-        file = new File("/Users/youyurong/Dropbox/课程/Compiler/Mango/src/ASTBuilder");
+        file = new File("/Users/youyurong/Dropbox/course/Compiler/Mango/src/cn/ficos/Compiler/ASTBuilder");
         countLine(file);
-        file = new File("/Users/youyurong/Dropbox/课程/Compiler/Mango/src/ASTVisitor");
+        file = new File("/Users/youyurong/Dropbox/course/Compiler/Mango/src/cn/ficos/Compiler/ASTVisitor");
         countLine(file);
-        file = new File("/Users/youyurong/Dropbox/课程/Compiler/Mango/src/Gadgets");
+        file = new File("/Users/youyurong/Dropbox/course/Compiler/Mango/src/cn/ficos/Compiler/Gadgets");
         countLine(file);
-        file = new File("/Users/youyurong/Dropbox/课程/Compiler/Mango/src/Exceptions");
+        file = new File("/Users/youyurong/Dropbox/course/Compiler/Mango/src/cn/ficos/Compiler/Exceptions");
         countLine(file);
-        file = new File("/Users/youyurong/Dropbox/课程/Compiler/Mango/src/Syntax/Mango.g4");
+        file = new File("/Users/youyurong/Dropbox/course/Compiler/Mango/src/cn/ficos/Compiler/Syntax/Mango.g4");
         countLine(file);
         System.out.println("有效代码行数: " + normalLine);
         System.out.println("注释行数: " + commentLine);

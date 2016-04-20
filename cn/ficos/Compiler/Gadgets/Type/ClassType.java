@@ -40,4 +40,13 @@ public class ClassType extends Type {
     public Boolean isSuitableAs(Type rhs) {
         return (this == rhs);
     }
+
+    @Override
+    public int sizeOf() {
+        return 4;
+    }
+
+    public int totalSize() {
+        return 4 * funcDict.size();
+    }
 }

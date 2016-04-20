@@ -52,4 +52,10 @@ public class ArrayType extends Type {
     public Type getBaseType() {
         return baseType;
     }
+
+    @Override
+    public int sizeOf() {
+        //the address is 4 words
+        return 4;
+    }
 }

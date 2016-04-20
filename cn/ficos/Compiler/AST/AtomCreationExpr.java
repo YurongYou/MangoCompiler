@@ -1,14 +1,14 @@
 package cn.ficos.Compiler.AST;
 
 import cn.ficos.Compiler.Gadgets.Position;
-import cn.ficos.Compiler.Gadgets.Type.Type;
+import cn.ficos.Compiler.Gadgets.Type.ClassType;
 
 /**
- * The atom creation expression (e.g. new int) node in AST
+ * The atom creation expression (e.g. new A) node in AST
  * Created by Ficos on 16/3/31.
  */
 public class AtomCreationExpr extends ExprStmt {
-    public AtomCreationExpr(Type _type, Position _pos) {
+    public AtomCreationExpr(ClassType _type, Position _pos) {
         super(_type, _pos);
     }
 }

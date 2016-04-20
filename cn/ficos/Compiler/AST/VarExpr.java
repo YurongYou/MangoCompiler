@@ -11,7 +11,7 @@ public class VarExpr extends ExprStmt implements LValue {
     VarSymbol var;
 
     public VarExpr(VarSymbol _var, Position _pos) {
-        super(_var.getType(), _pos);
+        super(_var.getType(), _pos, _var.getReg());
         var = _var;
     }
 

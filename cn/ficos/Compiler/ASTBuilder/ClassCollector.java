@@ -29,7 +29,7 @@ public class ClassCollector extends MangoBaseListener {
         try {
             global.define(name, newTypeInfo);
         } catch (Redefine exc) {
-            System.err.println("Redefine class " + name + " at line " + ctx.getStart().getLine());
+            System.err.println("line " + ctx.getStart().getLine() + ": Redefining class " + name);
             correct = false;
         }
     }

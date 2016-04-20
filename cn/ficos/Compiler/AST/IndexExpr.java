@@ -7,7 +7,7 @@ import cn.ficos.Compiler.Gadgets.Type.ArrayType;
  * The get-index expression in AST.
  * Created by Ficos on 16/3/31.
  */
-public class IndexExpr extends ExprStmt implements LValue {
+public class IndexExpr extends ExprStmt implements LValue, AddressFetch {
     ExprStmt base;
     ExprStmt index;
 

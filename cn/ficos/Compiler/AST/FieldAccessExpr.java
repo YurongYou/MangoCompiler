@@ -8,7 +8,7 @@ import cn.ficos.Compiler.Gadgets.Type.Type;
  * The field-access expression in AST.
  * Created by Ficos on 16/3/31.
  */
-public class FieldAccessExpr extends ExprStmt implements LValue {
+public class FieldAccessExpr extends ExprStmt implements LValue, AddressFetch {
     ExprStmt lhs;
     Name field;
 

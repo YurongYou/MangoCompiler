@@ -15,6 +15,7 @@ public class StringExpr extends ExprStmt {
         text = _text;
     }
 
+    //TODO: specify the reg of a string
     public String getText() {
         return text;
     }

@@ -1,6 +1,7 @@
 package cn.ficos.Compiler.AST;
 
 import cn.ficos.Compiler.Gadgets.Position;
+import cn.ficos.Compiler.IR.Label;
 
 /**
  * The while-loop statement node in AST.
@@ -9,11 +10,22 @@ import cn.ficos.Compiler.Gadgets.Position;
 public class WhileStmt extends Stmt implements LoopScope {
     ExprStmt condition;
     Stmt loop;
-
+    Label begin = new Label("While_Begin");
+    Label end = new Label("While_End");
     public WhileStmt(ExprStmt _condition, Stmt _loop, Position _pos) {
         super(_pos);
         condition = _condition;
         loop = _loop;
+    }
+
+    @Override
+    public Label getBegin() {
+        return begin;
+    }
+
+    @Override
+    public Label getEnd() {
+        return end;
     }
 
     public void fillLoop(Stmt _loop) {

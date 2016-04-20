@@ -29,4 +29,9 @@ public class BuiltInType extends Type {
     public String toString() {
         return className.toString();
     }
+
+    @Override
+    public int sizeOf() {
+        return 4;
+    }
 }
