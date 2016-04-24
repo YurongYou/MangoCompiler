@@ -77,14 +77,6 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
                     ctx.type().getText() + '>');
             throw new SemanticError();
         }
-        if (ctx.expr() != null) {
-            rhs = (ExprStmt) visit(ctx.expr());
-            if (!suit(varType, rhs.getType())) {
-                System.err.println("line " + ctx.getStart().getLine() + ": Unsuitable type in variable declaration, expect <" +
-                        varType + "> but meet <" + rhs.getType() + ">");
-                throw new SemanticError();
-            }
-        }
         VarSymbol varInfo;
         if (global.getCurrentScope() == 0) {
             varInfo = new VarSymbol(varName, varType, new GlobalRegister());
@@ -97,6 +89,15 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
             System.err.println("line " + ctx.getStart().getLine() + ": Redefining variable <" + ctx.ID().getText() +
                     ">");
             throw new SemanticError();
+        }
+        if (ctx.expr() != null) {
+            rhs = (ExprStmt) visit(ctx.expr());
+            if (!suit(varType, rhs.getType())) {
+                System.err.println("line " + ctx.getStart().getLine() + ": Unsuitable type in variable declaration, expect <" +
+                        varType + "> but meet <" + rhs.getType() + ">");
+                throw new SemanticError();
+            }
+
         }
         // currentScope == 0 means it's now in global
         if (global.getCurrentScope() == 0) {
@@ -481,6 +482,9 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
         if (ctx.exprList() == null) {
             // P n, A n
             if (funcInfo.getFormalParametersName() == null) {
+                if (funcInfo.getReturnType() == null) {
+                    return new CallExpr(funcInfo, null, new Position(ctx.getStart().getLine()), null);
+                }
                 return new CallExpr(funcInfo, null, new Position(ctx.getStart().getLine()));
             }
             // P nn, A n,Fault
@@ -514,6 +518,12 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
             throw new SemanticError();
         }
 
+//        System.out.println("visit call:" + funcInfo.getName() + ", with return type: " + funcInfo.getReturnType());
+        if (funcInfo.getReturnType() == null) {
+//            System.out.println("null return type!!!!!!!!!!!");
+            return new CallExpr(funcInfo, AP, new Position(ctx.getStart().getLine()), null);
+        }
+
         return new CallExpr(funcInfo, AP, new Position(ctx.getStart().getLine()));
     }
 
@@ -543,6 +553,19 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
             if (nowClass != null) {
                 try {
                     varInfo = (VarSymbol) global.resolve(getName(nowClass + '.' + ctx.ID().getText()));
+                    // automatically add an FieldAccessExpr
+                    VarSymbol _this;
+                    Name name = getName(ctx.ID().getText());
+                    try {
+                        _this = (VarSymbol) global.resolve(getName("this"));
+                    } catch (Undefined e) {
+                        throw new Bug_TextError();
+                    }
+                    return new FieldAccessExpr(varInfo.getType(),
+                            new VarExpr(_this, new Position(ctx.getStart().getLine())),
+                            name,
+                            ((ClassType) _this.getType()).getShift(getName(nowClass + '.' + ctx.ID().getText())),
+                            new Position(ctx.getStart().getLine()));
                 } catch (Undefined notClassField) {
                     // try resolve it in the outer scope
                     Symbol test = global.resolve(getName(ctx.ID().getText()));
@@ -653,12 +676,12 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
             case MangoParser.NEQ:
                 op = LogBinaryOp.NEQ;
                 break;
-            case MangoParser.LOG_AND:
-                op = LogBinaryOp.LOG_AND;
-                break;
-            case MangoParser.LOG_OR:
-                op = LogBinaryOp.LOG_OR;
-                break;
+//            case MangoParser.LOG_AND:
+//                op = LogBinaryOp.LOG_AND;
+//                break;
+//            case MangoParser.LOG_OR:
+//                op = LogBinaryOp.LOG_OR;
+//                break;
         }
         switch (ctx.op.getType()) {
             case MangoParser.LARGE:
@@ -684,6 +707,16 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
                     System.err.println("line " + ctx.getStart().getLine() + ": Logical operation on wrong operands <" + ctx.getText() + ">");
                     throw new SemanticError();
                 }
+                if (suit(SymbolTable.STRING, lhs.getType())) {
+                    List<ExprStmt> AP = new LinkedList<>();
+                    AP.add(lhs);
+                    AP.add(rhs);
+                    try {
+                        return new CallExpr((FuncSymbol) global.resolve(getName("stringIsEqual")), AP, new Position(ctx.getStart().getLine()));
+                    } catch (Undefined e) {
+                        throw new Bug_FuncNotDefine();
+                    }
+                }
                 break;
             case MangoParser.LESS: {
                 if (!(suit(SymbolTable.INT, lhs.getType()) &&
@@ -693,8 +726,19 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
                     System.err.println("line " + ctx.getStart().getLine() + ": Logical operation on wrong operands <" + ctx.getText() + ">");
                     throw new SemanticError();
                 }
+                if (suit(SymbolTable.STRING, lhs.getType())) {
+                    List<ExprStmt> AP = new LinkedList<>();
+                    AP.add(lhs);
+                    AP.add(rhs);
+                    try {
+                        return new CallExpr((FuncSymbol) global.resolve(getName("stringLess")), AP, new Position(ctx.getStart().getLine()));
+                    } catch (Undefined e) {
+                        throw new Bug_FuncNotDefine();
+                    }
+                }
             }
             break;
+//            If the expression is a logical relation expression
             case MangoParser.LOG_AND:
             case MangoParser.LOG_OR: {
                 if (!(suit(SymbolTable.BOOL, lhs.getType()) &&
@@ -702,6 +746,10 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
                     System.err.println("line " + ctx.getStart().getLine() + ": Logical operation on wrong operands " + ctx.getText() + ">");
                     throw new SemanticError();
                 }
+                if (ctx.op.getType() == MangoParser.LOG_AND)
+                    return new LogRelationExpr(lhs, true, rhs, new Position(ctx.getStart().getLine()));
+                else
+                    return new LogRelationExpr(lhs, false, rhs, new Position(ctx.getStart().getLine()));
             }
         }
         return new LogBinaryExpr(lhs, op, rhs, new Position(ctx.getStart().getLine()));
@@ -769,6 +817,16 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
                     System.err.println("line " + ctx.getStart().getLine() + ": Operation on wrong operands <" + ctx.getText() + ">");
                     throw new SemanticError();
                 }
+                if (suit(SymbolTable.STRING, lhs.getType())) {
+                    List<ExprStmt> AP = new LinkedList<>();
+                    AP.add(lhs);
+                    AP.add(rhs);
+                    try {
+                        return new CallExpr((FuncSymbol) global.resolve(getName("stringConcatenate")), AP, new Position(ctx.getStart().getLine()));
+                    } catch (Undefined e) {
+                        throw new Bug_FuncNotDefine();
+                    }
+                }
             }
         }
         return new BinaryExpr(lhs, op, rhs, new Position(ctx.getStart().getLine()));
@@ -789,12 +847,12 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
 
     @Override
     public AST visitAssign(MangoParser.AssignContext ctx) {
+        ExprStmt rhs = (ExprStmt) visit(ctx.expr(1));
         ExprStmt lv = (ExprStmt) visit(ctx.expr(0));
         if (!(lv instanceof LValue)) {
             System.err.println("line " + ctx.getStart().getLine() + ": Wrong assignment operation on non-Lvalue <" + ctx.expr(0).getText() + ">");
             throw new SemanticError();
         }
-        ExprStmt rhs = (ExprStmt) visit(ctx.expr(1));
         if (!suit(lv.getType(), rhs.getType())) {
             System.err.println("line " + ctx.getStart().getLine() + ": Wrong type matching on assignment <" + ctx.getText() + ">");
             throw new SemanticError();
@@ -832,7 +890,8 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
             System.err.println("line " + ctx.getStart().getLine() + ": Using undefined class field <" + ctx.getText() + ">");
             throw new SemanticError();
         }
-        return new FieldAccessExpr(varInfo.getType(), lhs, field, new Position(ctx.getStart().getLine()));
+        return new FieldAccessExpr(varInfo.getType(), lhs, field,
+                ((ClassType) lhs.getType()).getShift(field), new Position(ctx.getStart().getLine()));
     }
 
     @Override

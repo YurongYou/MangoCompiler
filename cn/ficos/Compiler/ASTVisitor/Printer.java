@@ -98,12 +98,16 @@ public class Printer {
             visit((LogNotExpr) node, d);
             return;
         }
+        if (node instanceof LogBinaryExpr) {
+            visit((LogBinaryExpr) node, d);
+            return;
+        }
         if (node instanceof StringExpr) {
             visit((StringExpr) node, d);
             return;
         }
-        if (node instanceof LogBinaryExpr) {
-            visit((LogBinaryExpr) node, d);
+        if (node instanceof LogRelationExpr) {
+            visit((LogRelationExpr) node, d);
             return;
         }
         if (node instanceof BinaryExpr) {
@@ -175,6 +179,8 @@ public class Printer {
         out.print("Name: " + node.getVar().getName() + "\n");
         indent(d + 1);
         out.print("Type: " + node.getVar().getType() + "\n");
+        indent(d + 1);
+        out.print("Reg: " + node.getVar().getReg() + "\n");
         if (node.getCreation() != null) {
             indent(d + 1);
             out.print("creation: ");
@@ -189,7 +195,9 @@ public class Printer {
         indent(d + 1);
         out.print("Name: " + node.getVarInfo().getName() + "\n");
         indent(d + 1);
-        out.print("Type: " + node.getVarInfo().getType());
+        out.print("Type: " + node.getVarInfo().getType() + '\n');
+        indent(d + 1);
+        out.print("Reg: " + node.getVarInfo().getReg());
         if (node.getCreation() != null) {
             out.print("\n");
             indent(d + 1);
@@ -240,7 +248,7 @@ public class Printer {
 
     void visit(VarExpr node, int d) {
         indent(d);
-        out.print("<ID:(" + node.getVar().getType() + ")" + node.getVar().getName() + ">");
+        out.print("<ID:(Type:" + node.getVar().getType() + ")" + node.getVar().getName() + "|Reg:" + node.getVar().getReg() + ">");
     }
 
     void visit(IndexExpr node, int d) {
@@ -249,19 +257,20 @@ public class Printer {
         visit(node.getBase(), 0);
         out.print("[");
         visit(node.getIndex(), 0);
-        out.print("]>");
+        out.print("]");
+        out.print("|rstReg:" + node.getResultOperand() + ", addReg:" + node.getAddressOperand() + ">");
     }
 
     void visit(FieldAccessExpr node, int d) {
         indent(d);
         out.print("<FieldAccess:");
         visit(node.getLhs(), 0);
-        out.print("." + node.getField() + ">");
+        out.print("." + node.getField() + "|rstReg:" + node.getResultOperand() + ", addReg:" + node.getAddressOperand() + ">");
     }
 
     void visit(CallExpr node, int d) {
         indent(d);
-        out.print("<FuncCall:" + node.getFuncInfo().getName());
+        out.print("<FuncCall:" + node.getFuncInfo().getName() + ", resultReg:" + node.getOperand());
         if (node.getActualParameter() != null) {
             out.print("|");
             ListIterator<Type> Titr = node.getFuncInfo().getFormalParametersType().listIterator();
@@ -276,14 +285,14 @@ public class Printer {
 
     void visit(AtomCreationExpr node, int d) {
         indent(d);
-        out.print("<New:" + node.getType() + ">");
+        out.print("<New:" + node.getType() + "|reg:" + node.getOperand() + ">");
     }
 
     void visit(ArrayCreationExpr node, int d) {
         indent(d);
-        out.print("<New:" + node.getType() + "| dim = ");
+        out.print("<New:" + node.getType() + "|dim = ");
         visit(node.getDim(), 0);
-        out.print(">");
+        out.print(", reg: " + node.getOperand() + ">");
     }
 
     void visit(SignExpr node, int d) {
@@ -329,6 +338,22 @@ public class Printer {
         out.print("<string:\"" + node.getText() + "\">");
     }
 
+    void visit(LogRelationExpr node, int d) {
+        indent(d);
+        if (node.isAnd()) {
+            out.print("<LogAnd|lhs:");
+            visit(node.getLhs(), 0);
+            out.print(", rhs:");
+            visit(node.getRhs(), 0);
+            out.print(">");
+        } else {
+            out.print("<LogOr|lhs:");
+            visit(node.getLhs(), 0);
+            out.print(", rhs:");
+            visit(node.getRhs(), 0);
+            out.print(">");
+        }
+    }
     void visit(LogBinaryExpr node, int d) {
         indent(d);
         out.print("<LogicalBinaryExpr|lhs:");
@@ -353,12 +378,12 @@ public class Printer {
             case NEQ:
                 out.print("!=");
                 break;
-            case LOG_AND:
-                out.print("&&");
-                break;
-            case LOG_OR:
-                out.print("||");
-                break;
+//            case LOG_AND:
+//                out.print("&&");
+//                break;
+//            case LOG_OR:
+//                out.print("||");
+//                break;
         }
         out.print(", rhs:");
         visit(node.getRhs(), 0);

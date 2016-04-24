@@ -18,6 +18,6 @@ public class Load extends IRNode {
 
     @Override
     public String toString() {
-        return "Load " + target + ", " + source;
+        return "LD\t" + target + ", " + source;
     }
 }

@@ -1,7 +1,7 @@
 package cn.ficos.Compiler.Gadgets;
 
 /**
- * Binary Operation tags
+ * Binary Operation op (< > == != >= <=)
  * Created by Ficos on 16/3/31.
  */
 public enum LogBinaryOp {
@@ -11,6 +11,6 @@ public enum LogBinaryOp {
     GEQ,
     EQ,
     NEQ,
-    LOG_AND,
-    LOG_OR;
+//    LOG_AND,
+//    LOG_OR;
 }

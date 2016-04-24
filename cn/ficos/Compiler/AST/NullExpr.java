@@ -1,5 +1,6 @@
 package cn.ficos.Compiler.AST;
 
+import cn.ficos.Compiler.Gadgets.Operand.Constant;
 import cn.ficos.Compiler.Gadgets.Position;
 
 /**
@@ -8,6 +9,6 @@ import cn.ficos.Compiler.Gadgets.Position;
  */
 public class NullExpr extends ExprStmt {
     public NullExpr(Position _pos) {
-        super(null, _pos);
+        super(null, _pos, new Constant(0));
     }
 }

@@ -5,6 +5,7 @@ import cn.ficos.Compiler.Gadgets.Operand.Register;
 
 /**
  * This class represents the new statement of IR
+ * The size counts in words
  * Created by Ficos on 16/4/20.
  */
 public class New extends IRNode {
@@ -18,6 +19,6 @@ public class New extends IRNode {
 
     @Override
     public String toString() {
-        return "New " + target + ", " + size;
+        return "NEW\t" + target + ", " + size;
     }
 }

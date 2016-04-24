@@ -8,6 +8,7 @@ import cn.ficos.Compiler.Gadgets.Type.Type;
 /**
  * The expression statement node in AST.
  * Note that every expression must have a Type
+ * It contains a operand of localRegister
  * Created by Ficos on 16/3/31.
  */
 public abstract class ExprStmt extends Stmt {
@@ -28,6 +29,10 @@ public abstract class ExprStmt extends Stmt {
 
     public Operand getOperand() {
         return operand;
+    }
+
+    public void changeOperand(Operand _operand) {
+        operand = _operand;
     }
 
     public Type getType() {

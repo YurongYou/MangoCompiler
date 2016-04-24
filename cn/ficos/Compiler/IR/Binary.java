@@ -22,6 +22,6 @@ public class Binary extends IRNode {
 
     @Override
     public String toString() {
-        return OP + " " + target + ", " + lhs + ", " + rhs;
+        return OP + "\t" + target + ", " + lhs + ", " + rhs;
     }
 }

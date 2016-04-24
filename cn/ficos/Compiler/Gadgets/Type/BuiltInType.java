@@ -30,8 +30,9 @@ public class BuiltInType extends Type {
         return className.toString();
     }
 
-    @Override
-    public int sizeOf() {
-        return 4;
-    }
+//    @Override
+//    public int sizeOf() {
+//        return 4;
+//    }
+
 }

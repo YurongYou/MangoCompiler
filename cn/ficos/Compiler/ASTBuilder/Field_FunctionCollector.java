@@ -1,11 +1,13 @@
 package cn.ficos.Compiler.ASTBuilder;
 
+import cn.ficos.Compiler.Exceptions.Bug_TextError;
 import cn.ficos.Compiler.Exceptions.Redefine;
 import cn.ficos.Compiler.Exceptions.Undefined;
 import cn.ficos.Compiler.Gadgets.Name;
 import cn.ficos.Compiler.Gadgets.Symbol.FuncSymbol;
 import cn.ficos.Compiler.Gadgets.Symbol.VarSymbol;
 import cn.ficos.Compiler.Gadgets.SymbolTable;
+import cn.ficos.Compiler.Gadgets.Type.ClassType;
 import cn.ficos.Compiler.Gadgets.Type.Type;
 import cn.ficos.Compiler.Syntax.MangoBaseListener;
 import cn.ficos.Compiler.Syntax.MangoParser;
@@ -55,9 +57,6 @@ public class Field_FunctionCollector extends MangoBaseListener {
 
         //The in-class name is <classname>.<varName>
         Name fieldName = Name.getName(nowClass + '.' + ctx.ID().getText());
-        if (fieldType != null) {
-            VarSymbol fieldInfo = new VarSymbol(fieldName, fieldType, null);
-        }
 
         //define the variable
         try {
@@ -67,6 +66,11 @@ public class Field_FunctionCollector extends MangoBaseListener {
             System.err.println("line " + ctx.getStart().getLine() + ": Redefining class field " + ctx.ID().getText()
                     + " in class " + nowClass);
             correct = false;
+        }
+        try {
+            ((ClassType) global.lookUpType(nowClass)).addVar(fieldName);
+        } catch (Undefined undefined) {
+            throw new Bug_TextError();
         }
     }
 
@@ -118,6 +122,17 @@ public class Field_FunctionCollector extends MangoBaseListener {
                 System.err.println("line " + ctx.getStart().getLine() + ": Using undefined class " + source.type().getText());
                 correct = false;
                 return;
+            }
+        } else {
+            if (nowClass != null) {
+                formalParameterType = new LinkedList<>();
+                formalParameterName = new LinkedList<>();
+                try {
+                    formalParameterType.add(global.lookUpType(nowClass));
+                } catch (Undefined e) {
+                    throw new Bug_TextError();
+                }
+                formalParameterName.add(Name.getName("this"));
             }
         }
 

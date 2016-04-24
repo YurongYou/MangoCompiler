@@ -6,7 +6,7 @@ package cn.ficos.Compiler.Gadgets.Operand;
  */
 public abstract class Register extends Operand {
     private static int count = 0;
-    private int ID;
+    protected int ID;
 
     Register() {
         ID = count++;

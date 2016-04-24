@@ -1,8 +1,7 @@
 package cn.ficos.Compiler.Gadgets.Type;
 
+import cn.ficos.Compiler.Gadgets.CONSTANT;
 import cn.ficos.Compiler.Gadgets.Name;
-import cn.ficos.Compiler.Gadgets.Symbol.FuncSymbol;
-import cn.ficos.Compiler.Gadgets.Symbol.VarSymbol;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,8 +14,8 @@ import java.util.Map;
  */
 public class ClassType extends Type {
 
-    private Map<Name, FuncSymbol> funcDict = new HashMap<>();
-    private Map<Name, VarSymbol> varDict = new HashMap<>();
+    //    private Map<Name, FuncSymbol> funcDict = new HashMap<>();
+    private Map<Name, Integer> varShift = new HashMap<>();
     private Name className;
 
     /**
@@ -41,12 +40,21 @@ public class ClassType extends Type {
         return (this == rhs);
     }
 
+//    @Override
+//    public int sizeOf() {
+//        return CONSTANT.regSize;
+//    }
+
     @Override
-    public int sizeOf() {
-        return 4;
+    public int totalSize() {
+        return CONSTANT.wordSize * varShift.size();
     }
 
-    public int totalSize() {
-        return 4 * funcDict.size();
+    public void addVar(Name name) {
+        varShift.put(name, varShift.size() * 4);
+    }
+
+    public int getShift(Name name) {
+        return varShift.get(name);
     }
 }

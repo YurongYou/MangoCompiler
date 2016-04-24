@@ -7,16 +7,16 @@ import cn.ficos.Compiler.Gadgets.Operand.Register;
  * Created by Ficos on 16/4/18.
  */
 public class Move extends IRNode {
-    Register lhs;
-    Operand rhs;
+    Register target;
+    Operand source;
 
-    public Move(Register lhs, Operand rhs) {
-        this.lhs = lhs;
-        this.rhs = rhs;
+    public Move(Register _target, Operand _source) {
+        target = _target;
+        source = _source;
     }
 
     @Override
     public String toString() {
-        return "Move " + lhs + ", " + rhs;
+        return "Move " + target + ", " + source;
     }
 }

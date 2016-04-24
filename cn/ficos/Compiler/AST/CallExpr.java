@@ -1,5 +1,6 @@
 package cn.ficos.Compiler.AST;
 
+import cn.ficos.Compiler.Gadgets.Operand.Operand;
 import cn.ficos.Compiler.Gadgets.Position;
 import cn.ficos.Compiler.Gadgets.Symbol.FuncSymbol;
 
@@ -16,6 +17,13 @@ public class CallExpr extends ExprStmt {
     public CallExpr(FuncSymbol _funcInfo, List<ExprStmt> _actualParameter,
                     Position _pos) {
         super(_funcInfo.getReturnType(), _pos);
+        funcInfo = _funcInfo;
+        actualParameter = _actualParameter;
+    }
+
+    public CallExpr(FuncSymbol _funcInfo, List<ExprStmt> _actualParameter,
+                    Position _pos, Operand _operand) {
+        super(_funcInfo.getReturnType(), _pos, _operand);
         funcInfo = _funcInfo;
         actualParameter = _actualParameter;
     }

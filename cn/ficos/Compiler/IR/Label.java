@@ -11,6 +11,7 @@ public class Label extends IRNode {
 
     public Label(String _name) {
         labelName = _name;
+//        System.out.println("create label " + ID + ": " + _name);
     }
 
     public String getLabelName() {

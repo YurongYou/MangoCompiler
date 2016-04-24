@@ -129,6 +129,24 @@ public class SymbolTable {
         name = Name.getName("~array.size");
         FuncSymbol _array_size = new FuncSymbol(name, INT, null, null);
         define(name, _array_size);
+
+        //string stringConcatenate(string lhs, string rhs)
+        name = Name.getName("stringConcatenate");
+        FuncSymbol stringConcatenate = new FuncSymbol(name, STRING, Arrays.asList(Name.getName("lhs"), Name.getName("rhs")),
+                Arrays.asList(STRING, STRING));
+        define(name, stringConcatenate);
+
+        //bool stringIsEqual(string lhs, string rhs)
+        name = Name.getName("stringIsEqual");
+        FuncSymbol stringIsEqual = new FuncSymbol(name, BOOL, Arrays.asList(Name.getName("lhs"), Name.getName("rhs")),
+                Arrays.asList(STRING, STRING));
+        define(name, stringIsEqual);
+
+        //bool stringLess(string lhs, string rhs)
+        name = Name.getName("stringLess");
+        FuncSymbol stringLess = new FuncSymbol(name, BOOL, Arrays.asList(Name.getName("lhs"), Name.getName("rhs")),
+                Arrays.asList(STRING, STRING));
+        define(name, stringLess);
     }
 
     /**

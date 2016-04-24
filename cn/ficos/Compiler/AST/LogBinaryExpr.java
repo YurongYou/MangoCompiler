@@ -5,7 +5,7 @@ import cn.ficos.Compiler.Gadgets.Position;
 import cn.ficos.Compiler.Gadgets.SymbolTable;
 
 /**
- * The logical binary expression (e.g. 1 != 2, a == b, e | d, etc.) node in AST.
+ * The logical binary expression (< > == != >= <=) node in AST.
  * Created by Ficos on 16/3/31.
  */
 public class LogBinaryExpr extends ExprStmt {

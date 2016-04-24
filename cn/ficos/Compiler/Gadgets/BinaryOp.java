@@ -1,7 +1,7 @@
 package cn.ficos.Compiler.Gadgets;
 
 /**
- * Binary Operation tags
+ * Binary Operation
  * Created by Ficos on 16/3/31.
  */
 public enum BinaryOp {

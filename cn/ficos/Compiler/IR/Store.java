@@ -11,13 +11,13 @@ public class Store extends IRNode {
     Operand source;
     Register target;
 
-    public Store(Operand source, Register target) {
+    public Store(Register target, Operand source) {
         this.source = source;
         this.target = target;
     }
 
     @Override
     public String toString() {
-        return "Store " + source + ", " + target;
+        return "ST\t" + target + ", " + source;
     }
 }

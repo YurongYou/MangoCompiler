@@ -53,9 +53,15 @@ public class ArrayType extends Type {
         return baseType;
     }
 
-    @Override
-    public int sizeOf() {
-        //the address is 4 words
-        return 4;
-    }
+//    @Override
+//    public int sizeOf() {
+//        //the address is 4 words
+//        return 4;
+//    }
+
+//    @Override
+//    public int totalSize() {
+//        return CONSTANT.regSize * varShift.size();
+//    }
+
 }

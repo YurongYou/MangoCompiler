@@ -2,6 +2,7 @@ package cn.ficos.Compiler.Gadgets.Symbol;
 
 import cn.ficos.Compiler.Gadgets.Name;
 import cn.ficos.Compiler.Gadgets.Type.Type;
+import cn.ficos.Compiler.IR.Label;
 
 import java.util.List;
 import java.util.ListIterator;
@@ -15,6 +16,7 @@ public class FuncSymbol extends Symbol {
     private Type returnType;
     private List<Type> formalParameterType = null;
     private List<Name> formalParameterName = null;
+    private Label funcLabel = null;
 
     /**
      * Creation function of funcSymbol. Define the formal parameters in the current scope
@@ -29,6 +31,12 @@ public class FuncSymbol extends Symbol {
 
         formalParameterName = FPN;
         formalParameterType = FPT;
+
+        funcLabel = new Label("function:" + _funcName);
+    }
+
+    public Label getFuncLabel() {
+        return funcLabel;
     }
 
     /**
