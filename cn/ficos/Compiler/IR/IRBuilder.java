@@ -95,10 +95,10 @@ public class IRBuilder {
             visit((BoolExpr) node);
             return;
         }
-        if (node instanceof ClassFuncAccessExpr) {
-            visit((ClassFuncAccessExpr) node);
-            return;
-        }
+//        if (node instanceof ClassFuncAccessExpr) {
+//            visit((ClassFuncAccessExpr) node);
+//            return;
+//        }
         if (node instanceof BitNotExpr) {
             visit((BitNotExpr) node);
             return;
@@ -266,9 +266,9 @@ public class IRBuilder {
     void visit(NullExpr ast) {
     }
 
-    void visit(ClassFuncAccessExpr ast) {
-
-    }
+//    void visit(ClassFuncAccessExpr ast) {
+//
+//    }
 
     void visit(BitNotExpr ast) {
 

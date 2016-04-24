@@ -8,6 +8,7 @@ import cn.ficos.Compiler.Gadgets.Symbol.FuncSymbol;
 import cn.ficos.Compiler.Gadgets.Symbol.Symbol;
 import cn.ficos.Compiler.Gadgets.Symbol.TypeSymbol;
 import cn.ficos.Compiler.Gadgets.Symbol.VarSymbol;
+import cn.ficos.Compiler.Gadgets.Type.ArrayType;
 import cn.ficos.Compiler.Gadgets.Type.BuiltInType;
 import cn.ficos.Compiler.Gadgets.Type.Type;
 
@@ -104,30 +105,30 @@ public class SymbolTable {
         FuncSymbol toString = new FuncSymbol(name, STRING, Arrays.asList(Name.getName("i")), Arrays.asList(INT));
         define(name, toString);
 
-        //int string.length()
+        //int string.length(string this)
         name = Name.getName("string.length");
-        FuncSymbol string_length = new FuncSymbol(name, INT, null, null);
+        FuncSymbol string_length = new FuncSymbol(name, INT, Arrays.asList(Name.getName("this")), Arrays.asList(STRING));
         define(name, string_length);
 
-        //string string.substring(int left, int right)
+        //string string.substring(string this, int left, int right)
         name = Name.getName("string.substring");
-        FuncSymbol string_substring = new FuncSymbol(name, STRING, Arrays.asList(Name.getName("left"), Name.getName("right"))
-                , Arrays.asList(INT, INT));
+        FuncSymbol string_substring = new FuncSymbol(name, STRING, Arrays.asList(Name.getName("this"), Name.getName("left"), Name.getName("right"))
+                , Arrays.asList(STRING, INT, INT));
         define(name, string_substring);
 
-        //int parseInt()
+        //int string.parseInt(string this)
         name = Name.getName("string.parseInt");
-        FuncSymbol string_parseInt = new FuncSymbol(name, INT, null, null);
+        FuncSymbol string_parseInt = new FuncSymbol(name, INT, Arrays.asList(Name.getName("this")), Arrays.asList(STRING));
         define(name, string_parseInt);
 
-        //int ord(int pos)
+        //int string.ord(string this, int pos)
         name = Name.getName("string.ord");
-        FuncSymbol string_ord = new FuncSymbol(name, INT, Arrays.asList(Name.getName("pos")), Arrays.asList(INT));
+        FuncSymbol string_ord = new FuncSymbol(name, INT, Arrays.asList(Name.getName("this"), Name.getName("pos")), Arrays.asList(STRING, INT));
         define(name, string_ord);
 
-        //int ~array.size()
+        //int ~array.size(~array this)
         name = Name.getName("~array.size");
-        FuncSymbol _array_size = new FuncSymbol(name, INT, null, null);
+        FuncSymbol _array_size = new FuncSymbol(name, INT, Arrays.asList(Name.getName("this")), Arrays.asList(ArrayType.virtualArrayType));
         define(name, _array_size);
 
         //string stringConcatenate(string lhs, string rhs)

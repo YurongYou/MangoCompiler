@@ -86,10 +86,10 @@ public class Printer {
             visit((BoolExpr) node, d);
             return;
         }
-        if (node instanceof ClassFuncAccessExpr) {
-            visit((ClassFuncAccessExpr) node, d);
-            return;
-        }
+//        if (node instanceof ClassFuncAccessExpr) {
+//            visit((ClassFuncAccessExpr) node, d);
+//            return;
+//        }
         if (node instanceof BitNotExpr) {
             visit((BitNotExpr) node, d);
             return;
@@ -312,12 +312,12 @@ public class Printer {
         out.print(node.getValue());
     }
 
-    void visit(ClassFuncAccessExpr node, int d) {
-        indent(d);
-        out.print("<ClassFunc:");
-        visit(node.getClassExpr(), 0);
-        out.print("|" + node.getFuncInfo().getName() + ">");
-    }
+//    void visit(ClassFuncAccessExpr node, int d) {
+//        indent(d);
+//        out.print("<ClassFunc:");
+//        visit(node.getClassExpr(), 0);
+//        out.print("|" + node.getFuncInfo().getName() + ">");
+//    }
 
     void visit(BitNotExpr node, int d) {
         indent(d);

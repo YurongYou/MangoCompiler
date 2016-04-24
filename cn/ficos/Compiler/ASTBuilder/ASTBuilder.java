@@ -455,10 +455,12 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
     @Override
     public AST visitCall(MangoParser.CallContext ctx) {
         FuncSymbol funcInfo;
+        boolean inClassFunction = false;
         try {
             if (nowClass != null) {
                 try {
                     funcInfo = (FuncSymbol) global.resolve(getName(nowClass + '.' + ctx.ID().getText()));
+                    inClassFunction = true;
                 } catch (Undefined notClassFunction) {
                     Symbol test = global.resolve(getName(ctx.ID().getText()));
                     if (!(test instanceof FuncSymbol)) throw new Undefined();
@@ -488,7 +490,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
                 return new CallExpr(funcInfo, null, new Position(ctx.getStart().getLine()));
             }
             // P nn, A n,Fault
-            else {
+            else if (!inClassFunction) {
                 System.err.println("line " + ctx.getStart().getLine() + ": Wrong function call, see function declaration at <" + funcInfo.getName() + ">");
                 throw new SemanticError();
             }
@@ -499,20 +501,37 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
             throw new SemanticError();
         }
         // check P nn, A nn
-        if (ctx.exprList().expr().size() != funcInfo.getFormalParametersName().size()) {
+        if (!inClassFunction && ctx.exprList().expr().size() != funcInfo.getFormalParametersName().size()) {
             System.err.println("line " + ctx.getStart().getLine() + ": Function call parameter mismatching, see function declaration at <" + funcInfo + ">");
             throw new SemanticError();
+        } else if (inClassFunction) {
+            if ((ctx.exprList() == null && funcInfo.getFormalParametersName().size() != 1) ||
+                    (ctx.exprList() != null && (ctx.exprList().expr().size() + 1) != funcInfo.getFormalParametersName().size())) {
+                System.err.println("line " + ctx.getStart().getLine() + ": Function call parameter mismatching, see function declaration at <" + funcInfo + ">");
+                throw new SemanticError();
+            }
         }
-        // compare AP and FP
-        List<MangoParser.ExprContext> APc = ctx.exprList().expr();
         List<Type> APT = new LinkedList<>();
         List<ExprStmt> AP = new LinkedList<>();
-        ListIterator<MangoParser.ExprContext> APcItr = APc.listIterator(0);
         ListIterator<ExprStmt> APItr = AP.listIterator(0);
-        while (APcItr.hasNext()) {
-            APItr.add((ExprStmt) visit(APcItr.next()));
-            APT.add(APItr.previous().getType());
+        if (inClassFunction && ctx.exprList() == null) {
+            VarSymbol _this;
+            try {
+                _this = (VarSymbol) global.resolve(getName("this"));
+                APT.add(_this.getType());
+            } catch (Undefined e) {
+                throw new Bug_TextError();
+            }
+            APItr.add(new VarExpr(_this, new Position(ctx.getStart().getLine())));
+        } else {
+            List<MangoParser.ExprContext> APc = ctx.exprList().expr();
+            ListIterator<MangoParser.ExprContext> APcItr = APc.listIterator(0);
+            while (APcItr.hasNext()) {
+                APItr.add((ExprStmt) visit(APcItr.next()));
+                APT.add(APItr.previous().getType());
+            }
         }
+        // compare AP and FP
         if (!funcInfo.isValidParameters(APT)) {
             System.err.println("line " + ctx.getStart().getLine() + ": Function call parameter mismatching, see function declaration at <" + funcInfo.getName() + ">");
             throw new SemanticError();
@@ -912,7 +931,32 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
         } catch (Undefined err) {
             System.err.println("line " + ctx.getStart().getLine() + ": Using undefined class function <" + func + ">");
         }
-        return new ClassFuncAccessExpr(lhs, funcInfo, new Position(ctx.getStart().getLine()));
+
+        List<Type> APT = new LinkedList<>();
+        List<ExprStmt> AP = new LinkedList<>();
+        ListIterator<ExprStmt> APItr = AP.listIterator(0);
+        APT.add(lhs.getType());
+        APItr.add(lhs);
+        if (ctx.exprList() != null) {
+            List<MangoParser.ExprContext> APc = ctx.exprList().expr();
+            ListIterator<MangoParser.ExprContext> APcItr = APc.listIterator(0);
+            while (APcItr.hasNext()) {
+                APItr.add((ExprStmt) visit(APcItr.next()));
+                APT.add(APItr.previous().getType());
+            }
+        }
+        // compare AP and FP
+        if (!funcInfo.isValidParameters(APT)) {
+            System.err.println("line " + ctx.getStart().getLine() + ": Function call parameter mismatching, see function declaration at <" + funcInfo.getName() + ">");
+            throw new SemanticError();
+        }
+        if (funcInfo.getReturnType() == null) {
+//            System.out.println("null return type!!!!!!!!!!!");
+            return new CallExpr(funcInfo, AP, new Position(ctx.getStart().getLine()), null);
+        }
+
+        return new CallExpr(funcInfo, AP, new Position(ctx.getStart().getLine()));
+//        return new ClassFuncAccessExpr(lhs, funcInfo, new Position(ctx.getStart().getLine()));
     }
 
     @Override

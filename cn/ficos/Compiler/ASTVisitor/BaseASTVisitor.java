@@ -25,8 +25,6 @@ abstract public class BaseASTVisitor<T> {
 
     abstract public T visit(ClassDecl expr);
 
-    abstract public T visit(ClassFuncAccessExpr expr);
-
     abstract public T visit(CompoundStmt expr);
 
     abstract public T visit(ContinueStmt expr);
