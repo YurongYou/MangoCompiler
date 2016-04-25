@@ -13,4 +13,8 @@ public class BreakStmt extends Stmt {
         super(_pos);
         breakTo = _breakTo;
     }
+
+    public LoopScope getBreakTo() {
+        return breakTo;
+    }
 }

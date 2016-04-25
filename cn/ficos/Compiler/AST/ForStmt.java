@@ -14,7 +14,7 @@ public class ForStmt extends Stmt implements LoopScope {
     ExprStmt after;
     Stmt loop;
 
-    Label begin = new Label("For_Begin");
+    Label afterLoop = new Label("For_afterLoop:Increment");
     Label end = new Label("For_End");
 
     public ForStmt(ExprStmt _init, ExprStmt _condition, ExprStmt _after, Stmt _loop, Position _pos) {
@@ -27,7 +27,7 @@ public class ForStmt extends Stmt implements LoopScope {
 
     @Override
     public Label getBegin() {
-        return begin;
+        return afterLoop;
     }
 
     @Override

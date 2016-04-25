@@ -11,9 +11,9 @@ public class Binary extends IRNode {
     Register target;
     Operand lhs;
     Operand rhs;
-    BinaryOp OP;
+    IRBinaryOp OP;
 
-    public Binary(Register target, Operand lhs, Operand rhs, BinaryOp OP) {
+    public Binary(Register target, Operand lhs, Operand rhs, IRBinaryOp OP) {
         this.target = target;
         this.lhs = lhs;
         this.rhs = rhs;
@@ -22,6 +22,6 @@ public class Binary extends IRNode {
 
     @Override
     public String toString() {
-        return OP + "\t" + target + ", " + lhs + ", " + rhs;
+        return OP + " " + target + ", " + lhs + ", " + rhs;
     }
 }

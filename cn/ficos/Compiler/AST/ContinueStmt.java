@@ -13,4 +13,8 @@ public class ContinueStmt extends Stmt {
         super(_pos);
         continueTo = _continueTo;
     }
+
+    public LoopScope getContinueTo() {
+        return continueTo;
+    }
 }

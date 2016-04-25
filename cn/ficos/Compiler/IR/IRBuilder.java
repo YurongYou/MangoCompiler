@@ -1,6 +1,7 @@
 package cn.ficos.Compiler.IR;
 
 import cn.ficos.Compiler.AST.*;
+import cn.ficos.Compiler.Gadgets.BinaryOp;
 import cn.ficos.Compiler.Gadgets.LogBinaryOp;
 import cn.ficos.Compiler.Gadgets.Operand.Constant;
 import cn.ficos.Compiler.Gadgets.Operand.LocalRegister;
@@ -211,6 +212,7 @@ public class IRBuilder {
     }
 
     void visit(CallExpr ast) {
+//        System.err.println("meet call!!!!!!");
         LinkedList<Operand> aps = null;
         if (ast.getActualParameter() != null) {
             aps = new LinkedList<>();
@@ -235,7 +237,7 @@ public class IRBuilder {
         } else {
             size = new LocalRegister();
             nowFunction.add(new Binary((Register) size, ast.getDim().getOperand(),
-                    new Constant(((ArrayType) ast.getType()).getBaseType().totalSize()), BinaryOp.MUL));
+                    new Constant(((ArrayType) ast.getType()).getBaseType().totalSize()), IRBinaryOp.MUL));
         }
         nowFunction.add(new New((Register) ast.getOperand(), size));
     }
@@ -248,9 +250,7 @@ public class IRBuilder {
                 ast.changeOperand(new Constant(-1 * ((IntExpr) ast.getBase()).getValue()));
             } else {
                 visit(ast.getBase());
-                nowFunction.add(new Binary((Register) ast.getOperand(),
-                        ast.getBase().getOperand(),
-                        new Constant(-1), BinaryOp.MUL));
+                nowFunction.add(new Neg((Register) ast.getOperand(), ast.getBase().getOperand()));
             }
         }
     }
@@ -267,12 +267,9 @@ public class IRBuilder {
     void visit(VarExpr ast) {
     }
 
-//    void visit(ClassFuncAccessExpr ast) {
-//
-//    }
-
     void visit(BitNotExpr ast) {
-
+        visit(ast.getBase());
+        nowFunction.add(new Not((Register) ast.getOperand(), ast.getBase().getOperand()));
     }
 
     void visit(LogNotExpr ast) {
@@ -280,15 +277,45 @@ public class IRBuilder {
     }
 
     void visit(StringExpr ast) {
-
     }
 
     void visit(LogBinaryExpr ast) {
-
+        visit(ast.getLhs());
+        visit(ast.getRhs());
+        LogBinaryOp ori = ast.getOp();
+        IRBinaryOp op;
+        if (ori == LogBinaryOp.LESS) op = IRBinaryOp.LESS;
+        else if (ori == LogBinaryOp.LARGE) op = IRBinaryOp.LARGE;
+        else if (ori == LogBinaryOp.LEQ) op = IRBinaryOp.LEQ;
+        else if (ori == LogBinaryOp.GEQ) op = IRBinaryOp.GEQ;
+        else if (ori == LogBinaryOp.EQ) op = IRBinaryOp.EQ;
+        else op = IRBinaryOp.NEQ;
+        nowFunction.add(new Binary((Register) ast.getOperand(),
+                ast.getLhs().getOperand(),
+                ast.getRhs().getOperand(),
+                op));
     }
 
     void visit(BinaryExpr ast) {
+        visit(ast.getLhs());
+        visit(ast.getRhs());
+        IRBinaryOp op;
+        BinaryOp ori = ast.getOp();
+        if (ori == BinaryOp.MULT) op = IRBinaryOp.MUL;
+        else if (ori == BinaryOp.DIV) op = IRBinaryOp.DIV;
+        else if (ori == BinaryOp.MOD) op = IRBinaryOp.REM;
+        else if (ori == BinaryOp.PLUS) op = IRBinaryOp.ADD;
+        else if (ori == BinaryOp.MINUS) op = IRBinaryOp.SUB;
+        else if (ori == BinaryOp.SHIFT_L) op = IRBinaryOp.SLL;
+        else if (ori == BinaryOp.SHIFT_R) op = IRBinaryOp.SRL;
+        else if (ori == BinaryOp.BIT_AND) op = IRBinaryOp.BAND;
+        else if (ori == BinaryOp.BIT_XOR) op = IRBinaryOp.BXOR;
+        else op = IRBinaryOp.BOR;
 
+        nowFunction.add(new Binary((Register) ast.getOperand(),
+                ast.getLhs().getOperand(),
+                ast.getRhs().getOperand(),
+                op));
     }
 
     LocalRegister visitAddress(AddressFetch ast) {
@@ -299,20 +326,20 @@ public class IRBuilder {
             LocalRegister address = ast.getAddressOperand();
             if (((IndexExpr) ast).getIndex() instanceof IntExpr) {
                 nowFunction.add(new Binary(address, ((IndexExpr) ast).getBase().getOperand(),
-                        new Constant(((IntExpr) ((IndexExpr) ast).getIndex()).getValue() * 4), BinaryOp.ADD));
+                        new Constant(((IntExpr) ((IndexExpr) ast).getIndex()).getValue() * 4), IRBinaryOp.ADD));
             } else {
                 LocalRegister shift = new LocalRegister();
                 nowFunction.add(new Binary(shift, ((IndexExpr) ast).getIndex().getOperand(),
-                        new Constant(4), BinaryOp.MUL));
+                        new Constant(4), IRBinaryOp.MUL));
                 nowFunction.add(new Binary(address, ((IndexExpr) ast).getBase().getOperand(),
-                        shift, BinaryOp.ADD));
+                        shift, IRBinaryOp.ADD));
             }
             return address;
         } else {
             visit(((FieldAccessExpr) ast).getLhs());
             LocalRegister address = ast.getAddressOperand();
             nowFunction.add(new Binary(address, ((FieldAccessExpr) ast).getLhs().getOperand(),
-                    new Constant(((FieldAccessExpr) ast).getShift()), BinaryOp.ADD));
+                    new Constant(((FieldAccessExpr) ast).getShift()), IRBinaryOp.ADD));
             return address;
         }
     }
@@ -336,26 +363,32 @@ public class IRBuilder {
     void visit(SelfOpPostExpr ast) {
         visit(ast.getBase());
         nowFunction.add(new Move((Register) ast.getOperand(), ast.getBase().getOperand()));
-        nowFunction.add(new Binary((Register) ast.getBase().getOperand(),
+        if (ast.getOp()) nowFunction.add(new Binary((Register) ast.getBase().getOperand(),
                 ast.getBase().getOperand(),
-                new Constant(1), BinaryOp.ADD));
+                new Constant(1), IRBinaryOp.ADD));
+        else nowFunction.add(new Binary((Register) ast.getBase().getOperand(),
+                ast.getBase().getOperand(),
+                new Constant(1), IRBinaryOp.SUB));
     }
 
     void visit(SelfOpPreExpr ast) {
         visit(ast.getBase());
-        nowFunction.add(new Binary((Register) ast.getBase().getOperand(),
+        if (ast.getOp())
+            nowFunction.add(new Binary((Register) ast.getBase().getOperand(),
                 ast.getBase().getOperand(),
-                new Constant(1), BinaryOp.ADD));
-        nowFunction.add(new Move((Register) ast.getOperand(), ast.getBase().getOperand()));
+                    new Constant(1), IRBinaryOp.ADD));
+        else nowFunction.add(new Binary((Register) ast.getBase().getOperand(),
+                ast.getBase().getOperand(),
+                new Constant(1), IRBinaryOp.SUB));
+        ast.changeOperand(ast.getBase().getOperand());
+//        nowFunction.add(new Move((Register) ast.getOperand(), ast.getBase().getOperand()));
     }
 
     void visit(ReturnStmt ast) {
         nowFunction.add(new Return(ast.getReturnExpr().getOperand()));
     }
 
-    void visit(ContinueStmt ast) {
 
-    }
 
     void buildCondition(Label T, Label F, ExprStmt condition) {
         if (condition instanceof LogRelationExpr) {
@@ -372,20 +405,21 @@ public class IRBuilder {
         } else if (condition instanceof LogNotExpr) {
             buildCondition(F, T, ((LogNotExpr) condition).getBase());
         } else if (condition instanceof LogBinaryExpr) {
-            visit(((LogBinaryExpr) condition).getLhs());
-            visit(((LogBinaryExpr) condition).getRhs());
-            LogBinaryOp ori = ((LogBinaryExpr) condition).getOp();
-            BinaryOp op;
-            if (ori == LogBinaryOp.LESS) op = BinaryOp.LESS;
-            else if (ori == LogBinaryOp.LARGE) op = BinaryOp.LARGE;
-            else if (ori == LogBinaryOp.LEQ) op = BinaryOp.LEQ;
-            else if (ori == LogBinaryOp.GEQ) op = BinaryOp.GEQ;
-            else if (ori == LogBinaryOp.EQ) op = BinaryOp.EQ;
-            else op = BinaryOp.NEQ;
-            nowFunction.add(new Binary((Register) condition.getOperand(),
-                    ((LogBinaryExpr) condition).getLhs().getOperand(),
-                    ((LogBinaryExpr) condition).getRhs().getOperand(),
-                    op));
+//            visit(((LogBinaryExpr) condition).getLhs());
+//            visit(((LogBinaryExpr) condition).getRhs());
+//            LogBinaryOp ori = ((LogBinaryExpr) condition).getOp();
+//            BinaryOp op;
+//            if (ori == LogBinaryOp.LESS) op = BinaryOp.LESS;
+//            else if (ori == LogBinaryOp.LARGE) op = BinaryOp.LARGE;
+//            else if (ori == LogBinaryOp.LEQ) op = BinaryOp.LEQ;
+//            else if (ori == LogBinaryOp.GEQ) op = BinaryOp.GEQ;
+//            else if (ori == LogBinaryOp.EQ) op = BinaryOp.EQ;
+//            else op = BinaryOp.NEQ;
+//            nowFunction.add(new Binary((Register) condition.getOperand(),
+//                    ((LogBinaryExpr) condition).getLhs().getOperand(),
+//                    ((LogBinaryExpr) condition).getRhs().getOperand(),
+//                    op));
+            visit(condition);
             nowFunction.add(new Branch(condition.getOperand(), T, F));
         } else {
             visit(condition);
@@ -419,21 +453,41 @@ public class IRBuilder {
     }
 
     void visit(ForStmt ast) {
-
+        if (ast.getInit() != null) visit(ast.getInit());
+        Label begin = new Label("For_Begin");
+        if (ast.getCondition() != null) buildCondition(begin, ast.getEnd(), ast.getCondition());
+        nowFunction.add(begin);
+        visit(ast.getLoop());
+        nowFunction.add(ast.getBegin());
+        if (ast.getAfter() != null) visit(ast.getAfter());
+        if (ast.getCondition() != null) buildCondition(begin, ast.getEnd(), ast.getCondition());
+        nowFunction.add(ast.getEnd());
     }
 
     void visit(WhileStmt ast) {
-
+        Label begin = new Label("While_Begin");
+        buildCondition(begin, ast.getEnd(), ast.getCondition());
+        nowFunction.add(begin);
+        visit(ast.getLoop());
+        nowFunction.add(ast.getBegin());
+        buildCondition(begin, ast.getEnd(), ast.getCondition());
+        nowFunction.add(ast.getEnd());
     }
 
     void visit(CompoundStmt ast) {
-
+        if (ast.getStmts() != null) {
+            for (Stmt s : ast.getStmts()) {
+                visit(s);
+            }
+        }
     }
-
 
     void visit(BreakStmt ast) {
-
+        nowFunction.add(new Jump(ast.getBreakTo().getEnd()));
     }
 
+    void visit(ContinueStmt ast) {
+        nowFunction.add(new Jump(ast.getContinueTo().getBegin()));
+    }
 
 }
