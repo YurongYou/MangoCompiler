@@ -11,6 +11,4 @@ public enum LogBinaryOp {
     GEQ,
     EQ,
     NEQ,
-//    LOG_AND,
-//    LOG_OR;
 }

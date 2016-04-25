@@ -1,6 +1,7 @@
 package cn.ficos.Compiler.IR;
 
 import cn.ficos.Compiler.AST.*;
+import cn.ficos.Compiler.Gadgets.LogBinaryOp;
 import cn.ficos.Compiler.Gadgets.Operand.Constant;
 import cn.ficos.Compiler.Gadgets.Operand.LocalRegister;
 import cn.ficos.Compiler.Gadgets.Operand.Operand;
@@ -171,6 +172,7 @@ public class IRBuilder {
     }
 
     void visit(VarDecl ast) {
+
     }
 
     //    If the creation expression is null then there is no need to represent this expression in the IR
@@ -206,10 +208,6 @@ public class IRBuilder {
         for (Stmt s : ast.getStmts()) {
             visit(s);
         }
-    }
-
-    void visit(VarExpr ast) {
-
     }
 
     void visit(CallExpr ast) {
@@ -264,6 +262,9 @@ public class IRBuilder {
     }
 
     void visit(NullExpr ast) {
+    }
+
+    void visit(VarExpr ast) {
     }
 
 //    void visit(ClassFuncAccessExpr ast) {
@@ -333,23 +334,88 @@ public class IRBuilder {
     }
 
     void visit(SelfOpPostExpr ast) {
-
+        visit(ast.getBase());
+        nowFunction.add(new Move((Register) ast.getOperand(), ast.getBase().getOperand()));
+        nowFunction.add(new Binary((Register) ast.getBase().getOperand(),
+                ast.getBase().getOperand(),
+                new Constant(1), BinaryOp.ADD));
     }
 
     void visit(SelfOpPreExpr ast) {
-
+        visit(ast.getBase());
+        nowFunction.add(new Binary((Register) ast.getBase().getOperand(),
+                ast.getBase().getOperand(),
+                new Constant(1), BinaryOp.ADD));
+        nowFunction.add(new Move((Register) ast.getOperand(), ast.getBase().getOperand()));
     }
 
     void visit(ReturnStmt ast) {
-
+        nowFunction.add(new Return(ast.getReturnExpr().getOperand()));
     }
 
     void visit(ContinueStmt ast) {
 
     }
 
-    void visit(SelectionStmt ast) {
+    void buildCondition(Label T, Label F, ExprStmt condition) {
+        if (condition instanceof LogRelationExpr) {
+            Label tempT = new Label("tempT");
+            if (((LogRelationExpr) condition).isAnd()) {
+                buildCondition(tempT, F, ((LogRelationExpr) condition).getLhs());
+                nowFunction.add(tempT);
+                buildCondition(T, F, ((LogRelationExpr) condition).getRhs());
+            } else {
+                buildCondition(T, tempT, ((LogRelationExpr) condition).getLhs());
+                nowFunction.add(tempT);
+                buildCondition(T, F, ((LogRelationExpr) condition).getRhs());
+            }
+        } else if (condition instanceof LogNotExpr) {
+            buildCondition(F, T, ((LogNotExpr) condition).getBase());
+        } else if (condition instanceof LogBinaryExpr) {
+            visit(((LogBinaryExpr) condition).getLhs());
+            visit(((LogBinaryExpr) condition).getRhs());
+            LogBinaryOp ori = ((LogBinaryExpr) condition).getOp();
+            BinaryOp op;
+            if (ori == LogBinaryOp.LESS) op = BinaryOp.LESS;
+            else if (ori == LogBinaryOp.LARGE) op = BinaryOp.LARGE;
+            else if (ori == LogBinaryOp.LEQ) op = BinaryOp.LEQ;
+            else if (ori == LogBinaryOp.GEQ) op = BinaryOp.GEQ;
+            else if (ori == LogBinaryOp.EQ) op = BinaryOp.EQ;
+            else op = BinaryOp.NEQ;
+            nowFunction.add(new Binary((Register) condition.getOperand(),
+                    ((LogBinaryExpr) condition).getLhs().getOperand(),
+                    ((LogBinaryExpr) condition).getRhs().getOperand(),
+                    op));
+            nowFunction.add(new Branch(condition.getOperand(), T, F));
+        } else {
+            visit(condition);
+            nowFunction.add(new Branch(condition.getOperand(), T, F));
+        }
+    }
 
+    void visit(SelectionStmt ast) {
+        Label LT = new Label("if_true");
+        Label LF = new Label("if_false");
+        buildCondition(LT, LF, ast.getCondition());
+        nowFunction.add(LT);
+        visit(ast.getThenStmt());
+        nowFunction.add(LF);
+        if (ast.getSubSelectionConditions() != null) {
+            ListIterator<ExprStmt> condI = ast.getSubSelectionConditions().listIterator(0);
+            ListIterator<Stmt> stmtI = ast.getSubSelectionThenStmts().listIterator(0);
+            while (condI.hasNext()) {
+                LT = new Label("elseif_true");
+                LF = new Label("elseif_false");
+                buildCondition(LT, LF, condI.next());
+                nowFunction.add(LT);
+                visit(stmtI.next());
+                nowFunction.add(LF);
+            }
+        }
+        if (ast.getElseStmt() != null) {
+            visit(ast.getElseStmt());
+            nowFunction.add(new Label("exitElse"));
+        }
     }
 
     void visit(ForStmt ast) {

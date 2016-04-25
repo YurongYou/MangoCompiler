@@ -14,5 +14,10 @@ public enum BinaryOp {
     BAND,
     BOR,
     BXOR,
-    BNOT
+    LESS,
+    LARGE,
+    LEQ,
+    GEQ,
+    EQ,
+    NEQ,
 }

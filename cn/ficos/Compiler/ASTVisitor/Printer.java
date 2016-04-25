@@ -273,11 +273,12 @@ public class Printer {
         out.print("<FuncCall:" + node.getFuncInfo().getName() + ", resultReg:" + node.getOperand());
         if (node.getActualParameter() != null) {
             out.print("|");
-            ListIterator<Type> Titr = node.getFuncInfo().getFormalParametersType().listIterator();
             ListIterator<ExprStmt> Nitr = node.getActualParameter().listIterator();
-            while (Titr.hasNext()) {
-                out.print("(" + Titr.next() + ")");
-                visit(Nitr.next(), 0);
+            ExprStmt nowExpr;
+            while (Nitr.hasNext()) {
+                nowExpr = Nitr.next();
+                out.print("(" + nowExpr.getType() + ")");
+                visit(nowExpr, 0);
             }
         }
         out.print(">");
