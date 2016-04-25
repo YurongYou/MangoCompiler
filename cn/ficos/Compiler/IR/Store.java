@@ -10,14 +10,27 @@ import cn.ficos.Compiler.Gadgets.Operand.Register;
 public class Store extends IRNode {
     Operand source;
     Register target;
+    int offset;
+    int size;
 
-    public Store(Register target, Operand source) {
+    public Store(int _size, Operand source, Register target, int _offset) {
+        size = _size;
+
         this.source = source;
         this.target = target;
+        offset = _offset;
+    }
+
+    public int getOffset() {
+        return offset;
+    }
+
+    public int getSize() {
+        return size;
     }
 
     @Override
     public String toString() {
-        return "ST\t" + target + ", " + source;
+        return "ST\tsize:" + size + ", " + source + ", (" + offset + ")" + target;
     }
 }

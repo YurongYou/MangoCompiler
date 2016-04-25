@@ -10,14 +10,26 @@ import cn.ficos.Compiler.Gadgets.Operand.Register;
 public class Load extends IRNode {
     Register target;
     Operand source;
+    int offset;
+    int size;
 
-    public Load(Register target, Operand source) {
+    public Load(int _size, Register target, Operand source, int _offset) {
+        size = _size;
         this.target = target;
         this.source = source;
+        offset = _offset;
+    }
+
+    public int getOffset() {
+        return offset;
+    }
+
+    public int getSize() {
+        return size;
     }
 
     @Override
     public String toString() {
-        return "LD\t" + target + ", " + source;
+        return "LD\tsize:" + size + ", " + target + ", (" + offset + ")" + source;
     }
 }

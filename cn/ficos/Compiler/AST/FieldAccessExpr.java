@@ -1,7 +1,6 @@
 package cn.ficos.Compiler.AST;
 
 import cn.ficos.Compiler.Gadgets.Name;
-import cn.ficos.Compiler.Gadgets.Operand.LocalRegister;
 import cn.ficos.Compiler.Gadgets.Position;
 import cn.ficos.Compiler.Gadgets.Type.Type;
 
@@ -13,7 +12,7 @@ import cn.ficos.Compiler.Gadgets.Type.Type;
 public class FieldAccessExpr extends ExprStmt implements LValue, AddressFetch {
     ExprStmt lhs;
     Name field;
-    LocalRegister address = new LocalRegister();
+    //    LocalRegister address = new LocalRegister();
     int shift = 0;
 
     public FieldAccessExpr(Type _type, ExprStmt _lhs, Name _field, int _shift, Position _pos) {
@@ -35,13 +34,13 @@ public class FieldAccessExpr extends ExprStmt implements LValue, AddressFetch {
         return field;
     }
 
-    @Override
-    public LocalRegister getAddressOperand() {
-        return address;
-    }
+//    @Override
+//    public LocalRegister getAddressOperand() {
+//        return address;
+//    }
 
-    @Override
-    public LocalRegister getResultOperand() {
-        return (LocalRegister) getOperand();
-    }
+//    @Override
+//    public LocalRegister getResultOperand() {
+//        return (LocalRegister) getOperand();
+//    }
 }

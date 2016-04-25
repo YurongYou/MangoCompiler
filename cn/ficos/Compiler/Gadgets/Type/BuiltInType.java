@@ -8,9 +8,11 @@ import cn.ficos.Compiler.Gadgets.Name;
  */
 public class BuiltInType extends Type {
     private Name className;
+    private int byteSize;
 
-    public BuiltInType(Name _className) {
+    public BuiltInType(Name _className, int _byteSize) {
         className = _className;
+        byteSize = _byteSize;
     }
 
     /**
@@ -30,9 +32,8 @@ public class BuiltInType extends Type {
         return className.toString();
     }
 
-//    @Override
-//    public int sizeOf() {
-//        return 4;
-//    }
-
+    @Override
+    public int sizeOf() {
+        return byteSize;
+    }
 }

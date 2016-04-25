@@ -69,10 +69,18 @@ public class IRBuilder {
             visit((VarExpr) node);
             return;
         }
-        if (node instanceof AddressFetch) {
-            visit((AddressFetch) node);
+        if (node instanceof FieldAccessExpr) {
+            visit((FieldAccessExpr) node);
             return;
         }
+        if (node instanceof IndexExpr) {
+            visit((IndexExpr) node);
+            return;
+        }
+//        if (node instanceof AddressFetch) {
+//            visit((AddressFetch) node);
+//            return;
+//        }
         if (node instanceof CallExpr) {
             visit((CallExpr) node);
             return;
@@ -233,11 +241,11 @@ public class IRBuilder {
         visit(ast.getDim());
         Operand size;
         if (ast.getDim() instanceof IntExpr) {
-            size = new Constant(((IntExpr) ast.getDim()).getValue() * ((ArrayType) ast.getType()).getBaseType().totalSize());
+            size = new Constant(((IntExpr) ast.getDim()).getValue() * ((ArrayType) ast.getType()).getBaseType().sizeOf());
         } else {
             size = new LocalRegister();
             nowFunction.add(new Binary((Register) size, ast.getDim().getOperand(),
-                    new Constant(((ArrayType) ast.getType()).getBaseType().totalSize()), IRBinaryOp.MUL));
+                    new Constant(((ArrayType) ast.getType()).getBaseType().sizeOf()), IRBinaryOp.MUL));
         }
         nowFunction.add(new New((Register) ast.getOperand(), size));
     }
@@ -318,41 +326,97 @@ public class IRBuilder {
                 op));
     }
 
-    LocalRegister visitAddress(AddressFetch ast) {
-        if (ast instanceof IndexExpr) {
-            visit(((IndexExpr) ast).getBase());
-            visit(((IndexExpr) ast).getIndex());
+//    LocalRegister visitAddress(AddressFetch ast) {
+//        if (ast instanceof IndexExpr) {
+//            visit(((IndexExpr) ast).getBase());
+//            visit(((IndexExpr) ast).getIndex());
+//
+//            LocalRegister address = ast.getAddressOperand();
+//            if (((IndexExpr) ast).getIndex() instanceof IntExpr) {
+//                nowFunction.add(new Binary(address, ((IndexExpr) ast).getBase().getOperand(),
+//                        new Constant(((IntExpr) ((IndexExpr) ast).getIndex()).getValue() * ((IndexExpr) ast).getType().sizeOf()), IRBinaryOp.ADD));
+//            } else {
+//                LocalRegister shift = new LocalRegister();
+//                nowFunction.add(new Binary(shift, ((IndexExpr) ast).getIndex().getOperand(),
+//                        new Constant(((IndexExpr) ast).getType().sizeOf()), IRBinaryOp.MUL));
+//                nowFunction.add(new Binary(address, ((IndexExpr) ast).getBase().getOperand(),
+//                        shift, IRBinaryOp.ADD));
+//            }
+//            return address;
+//        } else {
+//            visit(((FieldAccessExpr) ast).getLhs());
+//            LocalRegister address = ast.getAddressOperand();
+//            nowFunction.add(new Binary(address, ((FieldAccessExpr) ast).getLhs().getOperand(),
+//                    new Constant(((FieldAccessExpr) ast).getShift()), IRBinaryOp.ADD));
+//            return address;
+//        }
+//    }
 
-            LocalRegister address = ast.getAddressOperand();
-            if (((IndexExpr) ast).getIndex() instanceof IntExpr) {
-                nowFunction.add(new Binary(address, ((IndexExpr) ast).getBase().getOperand(),
-                        new Constant(((IntExpr) ((IndexExpr) ast).getIndex()).getValue() * 4), IRBinaryOp.ADD));
-            } else {
-                LocalRegister shift = new LocalRegister();
-                nowFunction.add(new Binary(shift, ((IndexExpr) ast).getIndex().getOperand(),
-                        new Constant(4), IRBinaryOp.MUL));
-                nowFunction.add(new Binary(address, ((IndexExpr) ast).getBase().getOperand(),
-                        shift, IRBinaryOp.ADD));
-            }
-            return address;
+
+    void visit(FieldAccessExpr ast) {
+        visit(ast.getLhs());
+        nowFunction.add(new Load(ast.getType().sizeOf(), (Register) ast.getOperand(), ast.getLhs().getOperand(), ast.getShift()));
+    }
+
+    void visit(IndexExpr ast) {
+        visit(ast.getBase());
+        if (!(ast.getIndex() instanceof IntExpr)) {
+            visit(ast.getIndex());
+            LocalRegister shift = new LocalRegister();
+            LocalRegister address = new LocalRegister();
+            nowFunction.add(new Binary(shift, ast.getIndex().getOperand(),
+                    new Constant(ast.getType().sizeOf()), IRBinaryOp.MUL));
+            nowFunction.add(new Binary(address, ast.getBase().getOperand(),
+                    shift, IRBinaryOp.ADD));
+            nowFunction.add(new Load(ast.getType().sizeOf(), (Register) ast.getOperand(),
+                    address, 0));
         } else {
-            visit(((FieldAccessExpr) ast).getLhs());
-            LocalRegister address = ast.getAddressOperand();
-            nowFunction.add(new Binary(address, ((FieldAccessExpr) ast).getLhs().getOperand(),
-                    new Constant(((FieldAccessExpr) ast).getShift()), IRBinaryOp.ADD));
-            return address;
+            nowFunction.add(new Load(ast.getType().sizeOf(), (Register) ast.getOperand(),
+                    ast.getBase().getOperand(),
+                    ((IntExpr) ast.getIndex()).getValue() * ast.getType().sizeOf()));
         }
     }
 
-    void visit(AddressFetch ast) {
-        nowFunction.add(new Load(ast.getResultOperand(), visitAddress(ast)));
+
+//    void visit(AddressFetch ast) {
+//        nowFunction.add(new Load(ast.getResultOperand(), visitAddress(ast)));
+//    }
+
+
+    void getStoreIR(AddressFetch ast, Operand source) {
+        if (ast instanceof IndexExpr) {
+            visit(((IndexExpr) ast).getBase());
+            if (!(((IndexExpr) ast).getIndex() instanceof IntExpr)) {
+                visit(((IndexExpr) ast).getIndex());
+                LocalRegister shift = new LocalRegister();
+                LocalRegister address = new LocalRegister();
+                nowFunction.add(new Binary(shift, ((IndexExpr) ast).getIndex().getOperand(),
+                        new Constant(((IndexExpr) ast).getType().sizeOf()), IRBinaryOp.MUL));
+                nowFunction.add(new Binary(address, ((IndexExpr) ast).getBase().getOperand(),
+                        shift, IRBinaryOp.ADD));
+                nowFunction.add(new Store(((IndexExpr) ast).getType().sizeOf(), source,
+                        address, 0));
+            } else {
+                nowFunction.add(new Store(((IndexExpr) ast).getType().sizeOf(), source,
+                        (Register) ((IndexExpr) ast).getBase().getOperand(),
+                        ((IntExpr) ((IndexExpr) ast).getIndex()).getValue() * ((IndexExpr) ast).getType().sizeOf()));
+            }
+            nowFunction.add(new Move((Register) ((IndexExpr) ast).getOperand(), source));
+        } else {
+            visit(((FieldAccessExpr) ast).getLhs());
+            nowFunction.add(new Store(((FieldAccessExpr) ast).getType().sizeOf(), source,
+                    (Register) ((FieldAccessExpr) ast).getLhs().getOperand(),
+                    ((FieldAccessExpr) ast).getShift()));
+            nowFunction.add(new Move((Register) ((FieldAccessExpr) ast).getOperand(), source));
+        }
     }
 
     void visit(AssignExpr ast) {
         visit(ast.getRhs());
         if (ast.getLhs() instanceof AddressFetch) {
-            visitAddress((AddressFetch) ast.getLhs());
-            nowFunction.add(new Store(((AddressFetch) ast.getLhs()).getAddressOperand(), ast.getRhs().getOperand()));
+//            visitAddress((AddressFetch) ast.getLhs());
+//            new Store(((AddressFetch) ast.getLhs()).getAddressOperand(), ast.getRhs().getOperand())
+            getStoreIR((AddressFetch) ast.getLhs(), ast.getRhs().getOperand());
         } else {
             nowFunction.add(new Move((Register) ast.getLhs().getOperand(), ast.getRhs().getOperand()));
         }

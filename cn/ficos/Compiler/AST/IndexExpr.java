@@ -29,13 +29,11 @@ public class IndexExpr extends ExprStmt implements LValue, AddressFetch {
         return index;
     }
 
-    @Override
     public LocalRegister getAddressOperand() {
         return address;
     }
 
-    @Override
-    public LocalRegister getResultOperand() {
-        return (LocalRegister) getOperand();
-    }
+//    public LocalRegister getResultOperand() {
+//        return (LocalRegister) getOperand();
+//    }
 }

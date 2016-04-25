@@ -22,15 +22,15 @@ public class SymbolTable {
     /**
      * this serves as reference to built-in type int
      */
-    public static BuiltInType INT = new BuiltInType(Name.getName("int"));
+    public static BuiltInType INT = new BuiltInType(Name.getName("int"), CONSTANT.wordSize);
     /**
      * this serves as reference to built-in type string
      */
-    public static BuiltInType STRING = new BuiltInType(Name.getName("string"));
+    public static BuiltInType STRING = new BuiltInType(Name.getName("string"), CONSTANT.wordSize);
     /**
      * this serves as reference to built-in type boll
      */
-    public static BuiltInType BOOL = new BuiltInType(Name.getName("bool"));
+    public static BuiltInType BOOL = new BuiltInType(Name.getName("bool"), 1);
 
     //serve as a dictionary for symbol fetching
     private Map<Name, Stack<Symbol>> dict = new HashMap<>();

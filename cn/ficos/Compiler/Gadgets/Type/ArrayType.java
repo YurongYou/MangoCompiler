@@ -1,6 +1,7 @@
 package cn.ficos.Compiler.Gadgets.Type;
 
 import cn.ficos.Compiler.Exceptions.FalseArrayInit;
+import cn.ficos.Compiler.Gadgets.CONSTANT;
 import cn.ficos.Compiler.Gadgets.Name;
 
 /**
@@ -22,7 +23,7 @@ public class ArrayType extends Type {
     }
 
     public static void main(String[] args) {
-        Type base1 = new BuiltInType(Name.getName("ficos"));
+        Type base1 = new BuiltInType(Name.getName("ficos"), CONSTANT.wordSize);
         Type base2 = base1;
 
         ArrayType a1 = new ArrayType(base1);
@@ -59,15 +60,15 @@ public class ArrayType extends Type {
         return baseType;
     }
 
-//    @Override
-//    public int sizeOf() {
-//        //the address is 4 words
-//        return 4;
-//    }
+    @Override
+    public int sizeOf() {
+        //the address is 4 words
+        return CONSTANT.wordSize;
+    }
 
 //    @Override
 //    public int totalSize() {
-//        return CONSTANT.regSize * varShift.size();
+//        return CONSTANT.wordSize;
 //    }
 
 }

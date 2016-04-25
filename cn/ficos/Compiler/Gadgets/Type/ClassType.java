@@ -16,6 +16,7 @@ public class ClassType extends Type {
 
     //    private Map<Name, FuncSymbol> funcDict = new HashMap<>();
     private Map<Name, Integer> varShift = new HashMap<>();
+    private int sizeCount = 0;
     private Name className;
 
     /**
@@ -40,18 +41,18 @@ public class ClassType extends Type {
         return (this == rhs);
     }
 
-//    @Override
-//    public int sizeOf() {
-//        return CONSTANT.regSize;
-//    }
-
     @Override
-    public int totalSize() {
-        return CONSTANT.wordSize * varShift.size();
+    public int sizeOf() {
+        return CONSTANT.wordSize;
     }
 
-    public void addVar(Name name) {
-        varShift.put(name, varShift.size() * 4);
+    public int totalSize() {
+        return sizeCount;
+    }
+
+    public void addVar(Name name, int _byteSize) {
+        varShift.put(name, sizeCount);
+        sizeCount += _byteSize;
     }
 
     public int getShift(Name name) {

@@ -258,14 +258,14 @@ public class Printer {
         out.print("[");
         visit(node.getIndex(), 0);
         out.print("]");
-        out.print("|rstReg:" + node.getResultOperand() + ", addReg:" + node.getAddressOperand() + ">");
+        out.print("|rstReg:" + node.getOperand() + ">");
     }
 
     void visit(FieldAccessExpr node, int d) {
         indent(d);
         out.print("<FieldAccess:");
         visit(node.getLhs(), 0);
-        out.print("." + node.getField() + "|rstReg:" + node.getResultOperand() + ", addReg:" + node.getAddressOperand() + ">");
+        out.print("." + node.getField() + "|rstReg:" + node.getOperand() + ">");
     }
 
     void visit(CallExpr node, int d) {
