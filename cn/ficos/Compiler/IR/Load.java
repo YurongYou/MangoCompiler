@@ -30,6 +30,6 @@ public class Load extends IRNode {
 
     @Override
     public String toString() {
-        return "LD\tsize:" + size + ", " + target + ", (" + offset + ")" + source;
+        return "LD\tsize:" + size + ", " + target + ", " + offset + "(" + source + ")";
     }
 }

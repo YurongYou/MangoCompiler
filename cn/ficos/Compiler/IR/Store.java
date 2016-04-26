@@ -31,6 +31,6 @@ public class Store extends IRNode {
 
     @Override
     public String toString() {
-        return "ST\tsize:" + size + ", " + source + ", (" + offset + ")" + target;
+        return "ST\tsize:" + size + ", " + source + ", " + offset + "(" + target + ")";
     }
 }

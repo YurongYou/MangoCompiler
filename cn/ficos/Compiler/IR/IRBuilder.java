@@ -2,6 +2,7 @@ package cn.ficos.Compiler.IR;
 
 import cn.ficos.Compiler.AST.*;
 import cn.ficos.Compiler.Gadgets.BinaryOp;
+import cn.ficos.Compiler.Gadgets.CONSTANT;
 import cn.ficos.Compiler.Gadgets.LogBinaryOp;
 import cn.ficos.Compiler.Gadgets.Operand.Constant;
 import cn.ficos.Compiler.Gadgets.Operand.LocalRegister;
@@ -77,10 +78,7 @@ public class IRBuilder {
             visit((IndexExpr) node);
             return;
         }
-//        if (node instanceof AddressFetch) {
-//            visit((AddressFetch) node);
-//            return;
-//        }
+
         if (node instanceof CallExpr) {
             visit((CallExpr) node);
             return;
@@ -105,10 +103,7 @@ public class IRBuilder {
             visit((BoolExpr) node);
             return;
         }
-//        if (node instanceof ClassFuncAccessExpr) {
-//            visit((ClassFuncAccessExpr) node);
-//            return;
-//        }
+
         if (node instanceof BitNotExpr) {
             visit((BitNotExpr) node);
             return;
@@ -123,6 +118,10 @@ public class IRBuilder {
         }
         if (node instanceof LogBinaryExpr) {
             visit((LogBinaryExpr) node);
+            return;
+        }
+        if (node instanceof LogRelationExpr) {
+            visit((LogRelationExpr) node);
             return;
         }
         if (node instanceof BinaryExpr) {
@@ -264,15 +263,26 @@ public class IRBuilder {
     }
 
     void visit(IntExpr ast) {
+        // left empty intendedly
     }
 
     void visit(BoolExpr ast) {
+        // left empty intendedly
     }
 
     void visit(NullExpr ast) {
+        // left empty intendedly
     }
 
     void visit(VarExpr ast) {
+        // left empty intendedly
+    }
+
+    void visit(StringExpr ast) {
+        // left empty intendedly
+        LocalRegister temp = new LocalRegister();
+        nowFunction.add(new LoadLabel(temp, ast.getLabel()));
+        nowFunction.add(new Load(CONSTANT.wordSize, (Register) ast.getOperand(), temp, 0));
     }
 
     void visit(BitNotExpr ast) {
@@ -281,10 +291,8 @@ public class IRBuilder {
     }
 
     void visit(LogNotExpr ast) {
-
-    }
-
-    void visit(StringExpr ast) {
+        visit(ast.getBase());
+        nowFunction.add(new Binary((Register) ast.getOperand(), ast.getBase().getOperand(), new Constant(1), IRBinaryOp.BXOR));
     }
 
     void visit(LogBinaryExpr ast) {
@@ -326,33 +334,6 @@ public class IRBuilder {
                 op));
     }
 
-//    LocalRegister visitAddress(AddressFetch ast) {
-//        if (ast instanceof IndexExpr) {
-//            visit(((IndexExpr) ast).getBase());
-//            visit(((IndexExpr) ast).getIndex());
-//
-//            LocalRegister address = ast.getAddressOperand();
-//            if (((IndexExpr) ast).getIndex() instanceof IntExpr) {
-//                nowFunction.add(new Binary(address, ((IndexExpr) ast).getBase().getOperand(),
-//                        new Constant(((IntExpr) ((IndexExpr) ast).getIndex()).getValue() * ((IndexExpr) ast).getType().sizeOf()), IRBinaryOp.ADD));
-//            } else {
-//                LocalRegister shift = new LocalRegister();
-//                nowFunction.add(new Binary(shift, ((IndexExpr) ast).getIndex().getOperand(),
-//                        new Constant(((IndexExpr) ast).getType().sizeOf()), IRBinaryOp.MUL));
-//                nowFunction.add(new Binary(address, ((IndexExpr) ast).getBase().getOperand(),
-//                        shift, IRBinaryOp.ADD));
-//            }
-//            return address;
-//        } else {
-//            visit(((FieldAccessExpr) ast).getLhs());
-//            LocalRegister address = ast.getAddressOperand();
-//            nowFunction.add(new Binary(address, ((FieldAccessExpr) ast).getLhs().getOperand(),
-//                    new Constant(((FieldAccessExpr) ast).getShift()), IRBinaryOp.ADD));
-//            return address;
-//        }
-//    }
-
-
     void visit(FieldAccessExpr ast) {
         visit(ast.getLhs());
         nowFunction.add(new Load(ast.getType().sizeOf(), (Register) ast.getOperand(), ast.getLhs().getOperand(), ast.getShift()));
@@ -376,12 +357,6 @@ public class IRBuilder {
                     ((IntExpr) ast.getIndex()).getValue() * ast.getType().sizeOf()));
         }
     }
-
-
-//    void visit(AddressFetch ast) {
-//        nowFunction.add(new Load(ast.getResultOperand(), visitAddress(ast)));
-//    }
-
 
     void getStoreIR(AddressFetch ast, Operand source) {
         if (ast instanceof IndexExpr) {
@@ -453,42 +428,43 @@ public class IRBuilder {
     }
 
 
+    void visit(LogRelationExpr ast) {
+        visit(ast.getLhs());
+        visit(ast.getRhs());
+        if (ast.isAnd()) {
+            nowFunction.add(new Binary((Register) ast.getOperand(),
+                    ast.getLhs().getOperand(), ast.getRhs().getOperand(),
+                    IRBinaryOp.BAND));
+        } else {
+            nowFunction.add(new Binary((Register) ast.getOperand(),
+                    ast.getLhs().getOperand(), ast.getRhs().getOperand(),
+                    IRBinaryOp.BOR));
+        }
+    }
 
     void buildCondition(Label T, Label F, ExprStmt condition) {
         if (condition instanceof LogRelationExpr) {
-            Label tempT = new Label("tempT");
+            Label temp = new Label("temp");
             if (((LogRelationExpr) condition).isAnd()) {
-                buildCondition(tempT, F, ((LogRelationExpr) condition).getLhs());
-                nowFunction.add(tempT);
+                buildCondition(temp, F, ((LogRelationExpr) condition).getLhs());
+                nowFunction.add(temp);
                 buildCondition(T, F, ((LogRelationExpr) condition).getRhs());
             } else {
-                buildCondition(T, tempT, ((LogRelationExpr) condition).getLhs());
-                nowFunction.add(tempT);
+                buildCondition(T, temp, ((LogRelationExpr) condition).getLhs());
+                nowFunction.add(temp);
                 buildCondition(T, F, ((LogRelationExpr) condition).getRhs());
             }
         } else if (condition instanceof LogNotExpr) {
+            visit(((LogNotExpr) condition).getBase());
             buildCondition(F, T, ((LogNotExpr) condition).getBase());
         } else if (condition instanceof LogBinaryExpr) {
-//            visit(((LogBinaryExpr) condition).getLhs());
-//            visit(((LogBinaryExpr) condition).getRhs());
-//            LogBinaryOp ori = ((LogBinaryExpr) condition).getOp();
-//            BinaryOp op;
-//            if (ori == LogBinaryOp.LESS) op = BinaryOp.LESS;
-//            else if (ori == LogBinaryOp.LARGE) op = BinaryOp.LARGE;
-//            else if (ori == LogBinaryOp.LEQ) op = BinaryOp.LEQ;
-//            else if (ori == LogBinaryOp.GEQ) op = BinaryOp.GEQ;
-//            else if (ori == LogBinaryOp.EQ) op = BinaryOp.EQ;
-//            else op = BinaryOp.NEQ;
-//            nowFunction.add(new Binary((Register) condition.getOperand(),
-//                    ((LogBinaryExpr) condition).getLhs().getOperand(),
-//                    ((LogBinaryExpr) condition).getRhs().getOperand(),
-//                    op));
-            visit(condition);
-            nowFunction.add(new Branch(condition.getOperand(), T, F));
-        } else {
             visit(condition);
             nowFunction.add(new Branch(condition.getOperand(), T, F));
         }
+//        else {
+//            visit(condition);
+//            nowFunction.add(new Branch(condition.getOperand(), T, F));
+//        }
     }
 
     void visit(SelectionStmt ast) {
@@ -553,5 +529,4 @@ public class IRBuilder {
     void visit(ContinueStmt ast) {
         nowFunction.add(new Jump(ast.getContinueTo().getBegin()));
     }
-
 }

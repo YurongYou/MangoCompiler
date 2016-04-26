@@ -14,6 +14,8 @@ import cn.ficos.Compiler.Gadgets.Type.Type;
 
 import java.util.*;
 
+import static cn.ficos.Compiler.Gadgets.Name.getName;
+
 /**
  * This is the symbol table for reference when building the AST
  * Created by Ficos on 16/3/31.
@@ -22,15 +24,36 @@ public class SymbolTable {
     /**
      * this serves as reference to built-in type int
      */
-    public static BuiltInType INT = new BuiltInType(Name.getName("int"), CONSTANT.wordSize);
+    public static BuiltInType INT = new BuiltInType(getName("int"), CONSTANT.wordSize);
     /**
      * this serves as reference to built-in type string
      */
-    public static BuiltInType STRING = new BuiltInType(Name.getName("string"), CONSTANT.wordSize);
+    public static BuiltInType STRING = new BuiltInType(getName("string"), CONSTANT.wordSize);
     /**
      * this serves as reference to built-in type boll
      */
-    public static BuiltInType BOOL = new BuiltInType(Name.getName("bool"), 1);
+    public static BuiltInType BOOL = new BuiltInType(getName("bool"), 4);
+
+    private static TypeSymbol IntType = new TypeSymbol(getName("int"), INT);
+    private static TypeSymbol StringType = new TypeSymbol(getName("string"), STRING);
+    private static TypeSymbol BoolType = new TypeSymbol(getName("bool"), BOOL);
+    private static FuncSymbol print = new FuncSymbol(getName("print"), null, Arrays.asList(getName("arg")), Arrays.asList(STRING));
+    private static FuncSymbol println = new FuncSymbol(getName("println"), null, Arrays.asList(getName("arg")), Arrays.asList(STRING));
+    private static FuncSymbol getString = new FuncSymbol(getName("getString"), STRING, null, null);
+    private static FuncSymbol getInt = new FuncSymbol(getName("getInt"), INT, null, null);
+    private static FuncSymbol toString = new FuncSymbol(getName("toString"), STRING, Arrays.asList(getName("i")), Arrays.asList(INT));
+    private static FuncSymbol string_length = new FuncSymbol(getName("string.length"), INT, Arrays.asList(getName("this")), Arrays.asList(STRING));
+    private static FuncSymbol string_substring = new FuncSymbol(getName("string.substring"), STRING, Arrays.asList(getName("this"), getName("left"), getName("right"))
+            , Arrays.asList(STRING, INT, INT));
+    private static FuncSymbol string_parseInt = new FuncSymbol(getName("string.parseInt"), INT, Arrays.asList(getName("this")), Arrays.asList(STRING));
+    private static FuncSymbol string_ord = new FuncSymbol(getName("string.ord"), INT, Arrays.asList(getName("this"), getName("pos")), Arrays.asList(STRING, INT));
+    private static FuncSymbol _array_size = new FuncSymbol(getName("~array.size"), INT, Arrays.asList(getName("this")), Arrays.asList(ArrayType.virtualArrayType));
+    private static FuncSymbol stringConcatenate = new FuncSymbol(getName("stringConcatenate"), STRING, Arrays.asList(getName("lhs"), getName("rhs")),
+            Arrays.asList(STRING, STRING));
+    private static FuncSymbol stringIsEqual = new FuncSymbol(getName("stringIsEqual"), BOOL, Arrays.asList(getName("lhs"), getName("rhs")),
+            Arrays.asList(STRING, STRING));
+    private static FuncSymbol stringLess = new FuncSymbol(getName("stringLess"), BOOL, Arrays.asList(getName("lhs"), getName("rhs")),
+            Arrays.asList(STRING, STRING));
 
     //serve as a dictionary for symbol fetching
     private Map<Name, Stack<Symbol>> dict = new HashMap<>();
@@ -49,105 +72,69 @@ public class SymbolTable {
 
     public static void main(String[] args) throws Redefine, Undefined {
         SymbolTable test = new SymbolTable();
-        test.define(Name.getName("ficos"), new VarSymbol(Name.getName("ficos"), INT, new GlobalRegister()));
-        Symbol yyr1 = test.resolve(Name.getName("ficos"));
+        test.define(getName("ficos"), new VarSymbol(getName("ficos"), INT, new GlobalRegister()));
+        Symbol yyr1 = test.resolve(getName("ficos"));
         test.beginScope();
-        test.define(Name.getName("ficos"), new VarSymbol(Name.getName("ficos"), INT, new GlobalRegister()));
-        Symbol yyr2 = test.resolve(Name.getName("ficos"));
+        test.define(getName("ficos"), new VarSymbol(getName("ficos"), INT, new GlobalRegister()));
+        Symbol yyr2 = test.resolve(getName("ficos"));
         System.out.println(yyr1 == yyr2);
         test.endScope();
-        yyr2 = test.resolve(Name.getName("ficos"));
+        yyr2 = test.resolve(getName("ficos"));
         System.out.println(yyr1 == yyr2);
-        System.out.println(test.resolve(Name.getName("string.ord")).getName());
+        System.out.println(test.resolve(getName("string.ord")).getName());
     }
 
     private void initialize() throws Redefine {
 //        currentNewSymbols.push(new LinkedList<>());
         nowScope.push(new HashSet<>());
-        Name name;
 
         //define several built-in types in the Global Scope
-        name = Name.getName("int");
-        TypeSymbol IntType = new TypeSymbol(name, INT);
-        define(name, IntType);
+        define(getName("int"), IntType);
 
-        name = Name.getName("string");
-        TypeSymbol StringType = new TypeSymbol(name, STRING);
-        define(name, StringType);
+        define(getName("string"), StringType);
 
-        name = Name.getName("bool");
-        TypeSymbol BoolType = new TypeSymbol(name, BOOL);
-        define(name, BoolType);
+        define(getName("bool"), BoolType);
 
         //define several built-in functions
         //void print(string arg)
-        name = Name.getName("print");
-        FuncSymbol print = new FuncSymbol(name, null, Arrays.asList(Name.getName("arg")), Arrays.asList(STRING));
-        define(name, print);
+
+        define(getName("print"), print);
 
         //void println(string arg)
-        name = Name.getName("println");
-        FuncSymbol println = new FuncSymbol(name, null, Arrays.asList(Name.getName("arg")), Arrays.asList(STRING));
-        define(name, println);
+        define(getName("println"), println);
 
         //string getString()
-        name = Name.getName("getString");
-        FuncSymbol getString = new FuncSymbol(name, STRING, null, null);
-        define(name, getString);
+        define(getName("getString"), getString);
 
         //int getInt()
-        name = Name.getName("getInt");
-        FuncSymbol getInt = new FuncSymbol(name, INT, null, null);
-        define(name, getInt);
+        define(getName("getInt"), getInt);
 
         //string toString(int i)
-        name = Name.getName("toString");
-        FuncSymbol toString = new FuncSymbol(name, STRING, Arrays.asList(Name.getName("i")), Arrays.asList(INT));
-        define(name, toString);
+        define(getName("toString"), toString);
 
         //int string.length(string this)
-        name = Name.getName("string.length");
-        FuncSymbol string_length = new FuncSymbol(name, INT, Arrays.asList(Name.getName("this")), Arrays.asList(STRING));
-        define(name, string_length);
+        define(getName("string.length"), string_length);
 
         //string string.substring(string this, int left, int right)
-        name = Name.getName("string.substring");
-        FuncSymbol string_substring = new FuncSymbol(name, STRING, Arrays.asList(Name.getName("this"), Name.getName("left"), Name.getName("right"))
-                , Arrays.asList(STRING, INT, INT));
-        define(name, string_substring);
+        define(getName("string.substring"), string_substring);
 
         //int string.parseInt(string this)
-        name = Name.getName("string.parseInt");
-        FuncSymbol string_parseInt = new FuncSymbol(name, INT, Arrays.asList(Name.getName("this")), Arrays.asList(STRING));
-        define(name, string_parseInt);
+        define(getName("string.parseInt"), string_parseInt);
 
         //int string.ord(string this, int pos)
-        name = Name.getName("string.ord");
-        FuncSymbol string_ord = new FuncSymbol(name, INT, Arrays.asList(Name.getName("this"), Name.getName("pos")), Arrays.asList(STRING, INT));
-        define(name, string_ord);
+        define(getName("string.ord"), string_ord);
 
         //int ~array.size(~array this)
-        name = Name.getName("~array.size");
-        FuncSymbol _array_size = new FuncSymbol(name, INT, Arrays.asList(Name.getName("this")), Arrays.asList(ArrayType.virtualArrayType));
-        define(name, _array_size);
+        define(getName("~array.size"), _array_size);
 
         //string stringConcatenate(string lhs, string rhs)
-        name = Name.getName("stringConcatenate");
-        FuncSymbol stringConcatenate = new FuncSymbol(name, STRING, Arrays.asList(Name.getName("lhs"), Name.getName("rhs")),
-                Arrays.asList(STRING, STRING));
-        define(name, stringConcatenate);
+        define(getName("stringConcatenate"), stringConcatenate);
 
         //bool stringIsEqual(string lhs, string rhs)
-        name = Name.getName("stringIsEqual");
-        FuncSymbol stringIsEqual = new FuncSymbol(name, BOOL, Arrays.asList(Name.getName("lhs"), Name.getName("rhs")),
-                Arrays.asList(STRING, STRING));
-        define(name, stringIsEqual);
+        define(getName("stringIsEqual"), stringIsEqual);
 
         //bool stringLess(string lhs, string rhs)
-        name = Name.getName("stringLess");
-        FuncSymbol stringLess = new FuncSymbol(name, BOOL, Arrays.asList(Name.getName("lhs"), Name.getName("rhs")),
-                Arrays.asList(STRING, STRING));
-        define(name, stringLess);
+        define(getName("stringLess"), stringLess);
     }
 
     /**
@@ -195,7 +182,7 @@ public class SymbolTable {
      * @throws Undefined
      */
     public Type lookUpType(String typeName) throws Undefined {
-        return ((TypeSymbol) resolve(Name.getName(typeName))).getType();
+        return ((TypeSymbol) resolve(getName(typeName))).getType();
     }
 
     /**

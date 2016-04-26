@@ -675,6 +675,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
     public AST visitLogBinary(MangoParser.LogBinaryContext ctx) {
         ExprStmt lhs = (ExprStmt) visit(ctx.expr(0));
         ExprStmt rhs = (ExprStmt) visit(ctx.expr(1));
+
         LogBinaryOp op = null;
         switch (ctx.op.getType()) {
             case MangoParser.LESS:
@@ -727,6 +728,15 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
                     throw new SemanticError();
                 }
                 if (suit(SymbolTable.STRING, lhs.getType())) {
+
+                    if (lhs instanceof StringExpr && rhs instanceof StringExpr) {
+                        if (((StringExpr) lhs).getText().equals(((StringExpr) rhs).getText())) {
+                            return new BoolExpr("true", new Position(ctx.getStart().getLine()));
+                        } else {
+                            return new BoolExpr("false", new Position(ctx.getStart().getLine()));
+                        }
+                    }
+
                     List<ExprStmt> AP = new LinkedList<>();
                     AP.add(lhs);
                     AP.add(rhs);
@@ -746,6 +756,15 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
                     throw new SemanticError();
                 }
                 if (suit(SymbolTable.STRING, lhs.getType())) {
+
+                    if (lhs instanceof StringExpr && rhs instanceof StringExpr) {
+                        if (((StringExpr) lhs).getText().compareTo(((StringExpr) rhs).getText()) < 0) {
+                            return new BoolExpr("true", new Position(ctx.getStart().getLine()));
+                        } else {
+                            return new BoolExpr("false", new Position(ctx.getStart().getLine()));
+                        }
+                    }
+
                     List<ExprStmt> AP = new LinkedList<>();
                     AP.add(lhs);
                     AP.add(rhs);
@@ -765,10 +784,50 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
                     System.err.println("line " + ctx.getStart().getLine() + ": Logical operation on wrong operands " + ctx.getText() + ">");
                     throw new SemanticError();
                 }
+                if (lhs instanceof BoolExpr && rhs instanceof BoolExpr) {
+                    if (ctx.op.getType() == MangoParser.LOG_AND) {
+                        if (((BoolExpr) lhs).getValue() && ((BoolExpr) rhs).getValue()) {
+                            return new BoolExpr("true", new Position(ctx.getStart().getLine()));
+                        } else return new BoolExpr("false", new Position(ctx.getStart().getLine()));
+                    } else {
+                        if (((BoolExpr) lhs).getValue() || ((BoolExpr) rhs).getValue()) {
+                            return new BoolExpr("true", new Position(ctx.getStart().getLine()));
+                        } else return new BoolExpr("false", new Position(ctx.getStart().getLine()));
+                    }
+                }
                 if (ctx.op.getType() == MangoParser.LOG_AND)
                     return new LogRelationExpr(lhs, true, rhs, new Position(ctx.getStart().getLine()));
                 else
                     return new LogRelationExpr(lhs, false, rhs, new Position(ctx.getStart().getLine()));
+            }
+        }
+//        if the two sides are all int
+        if (lhs instanceof IntExpr && rhs instanceof IntExpr) {
+            switch (ctx.op.getType()) {
+                case MangoParser.LARGE:
+                    if (((IntExpr) lhs).getValue() > ((IntExpr) rhs).getValue())
+                        return new BoolExpr("true", new Position(ctx.getStart().getLine()));
+                    else return new BoolExpr("false", new Position(ctx.getStart().getLine()));
+                case MangoParser.LEQ:
+                    if (((IntExpr) lhs).getValue() <= ((IntExpr) rhs).getValue())
+                        return new BoolExpr("true", new Position(ctx.getStart().getLine()));
+                    else return new BoolExpr("false", new Position(ctx.getStart().getLine()));
+                case MangoParser.GEQ:
+                    if (((IntExpr) lhs).getValue() >= ((IntExpr) rhs).getValue())
+                        return new BoolExpr("true", new Position(ctx.getStart().getLine()));
+                    else return new BoolExpr("false", new Position(ctx.getStart().getLine()));
+                case MangoParser.NEQ:
+                    if (((IntExpr) lhs).getValue() != ((IntExpr) rhs).getValue())
+                        return new BoolExpr("true", new Position(ctx.getStart().getLine()));
+                    else return new BoolExpr("false", new Position(ctx.getStart().getLine()));
+                case MangoParser.EQ:
+                    if (((IntExpr) lhs).getValue() == ((IntExpr) rhs).getValue())
+                        return new BoolExpr("true", new Position(ctx.getStart().getLine()));
+                    else return new BoolExpr("false", new Position(ctx.getStart().getLine()));
+                case MangoParser.LESS:
+                    if (((IntExpr) lhs).getValue() < ((IntExpr) rhs).getValue())
+                        return new BoolExpr("true", new Position(ctx.getStart().getLine()));
+                    else return new BoolExpr("false", new Position(ctx.getStart().getLine()));
             }
         }
         return new LogBinaryExpr(lhs, op, rhs, new Position(ctx.getStart().getLine()));
@@ -837,6 +896,9 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
                     throw new SemanticError();
                 }
                 if (suit(SymbolTable.STRING, lhs.getType())) {
+                    if (lhs instanceof StringExpr && rhs instanceof StringExpr) {
+                        return new StringExpr(((StringExpr) lhs).getText() + ((StringExpr) rhs).getText(), new Position(ctx.getStart().getLine()));
+                    }
                     List<ExprStmt> AP = new LinkedList<>();
                     AP.add(lhs);
                     AP.add(rhs);
@@ -846,6 +908,31 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
                         throw new Bug_FuncNotDefine();
                     }
                 }
+            }
+        }
+
+        if (lhs instanceof IntExpr && rhs instanceof IntExpr) {
+            switch (ctx.op.getType()) {
+                case MangoParser.MULT:
+                    return new IntExpr(((IntExpr) lhs).getValue() * ((IntExpr) rhs).getValue(), new Position(ctx.getStart().getLine()));
+                case MangoParser.DIV:
+                    return new IntExpr(((IntExpr) lhs).getValue() / ((IntExpr) rhs).getValue(), new Position(ctx.getStart().getLine()));
+                case MangoParser.MOD:
+                    return new IntExpr(((IntExpr) lhs).getValue() % ((IntExpr) rhs).getValue(), new Position(ctx.getStart().getLine()));
+                case MangoParser.MINUS:
+                    return new IntExpr(((IntExpr) lhs).getValue() - ((IntExpr) rhs).getValue(), new Position(ctx.getStart().getLine()));
+                case MangoParser.SHIFT_L:
+                    return new IntExpr(((IntExpr) lhs).getValue() << ((IntExpr) rhs).getValue(), new Position(ctx.getStart().getLine()));
+                case MangoParser.SHIFT_R:
+                    return new IntExpr(((IntExpr) lhs).getValue() >> ((IntExpr) rhs).getValue(), new Position(ctx.getStart().getLine()));
+                case MangoParser.BIT_AND:
+                    return new IntExpr(((IntExpr) lhs).getValue() & ((IntExpr) rhs).getValue(), new Position(ctx.getStart().getLine()));
+                case MangoParser.BIT_XOR:
+                    return new IntExpr(((IntExpr) lhs).getValue() ^ ((IntExpr) rhs).getValue(), new Position(ctx.getStart().getLine()));
+                case MangoParser.BIT_OR:
+                    return new IntExpr(((IntExpr) lhs).getValue() | ((IntExpr) rhs).getValue(), new Position(ctx.getStart().getLine()));
+                case MangoParser.PLUS:
+                    return new IntExpr(((IntExpr) lhs).getValue() + ((IntExpr) rhs).getValue(), new Position(ctx.getStart().getLine()));
             }
         }
         return new BinaryExpr(lhs, op, rhs, new Position(ctx.getStart().getLine()));

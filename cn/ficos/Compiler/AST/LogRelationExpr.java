@@ -14,11 +14,10 @@ public class LogRelationExpr extends ExprStmt {
     private boolean relation;
 
     public LogRelationExpr(ExprStmt _lhs, boolean _relation, ExprStmt _rhs, Position _pos) {
-        super(SymbolTable.BOOL, _pos, null);
+        super(SymbolTable.BOOL, _pos);
         relation = _relation;
         lhs = _lhs;
         rhs = _rhs;
-
     }
 
     public ExprStmt getLhs() {

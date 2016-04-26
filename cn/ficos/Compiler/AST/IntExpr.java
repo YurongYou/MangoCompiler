@@ -16,6 +16,11 @@ public class IntExpr extends ExprStmt {
         value = Integer.parseInt(text);
     }
 
+    public IntExpr(int _value, Position _pos) {
+        super(SymbolTable.INT, _pos, new Constant(_value));
+        value = _value;
+    }
+
     public static void main(String[] args) {
         IntExpr i = new IntExpr("2147483648", new Position(1));
         System.out.println(i.getValue());

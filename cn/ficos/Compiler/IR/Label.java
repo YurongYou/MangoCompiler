@@ -20,6 +20,6 @@ public class Label extends IRNode {
 
     @Override
     public String toString() {
-        return "Label " + ID + "::" + labelName;
+        return "Label" + ID + "_" + labelName;
     }
 }
