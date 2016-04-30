@@ -15,4 +15,8 @@ public class Jump extends IRNode {
     public String toString() {
         return "Jump " + target;
     }
+
+    public Label getTarget() {
+        return target;
+    }
 }

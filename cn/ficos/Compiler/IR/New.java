@@ -21,4 +21,12 @@ public class New extends IRNode {
     public String toString() {
         return "NEW\t" + target + ", " + size;
     }
+
+    public Register getTarget() {
+        return target;
+    }
+
+    public Operand getSize() {
+        return size;
+    }
 }

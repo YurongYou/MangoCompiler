@@ -1,6 +1,5 @@
 package cn.ficos.Compiler.IR;
 
-import cn.ficos.Compiler.Gadgets.Operand.Operand;
 import cn.ficos.Compiler.Gadgets.Operand.Register;
 
 /**
@@ -9,9 +8,9 @@ import cn.ficos.Compiler.Gadgets.Operand.Register;
  */
 public class Not extends IRNode {
     Register target;
-    Operand source;
+    Register source;
 
-    public Not(Register target, Operand source) {
+    public Not(Register target, Register source) {
         this.target = target;
         this.source = source;
     }
@@ -19,5 +18,13 @@ public class Not extends IRNode {
     @Override
     public String toString() {
         return "Not " + target + ", " + source;
+    }
+
+    public Register getTarget() {
+        return target;
+    }
+
+    public Register getSource() {
+        return source;
     }
 }

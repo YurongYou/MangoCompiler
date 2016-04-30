@@ -17,4 +17,8 @@ public class Return extends IRNode {
     public String toString() {
         return "Return " + result;
     }
+
+    public Operand getResult() {
+        return result;
+    }
 }

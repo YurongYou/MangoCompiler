@@ -1,6 +1,9 @@
 package cn.ficos.Compiler;
 
+import cn.ficos.Compiler.AST.AST;
 import cn.ficos.Compiler.ASTBuilder.ASTBuilder;
+import cn.ficos.Compiler.CodeGeneration.IRBuilder;
+import cn.ficos.Compiler.CodeGeneration.NaiveMIPSGenerator;
 import cn.ficos.Compiler.Syntax.MangoLexer;
 import cn.ficos.Compiler.Syntax.MangoParser;
 import org.antlr.v4.runtime.ANTLRInputStream;
@@ -10,6 +13,8 @@ import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  *
@@ -41,5 +46,24 @@ public class Main {
 //        PrintStream out = new PrintStream("MangoTestCase/output/Built_In_Functions-5140519064-ficos.AST");
 //        Printer print = new Printer(root, out);
 //        print.print();
+    }
+
+    public void compile(InputStream in, OutputStream out) throws Exception {
+        org.antlr.v4.runtime.ANTLRInputStream input = new org.antlr.v4.runtime.ANTLRInputStream(in);
+        MangoLexer lexer = new MangoLexer(input);
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        MangoParser parser = new MangoParser(tokens);
+        parser.setErrorHandler(new BailErrorStrategy());
+        ParseTree tree = parser.prog();
+
+        ASTBuilder AST_builder = new ASTBuilder(tree);
+        AST root = AST_builder.visit(tree);
+//        Printer p = new Printer(root, System.out);
+//        p.print();
+        IRBuilder IR_builder = new IRBuilder(root);
+        IR_builder.buildIR();
+//        IR_builder.print();
+//        System.out.println();
+        NaiveMIPSGenerator MIPS = new NaiveMIPSGenerator(IR_builder, out);
     }
 }

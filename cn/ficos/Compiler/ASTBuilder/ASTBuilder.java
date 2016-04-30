@@ -3,9 +3,6 @@ package cn.ficos.Compiler.ASTBuilder;
 import cn.ficos.Compiler.AST.*;
 import cn.ficos.Compiler.Exceptions.*;
 import cn.ficos.Compiler.Gadgets.*;
-import cn.ficos.Compiler.Gadgets.Operand.GlobalRegister;
-import cn.ficos.Compiler.Gadgets.Operand.LocalRegister;
-import cn.ficos.Compiler.Gadgets.Operand.ParameterRegister;
 import cn.ficos.Compiler.Gadgets.Symbol.FuncSymbol;
 import cn.ficos.Compiler.Gadgets.Symbol.Symbol;
 import cn.ficos.Compiler.Gadgets.Symbol.VarSymbol;
@@ -79,9 +76,9 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
         }
         VarSymbol varInfo;
         if (global.getCurrentScope() == 0) {
-            varInfo = new VarSymbol(varName, varType, new GlobalRegister());
+            varInfo = new VarSymbol(varName, varType, VarSymbol.global);
         } else {
-            varInfo = new VarSymbol(varName, varType, new LocalRegister());
+            varInfo = new VarSymbol(varName, varType, VarSymbol.local);
         }
         try {
             global.define(varName, varInfo);
@@ -157,7 +154,9 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
             try {
                 while (APTitr.hasNext()) {
                     varName = APNitr.next();
-                    global.define(varName, new VarSymbol(varName, APTitr.next(), new ParameterRegister()));
+                    VarSymbol temp = new VarSymbol(varName, APTitr.next(), VarSymbol.parameter);
+                    funcInfo.getParameter().add(temp);
+                    global.define(varName, temp);
                 }
             } catch (Redefine err) {
                 System.err.println("line " + ctx.getStart().getLine() + ": Redefined variable <" + varName +
@@ -969,11 +968,14 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
     @Override
     public AST visitBitNot(MangoParser.BitNotContext ctx) {
         ExprStmt context = (ExprStmt) visit(ctx.expr());
+        if (context instanceof IntExpr) {
+            return new IntExpr(~((IntExpr) context).getValue(), new Position(ctx.getStart().getLine()));
+        }
         if (!context.getType().isSuitableAs(SymbolTable.INT)) {
             System.err.println("line " + ctx.getStart().getLine() + ": Invalid operation operand <" + ctx.expr().getText() + ">");
             throw new SemanticError();
         }
-        return visitChildren(ctx);
+        return new BitNotExpr(context, new Position(ctx.getStart().getLine()));
     }
 
     @Override

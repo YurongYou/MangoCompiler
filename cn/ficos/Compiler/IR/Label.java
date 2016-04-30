@@ -9,8 +9,9 @@ public class Label extends IRNode {
     String labelName;
     private int ID = count++;
 
-    public Label(String _name) {
-        labelName = _name;
+    public Label(String _name, boolean isCount) {
+        if (isCount) labelName = _name + "_" + ID;
+        else labelName = _name;
 //        System.out.println("create label " + ID + ": " + _name);
     }
 
@@ -20,6 +21,6 @@ public class Label extends IRNode {
 
     @Override
     public String toString() {
-        return "Label" + ID + "_" + labelName;
+        return labelName;
     }
 }

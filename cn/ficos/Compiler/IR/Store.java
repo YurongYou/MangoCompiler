@@ -1,6 +1,5 @@
 package cn.ficos.Compiler.IR;
 
-import cn.ficos.Compiler.Gadgets.Operand.Operand;
 import cn.ficos.Compiler.Gadgets.Operand.Register;
 
 /**
@@ -8,12 +7,12 @@ import cn.ficos.Compiler.Gadgets.Operand.Register;
  * Created by Ficos on 16/4/20.
  */
 public class Store extends IRNode {
-    Operand source;
+    Register source;
     Register target;
     int offset;
     int size;
 
-    public Store(int _size, Operand source, Register target, int _offset) {
+    public Store(int _size, Register source, Register target, int _offset) {
         size = _size;
 
         this.source = source;
@@ -27,6 +26,14 @@ public class Store extends IRNode {
 
     public int getSize() {
         return size;
+    }
+
+    public Register getSource() {
+        return source;
+    }
+
+    public Register getTarget() {
+        return target;
     }
 
     @Override

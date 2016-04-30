@@ -60,7 +60,7 @@ public class Field_FunctionCollector extends MangoBaseListener {
 
         //define the variable
         try {
-            VarSymbol fieldInfo = new VarSymbol(fieldName, fieldType, null);
+            VarSymbol fieldInfo = new VarSymbol(fieldName, fieldType, VarSymbol.classField);
             global.define(fieldName, fieldInfo);
         } catch (Redefine err) {
             System.err.println("line " + ctx.getStart().getLine() + ": Redefining class field " + ctx.ID().getText()

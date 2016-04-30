@@ -1,6 +1,5 @@
 package cn.ficos.Compiler.IR;
 
-import cn.ficos.Compiler.Gadgets.Operand.Operand;
 import cn.ficos.Compiler.Gadgets.Operand.Register;
 
 /**
@@ -8,9 +7,9 @@ import cn.ficos.Compiler.Gadgets.Operand.Register;
  */
 public class Move extends IRNode {
     Register target;
-    Operand source;
+    Register source;
 
-    public Move(Register _target, Operand _source) {
+    public Move(Register _target, Register _source) {
         target = _target;
         source = _source;
     }
@@ -18,5 +17,13 @@ public class Move extends IRNode {
     @Override
     public String toString() {
         return "Move " + target + ", " + source;
+    }
+
+    public Register getTarget() {
+        return target;
+    }
+
+    public Register getSource() {
+        return source;
     }
 }

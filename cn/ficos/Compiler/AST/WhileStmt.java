@@ -10,8 +10,8 @@ import cn.ficos.Compiler.IR.Label;
 public class WhileStmt extends Stmt implements LoopScope {
     ExprStmt condition;
     Stmt loop;
-    Label afterLoop = new Label("While_AfterLoop");
-    Label end = new Label("While_End");
+    Label afterLoop = new Label("While_AfterLoop", true);
+    Label end = new Label("While_End", true);
     public WhileStmt(ExprStmt _condition, Stmt _loop, Position _pos) {
         super(_pos);
         condition = _condition;

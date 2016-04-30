@@ -3,20 +3,34 @@ package cn.ficos.Compiler.IR;
 import cn.ficos.Compiler.Gadgets.Operand.Register;
 
 /**
- * This class means loading from a label address
- * Created by Ficos on 16/4/27.
+ * this node is mainly used to load global variables
+ * Created by Ficos on 16/4/28.
  */
 public class LoadLabel extends IRNode {
-    Register target;
     Label label;
+    Register target;
+    int size;
 
-    public LoadLabel(Register target, Label label) {
-        this.target = target;
+    public LoadLabel(Label label, Register reg, int _size) {
         this.label = label;
+        this.target = reg;
+        this.size = _size;
+    }
+
+    public Label getLabel() {
+        return label;
+    }
+
+    public Register getTarget() {
+        return target;
+    }
+
+    public int getSize() {
+        return size;
     }
 
     @Override
     public String toString() {
-        return "LA\t" + target + " " + label;
+        return "Load size:" + size + ", " + target + ", " + label;
     }
 }

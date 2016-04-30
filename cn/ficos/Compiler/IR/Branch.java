@@ -21,4 +21,16 @@ public class Branch extends IRNode {
     public String toString() {
         return "Branch " + condition + ", " + T + ", " + F;
     }
+
+    public Operand getCondition() {
+        return condition;
+    }
+
+    public Label getT() {
+        return T;
+    }
+
+    public Label getF() {
+        return F;
+    }
 }

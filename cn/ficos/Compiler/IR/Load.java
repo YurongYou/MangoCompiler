@@ -1,6 +1,5 @@
 package cn.ficos.Compiler.IR;
 
-import cn.ficos.Compiler.Gadgets.Operand.Operand;
 import cn.ficos.Compiler.Gadgets.Operand.Register;
 
 /**
@@ -9,15 +8,23 @@ import cn.ficos.Compiler.Gadgets.Operand.Register;
  */
 public class Load extends IRNode {
     Register target;
-    Operand source;
+    Register source;
     int offset;
     int size;
 
-    public Load(int _size, Register target, Operand source, int _offset) {
+    public Load(int _size, Register target, Register source, int _offset) {
         size = _size;
         this.target = target;
         this.source = source;
         offset = _offset;
+    }
+
+    public Register getTarget() {
+        return target;
+    }
+
+    public Register getSource() {
+        return source;
     }
 
     public int getOffset() {

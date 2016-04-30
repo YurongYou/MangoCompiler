@@ -16,8 +16,7 @@ public class StringExpr extends ExprStmt {
     public StringExpr(String _text, Position _pos) {
         super(SymbolTable.STRING, _pos, new LocalRegister());
         text = _text;
-        label = new Label("str");
-
+        label = new Label("str", true);
     }
 
     public Label getLabel() {

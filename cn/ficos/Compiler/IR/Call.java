@@ -11,18 +11,29 @@ import java.util.List;
  * Created by Ficos on 16/4/19.
  */
 public class Call extends IRNode {
-    FuncSymbol info;
+    Label funcLabel;
     List<Operand> parameters;
     Register target;
-
     public Call(FuncSymbol info, List<Operand> parameters, Register target) {
-        this.info = info;
+        funcLabel = info.getFuncLabel();
         this.parameters = parameters;
         this.target = target;
     }
 
+    public List<Operand> getParameters() {
+        return parameters;
+    }
+
+    public Label getFuncLabel() {
+        return funcLabel;
+    }
+
+    public Register getTarget() {
+        return target;
+    }
+
     @Override
     public String toString() {
-        return "Call:" + info.getName() + " " + target + ", " + parameters;
+        return "Call:" + funcLabel + " " + target + ", " + parameters;
     }
 }
