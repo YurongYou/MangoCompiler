@@ -46,7 +46,7 @@ public class ClassType extends Type {
         return CONSTANT.wordSize;
     }
 
-    public int totalSize() {
+    public int sizeInHeap() {
         return sizeCount;
     }
 

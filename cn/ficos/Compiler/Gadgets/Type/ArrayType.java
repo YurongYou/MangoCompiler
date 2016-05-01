@@ -67,7 +67,7 @@ public class ArrayType extends Type {
     }
 
     @Override
-    public int totalSize() {
+    public int sizeInHeap() {
         return CONSTANT.wordSize;
     }
 

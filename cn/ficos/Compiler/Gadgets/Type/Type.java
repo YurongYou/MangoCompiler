@@ -12,6 +12,6 @@ public abstract class Type {
 
     public abstract int variableSize();
 
-    public abstract int totalSize();
+    public abstract int sizeInHeap();
 
 }

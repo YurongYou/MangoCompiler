@@ -1,5 +1,6 @@
 package cn.ficos.Compiler.Gadgets.Type;
 
+import cn.ficos.Compiler.Exceptions.Bug_New_a_BuiltIn_Type;
 import cn.ficos.Compiler.Gadgets.Name;
 
 /**
@@ -38,7 +39,7 @@ public class BuiltInType extends Type {
     }
 
     @Override
-    public int totalSize() {
-        return byteSize;
+    public int sizeInHeap() {
+        throw new Bug_New_a_BuiltIn_Type();
     }
 }
