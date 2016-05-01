@@ -320,7 +320,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
         // Checking whether the return type is suitable
         if (returnExpr == null) {
             if (nowFunc.getFuncInfo().getReturnType() != null) {
-                System.err.println("line " + ctx.getStart().getLine() + ": Non-<void> function <" + nowFunc.getFuncInfo().getName() + "> expecting a return of type <" + nowFunc.getFuncInfo().getReturnType() +
+                System.err.println("line " + ctx.getStart().getLine() + ": Not-void function <" + nowFunc.getFuncInfo().getName() + "> expecting a return of type <" + nowFunc.getFuncInfo().getReturnType() +
                         ">, but found a pure return");
                 throw new SemanticError();
             }

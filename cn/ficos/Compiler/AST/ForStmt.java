@@ -14,7 +14,7 @@ public class ForStmt extends Stmt implements LoopScope {
     ExprStmt after;
     Stmt loop;
 
-    Label afterLoop = new Label("For_afterLoop:Increment", true);
+    Label afterLoop = new Label("For_AfterLoop", true);
     Label end = new Label("For_End", true);
 
     public ForStmt(ExprStmt _init, ExprStmt _condition, ExprStmt _after, Stmt _loop, Position _pos) {

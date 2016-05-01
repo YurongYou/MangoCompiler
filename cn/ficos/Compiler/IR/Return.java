@@ -4,6 +4,7 @@ import cn.ficos.Compiler.Gadgets.Operand.Operand;
 
 /**
  * This class means the return statements of IR
+ * Note that null result means "return;"
  * Created by Ficos on 16/4/20.
  */
 public class Return extends IRNode {
