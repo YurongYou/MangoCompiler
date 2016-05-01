@@ -3,19 +3,19 @@ package cn.ficos.Compiler.AST;
 import cn.ficos.Compiler.Gadgets.BinaryOp;
 import cn.ficos.Compiler.Gadgets.Operand.Operand;
 import cn.ficos.Compiler.Gadgets.Position;
-import cn.ficos.Compiler.Gadgets.SymbolTable;
 
 /**
- * The logical binary expression (< > == != >= <=) node in AST.
+ * The binary expression (e.g. 1 + 2, i % j, etc.) node in AST.
+ * Note that such expression does not include logical binary expression
  * Created by Ficos on 16/3/31.
  */
-public class LogBinaryExpr extends ExprStmt implements BinaryExpr {
+public class CalcBinaryExpr extends ExprStmt implements BinaryExpr {
     BinaryOp op;
     ExprStmt lhs;
     ExprStmt rhs;
 
-    public LogBinaryExpr(ExprStmt _lhs, BinaryOp _op, ExprStmt _rhs, Position _pos) {
-        super(SymbolTable.BOOL, _pos);
+    public CalcBinaryExpr(ExprStmt _lhs, BinaryOp _op, ExprStmt _rhs, Position _pos) {
+        super(_lhs.getType(), _pos);
         op = _op;
         lhs = _lhs;
         rhs = _rhs;

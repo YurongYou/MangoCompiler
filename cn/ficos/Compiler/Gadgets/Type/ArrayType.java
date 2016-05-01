@@ -61,14 +61,14 @@ public class ArrayType extends Type {
     }
 
     @Override
-    public int sizeOf() {
+    public int variableSize() {
         //the address is 4 words
         return CONSTANT.wordSize;
     }
 
-//    @Override
-//    public int totalSize() {
-//        return CONSTANT.wordSize;
-//    }
+    @Override
+    public int totalSize() {
+        return CONSTANT.wordSize;
+    }
 
 }

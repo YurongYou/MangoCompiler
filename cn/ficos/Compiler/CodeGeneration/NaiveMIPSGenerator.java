@@ -34,10 +34,6 @@ public class NaiveMIPSGenerator {
         while (funcItr.hasNext()) {
             functions.add(new Function(funcItr.next(), infoItr.next()));
         }
-//        for (LinkedList<IRNode> func: IR_builder.getFunctions()){
-//            functions.add(new Function(func));
-//        }
-//        System.out.println(data);
         print();
     }
 
@@ -105,9 +101,9 @@ public class NaiveMIPSGenerator {
                         offset.put(((LoadImm) e).getReg(), 4 * (maxArgu + offset.size()));
                     }
                 }
-                if (e instanceof LoadLabel) {
-                    if (!offset.containsKey(((LoadLabel) e).getTarget())) {
-                        offset.put(((LoadLabel) e).getTarget(), 4 * (maxArgu + offset.size()));
+                if (e instanceof LoadFromLabel) {
+                    if (!offset.containsKey(((LoadFromLabel) e).getTarget())) {
+                        offset.put(((LoadFromLabel) e).getTarget(), 4 * (maxArgu + offset.size()));
                     }
                     continue;
                 }
@@ -217,9 +213,9 @@ public class NaiveMIPSGenerator {
                     out.println("\tli $v0, " + ((LoadImm) node).getImm());
                     out.println("\tsw $v0, " + offset.get(((LoadImm) node).getReg()) + "($sp)");
                 }
-                if (node instanceof LoadLabel) {
-                    out.println("\tlw $v0, " + ((LoadLabel) node).getLabel());
-                    out.println("\tsw $v0, " + offset.get(((LoadLabel) node).getTarget()) + "($sp)");
+                if (node instanceof LoadFromLabel) {
+                    out.println("\tlw $v0, " + ((LoadFromLabel) node).getLabel());
+                    out.println("\tsw $v0, " + offset.get(((LoadFromLabel) node).getTarget()) + "($sp)");
                 }
                 if (node instanceof Move) {
 //                    if (((Move) node).getSource() instanceof Constant){

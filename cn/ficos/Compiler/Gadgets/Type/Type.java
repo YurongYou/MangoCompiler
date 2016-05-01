@@ -10,8 +10,8 @@ public abstract class Type {
 
     public abstract String toString();
 
-    public abstract int sizeOf();
+    public abstract int variableSize();
 
-//    public abstract int totalSize();
+    public abstract int totalSize();
 
 }

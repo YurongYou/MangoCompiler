@@ -26,6 +26,6 @@ public class LoadImm extends IRNode {
     @Override
     public String toString() {
         return "LoadImm " + reg +
-                "," + imm;
+                " ," + imm;
     }
 }

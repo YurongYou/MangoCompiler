@@ -9,4 +9,5 @@ public interface AddressFetch {
 //    LocalRegister getAddressOperand();
 //
 //    LocalRegister getResultOperand();
+ExprStmt getBase();
 }

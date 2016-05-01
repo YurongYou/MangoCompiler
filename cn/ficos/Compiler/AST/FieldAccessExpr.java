@@ -10,14 +10,14 @@ import cn.ficos.Compiler.Gadgets.Type.Type;
  * Created by Ficos on 16/3/31.
  */
 public class FieldAccessExpr extends ExprStmt implements LValue, AddressFetch {
-    ExprStmt lhs;
+    ExprStmt base;
     Name field;
     //    LocalRegister address = new LocalRegister();
     int shift = 0;
 
     public FieldAccessExpr(Type _type, ExprStmt _lhs, Name _field, int _shift, Position _pos) {
         super(_type, _pos);
-        lhs = _lhs;
+        base = _lhs;
         field = _field;
         shift = _shift;
     }
@@ -27,11 +27,16 @@ public class FieldAccessExpr extends ExprStmt implements LValue, AddressFetch {
     }
 
     public ExprStmt getLhs() {
-        return lhs;
+        return base;
     }
 
     public Name getField() {
         return field;
+    }
+
+    @Override
+    public ExprStmt getBase() {
+        return base;
     }
 
 //    @Override

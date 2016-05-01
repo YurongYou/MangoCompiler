@@ -1,34 +1,18 @@
 package cn.ficos.Compiler.AST;
 
 import cn.ficos.Compiler.Gadgets.BinaryOp;
-import cn.ficos.Compiler.Gadgets.Position;
+import cn.ficos.Compiler.Gadgets.Operand.Operand;
 
 /**
- * The binary expression (e.g. 1 + 2, i % j, etc.) node in AST.
- * Note that such expression does not include logical binary expression
- * Created by Ficos on 16/3/31.
+ * This tag is for the convenience of creating IR
+ * Created by Ficos on 16/5/1.
  */
-public class BinaryExpr extends ExprStmt {
-    BinaryOp op;
-    ExprStmt lhs;
-    ExprStmt rhs;
+public interface BinaryExpr {
+    ExprStmt getLhs();
 
-    public BinaryExpr(ExprStmt _lhs, BinaryOp _op, ExprStmt _rhs, Position _pos) {
-        super(_lhs.getType(), _pos);
-        op = _op;
-        lhs = _lhs;
-        rhs = _rhs;
-    }
+    ExprStmt getRhs();
 
-    public BinaryOp getOp() {
-        return op;
-    }
+    BinaryOp getOp();
 
-    public ExprStmt getLhs() {
-        return lhs;
-    }
-
-    public ExprStmt getRhs() {
-        return rhs;
-    }
+    Operand getOperand();
 }

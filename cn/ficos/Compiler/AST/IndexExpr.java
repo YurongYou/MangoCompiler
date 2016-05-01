@@ -1,6 +1,5 @@
 package cn.ficos.Compiler.AST;
 
-import cn.ficos.Compiler.Gadgets.Operand.LocalRegister;
 import cn.ficos.Compiler.Gadgets.Position;
 import cn.ficos.Compiler.Gadgets.Type.ArrayType;
 
@@ -13,7 +12,7 @@ import cn.ficos.Compiler.Gadgets.Type.ArrayType;
 public class IndexExpr extends ExprStmt implements LValue, AddressFetch {
     ExprStmt base;
     ExprStmt index;
-    LocalRegister address = new LocalRegister();
+//    LocalRegister address = new LocalRegister();
 
     public IndexExpr(ExprStmt _base, ExprStmt _index, Position _pos) {
         super(((ArrayType) _base.getType()).getBaseType(), _pos);
@@ -21,6 +20,7 @@ public class IndexExpr extends ExprStmt implements LValue, AddressFetch {
         index = _index;
     }
 
+    @Override
     public ExprStmt getBase() {
         return base;
     }
@@ -29,9 +29,9 @@ public class IndexExpr extends ExprStmt implements LValue, AddressFetch {
         return index;
     }
 
-    public LocalRegister getAddressOperand() {
-        return address;
-    }
+//    public LocalRegister getAddressOperand() {
+//        return address;
+//    }
 
 //    public LocalRegister getResultOperand() {
 //        return (LocalRegister) getOperand();

@@ -42,7 +42,7 @@ public class ClassType extends Type {
     }
 
     @Override
-    public int sizeOf() {
+    public int variableSize() {
         return CONSTANT.wordSize;
     }
 
@@ -56,6 +56,7 @@ public class ClassType extends Type {
     }
 
     public int getShift(Name name) {
+//        The name is "<ClassName>.name"
         return varShift.get(name);
     }
 }

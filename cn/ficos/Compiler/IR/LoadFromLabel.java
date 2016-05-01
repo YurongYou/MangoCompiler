@@ -6,12 +6,12 @@ import cn.ficos.Compiler.Gadgets.Operand.Register;
  * this node is mainly used to load global variables
  * Created by Ficos on 16/4/28.
  */
-public class LoadLabel extends IRNode {
+public class LoadFromLabel extends IRNode {
     Label label;
     Register target;
     int size;
 
-    public LoadLabel(Label label, Register reg, int _size) {
+    public LoadFromLabel(Label label, Register reg, int _size) {
         this.label = label;
         this.target = reg;
         this.size = _size;

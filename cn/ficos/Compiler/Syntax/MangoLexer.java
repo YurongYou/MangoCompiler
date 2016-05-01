@@ -22,9 +22,9 @@ public class MangoLexer extends Lexer {
             "T__0", "T__1", "T__2", "T__3", "T__4", "T__5", "T__6", "T__7", "T__8",
             "T__9", "T__10", "T__11", "T__12", "T__13", "T__14", "INT", "STRING",
             "ESC", "BOOL", "NULL", "IF", "ELSE", "ELSEIF", "WHILE", "FOR", "NEW",
-            "RETURN", "BREAK", "CONTINUE", "PPLUS", "MMINUS", "MULT", "DIV", "MOD",
-            "PLUS", "MINUS", "SHIFT_L", "SHIFT_R", "LESS", "LARGE", "LEQ", "GEQ",
-            "EQ", "NEQ", "BIT_AND", "BIT_XOR", "BIT_OR", "BIT_NOT", "LOG_NOT", "LOG_AND",
+            "RETURN", "BREAK", "CONTINUE", "PPLUS", "MMINUS", "mult", "div", "rem",
+            "add", "sub", "sll", "sra", "slt", "sgt", "sle", "sge",
+            "seq", "sne", "and", "xor", "or", "BIT_NOT", "LOG_NOT", "LOG_AND",
             "LOG_OR", "DIM", "ID", "ID_LETTER", "DIGIT", "LINE_COMMENT", "WS"
     };
     /**
@@ -160,8 +160,8 @@ public class MangoLexer extends Lexer {
             null, null, null, null, null, null, null, null, null, null, null, null,
             null, null, null, null, "INT", "STRING", "BOOL", "NULL", "IF", "ELSE",
             "ELSEIF", "WHILE", "FOR", "NEW", "RETURN", "BREAK", "CONTINUE", "PPLUS",
-            "MMINUS", "MULT", "DIV", "MOD", "PLUS", "MINUS", "SHIFT_L", "SHIFT_R",
-            "LESS", "LARGE", "LEQ", "GEQ", "EQ", "NEQ", "BIT_AND", "BIT_XOR", "BIT_OR",
+            "MMINUS", "mult", "div", "rem", "add", "sub", "sll", "sra",
+            "slt", "sgt", "sle", "sge", "seq", "sne", "and", "xor", "or",
             "BIT_NOT", "LOG_NOT", "LOG_AND", "LOG_OR", "DIM", "ID", "LINE_COMMENT",
             "WS"
     };

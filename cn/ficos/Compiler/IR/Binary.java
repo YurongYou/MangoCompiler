@@ -1,5 +1,6 @@
 package cn.ficos.Compiler.IR;
 
+import cn.ficos.Compiler.Gadgets.BinaryOp;
 import cn.ficos.Compiler.Gadgets.Operand.Operand;
 import cn.ficos.Compiler.Gadgets.Operand.Register;
 
@@ -11,9 +12,9 @@ public class Binary extends IRNode {
     Register target;
     Register lhs;
     Operand rhs;
-    IRBinaryOp OP;
+    BinaryOp OP;
 
-    public Binary(Register target, Register lhs, Operand rhs, IRBinaryOp OP) {
+    public Binary(Register target, Register lhs, Operand rhs, BinaryOp OP) {
         this.target = target;
         this.lhs = lhs;
         this.rhs = rhs;
@@ -32,7 +33,7 @@ public class Binary extends IRNode {
         return rhs;
     }
 
-    public IRBinaryOp getOP() {
+    public BinaryOp getOP() {
         return OP;
     }
 

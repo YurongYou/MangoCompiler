@@ -166,8 +166,8 @@ public class MangoParser extends Parser {
             null, null, null, null, null, null, null, null, null, null, null, null,
             null, null, null, null, "INT", "STRING", "BOOL", "NULL", "IF", "ELSE",
             "ELSEIF", "WHILE", "FOR", "NEW", "RETURN", "BREAK", "CONTINUE", "PPLUS",
-            "MMINUS", "MULT", "DIV", "MOD", "PLUS", "MINUS", "SHIFT_L", "SHIFT_R",
-            "LESS", "LARGE", "LEQ", "GEQ", "EQ", "NEQ", "BIT_AND", "BIT_XOR", "BIT_OR",
+            "MMINUS", "mult", "div", "rem", "add", "sub", "sll", "sra",
+            "slt", "sgt", "sle", "sge", "seq", "sne", "and", "xor", "or",
             "BIT_NOT", "LOG_NOT", "LOG_AND", "LOG_OR", "DIM", "ID", "LINE_COMMENT",
             "WS"
     };

@@ -110,8 +110,8 @@ public class Printer {
             visit((LogRelationExpr) node, d);
             return;
         }
-        if (node instanceof BinaryExpr) {
-            visit((BinaryExpr) node, d);
+        if (node instanceof CalcBinaryExpr) {
+            visit((CalcBinaryExpr) node, d);
             return;
         }
         if (node instanceof AssignExpr) {
@@ -264,7 +264,7 @@ public class Printer {
     void visit(FieldAccessExpr node, int d) {
         indent(d);
         out.print("<FieldAccess:");
-        visit(node.getLhs(), 0);
+        visit(node.getBase(), 0);
         out.print("." + node.getField() + "|rstReg:" + node.getOperand() + ">");
     }
 
@@ -361,22 +361,22 @@ public class Printer {
         visit(node.getLhs(), 0);
         out.print(", op:");
         switch (node.getOp()) {
-            case LESS:
+            case slt:
                 out.print("<");
                 break;
-            case LARGE:
+            case sgt:
                 out.print(">");
                 break;
-            case LEQ:
+            case sle:
                 out.print("<=");
                 break;
-            case GEQ:
+            case sge:
                 out.print(">=");
                 break;
-            case EQ:
+            case seq:
                 out.print("==");
                 break;
-            case NEQ:
+            case sne:
                 out.print("!=");
                 break;
 //            case LOG_AND:
@@ -391,37 +391,37 @@ public class Printer {
         out.print(">");
     }
 
-    void visit(BinaryExpr node, int d) {
+    void visit(CalcBinaryExpr node, int d) {
         indent(d);
         out.print("<BinaryExpr|lhs:");
         visit(node.getLhs(), 0);
         out.print(", op:");
         switch (node.getOp()) {
-            case MULT:
+            case mult:
                 out.print("*");
                 break;
-            case DIV:
+            case div:
                 out.print("/");
                 break;
-            case MOD:
+            case rem:
                 out.print("%");
                 break;
-            case PLUS:
+            case add:
                 out.print("+");
                 break;
-            case SHIFT_L:
+            case sll:
                 out.print("<<");
                 break;
-            case SHIFT_R:
+            case sra:
                 out.print(">>");
                 break;
-            case BIT_AND:
+            case and:
                 out.print("&");
                 break;
-            case BIT_XOR:
+            case xor:
                 out.print("~");
                 break;
-            case BIT_OR:
+            case or:
                 out.print("|");
                 break;
         }

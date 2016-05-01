@@ -33,7 +33,12 @@ public class BuiltInType extends Type {
     }
 
     @Override
-    public int sizeOf() {
+    public int variableSize() {
+        return byteSize;
+    }
+
+    @Override
+    public int totalSize() {
         return byteSize;
     }
 }

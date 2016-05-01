@@ -3,7 +3,6 @@ package cn.ficos.Compiler.CodeGeneration;
 import cn.ficos.Compiler.AST.*;
 import cn.ficos.Compiler.Gadgets.BinaryOp;
 import cn.ficos.Compiler.Gadgets.CONSTANT;
-import cn.ficos.Compiler.Gadgets.LogBinaryOp;
 import cn.ficos.Compiler.Gadgets.Name;
 import cn.ficos.Compiler.Gadgets.Operand.Constant;
 import cn.ficos.Compiler.Gadgets.Operand.LocalRegister;
@@ -26,11 +25,13 @@ import java.util.ListIterator;
 public class IRBuilder {
     private AST root;
     private LinkedList<LinkedList<IRNode>> functions = new LinkedList<>();
-    private LinkedList<FuncSymbol> funcInfo = new LinkedList<>();
     private LinkedList<IRNode> nowFunction = null;
-    private LinkedList<IRNode> initialization = new LinkedList<IRNode>();
+    private LinkedList<IRNode> initialization = new LinkedList<>();
+
     private LinkedList<String> data = new LinkedList<>();
+    private LinkedList<FuncSymbol> funcInfo = new LinkedList<>();
     private FuncDecl main = null;
+
     public IRBuilder(AST root) {
         this.root = root;
     }
@@ -47,6 +48,10 @@ public class IRBuilder {
         return initialization;
     }
 
+    public LinkedList<FuncSymbol> getFuncInfo() {
+        return funcInfo;
+    }
+
     public LinkedList<LinkedList<IRNode>> buildIR() {
         initialization.add(new Label("main", false));
         visit(root);
@@ -57,20 +62,23 @@ public class IRBuilder {
     }
 
     public void print() {
-        System.out.println("Initialization:");
+        System.out.println("data:");
+        for (String s : data) {
+            System.out.println(s);
+        }
+        System.out.println();
         for (IRNode e : initialization) {
             System.out.println(e);
         }
-        System.out.println();
         for (List<IRNode> list : functions) {
+            System.out.println();
             for (IRNode e : list) {
                 System.out.println(e);
             }
-            System.out.println();
         }
     }
 
-    void visit(AST node) {
+    private void visit(AST node) {
         if (node instanceof Program) {
             visit((Program) node);
             return;
@@ -103,7 +111,6 @@ public class IRBuilder {
             visit((IndexExpr) node);
             return;
         }
-
         if (node instanceof CallExpr) {
             visit((CallExpr) node);
             return;
@@ -141,14 +148,18 @@ public class IRBuilder {
             visit((StringExpr) node);
             return;
         }
-        if (node instanceof LogBinaryExpr) {
-            visit((LogBinaryExpr) node);
-            return;
-        }
+//        if (node instanceof LogBinaryExpr) {
+//            visit((LogBinaryExpr) node);
+//            return;
+//        }
         if (node instanceof LogRelationExpr) {
             visit((LogRelationExpr) node);
             return;
         }
+//        if (node instanceof CalcBinaryExpr) {
+//            visit((CalcBinaryExpr) node);
+//            return;
+//        }
         if (node instanceof BinaryExpr) {
             visit((BinaryExpr) node);
             return;
@@ -197,31 +208,35 @@ public class IRBuilder {
         }
     }
 
-    void visit(Program ast) {
+    private void visit(Program ast) {
         ListIterator<Decl> itr = ast.getDecls().listIterator();
         while (itr.hasNext()) {
             visit(itr.next());
         }
     }
 
-    void visit(VarDecl ast) {
-        data.add(ast.getVar().getGlobalLabel() + ": " + ".word 0");
+    private void visit(VarDecl ast) {
+        String init = ast.getVar().getGlobalLabel() + ": .word ";
+//        data.add(ast.getVar().getGlobalLabel() + ": " + ".word 0");
         if (ast.getCreation() != null) {
-//            LinkedList<IRNode> temp = nowFunction;
             nowFunction = initialization;
+
             visit(ast.getCreation());
-            if (ast.getCreation().getOperand() instanceof Constant) {
-                LocalRegister temp = new LocalRegister();
-                nowFunction.add(new LoadImm(temp, ((Constant) ast.getCreation().getOperand()).getValue()));
-                nowFunction.add(new StoreLabel(ast.getVar().getGlobalLabel(), temp, CONSTANT.wordSize));
-            } else
+            if (ast.getCreation().getOperand() instanceof Constant)
+                data.add(init + ((Constant) ast.getCreation().getOperand()).getValue());
+            else {
+                data.add(init + "0");
                 nowFunction.add(new StoreLabel(ast.getVar().getGlobalLabel(), (Register) ast.getCreation().getOperand(), CONSTANT.wordSize));
+            }
+
             nowFunction = null;
+        } else {
+            data.add(init + "0");
         }
     }
 
     //    If the creation expression is null then there is no need to represent this expression in the IR
-    void visit(VarDeclStmt ast) {
+    private void visit(VarDeclStmt ast) {
         if (ast.getCreation() != null) {
             // if it's a declaration of built-in type, just move the creation result to the register
             if (ast.getVarInfo().getType() instanceof BuiltInType) {
@@ -242,7 +257,7 @@ public class IRBuilder {
         }
     }
 
-    void visit(ClassDecl ast) {
+    private void visit(ClassDecl ast) {
         if (ast.getFunctions() != null) {
             for (FuncDecl e : ast.getFunctions()) {
                 visit(e);
@@ -250,14 +265,11 @@ public class IRBuilder {
         }
     }
 
-    public LinkedList<FuncSymbol> getFuncInfo() {
-        return funcInfo;
-    }
 
-    void visit(FuncDecl ast) {
+    private void visit(FuncDecl ast) {
         functions.add(new LinkedList<>());
         funcInfo.add(ast.getFuncInfo());
-        if (ast.getFuncInfo().getName().equals(Name.getName("main"))) {
+        if (ast.getFuncInfo().getName() == Name.getName("main")) {
             main = ast;
         }
         nowFunction = functions.getLast();
@@ -267,7 +279,7 @@ public class IRBuilder {
         }
     }
 
-    void visit(CallExpr ast) {
+    private void visit(CallExpr ast) {
         LinkedList<Operand> aps = null;
         if (ast.getActualParameter() != null) {
             aps = new LinkedList<>();
@@ -279,25 +291,25 @@ public class IRBuilder {
         nowFunction.add(new Call(ast.getFuncInfo(), aps, (Register) ast.getOperand()));
     }
 
-    void visit(AtomCreationExpr ast) {
+    private void visit(AtomCreationExpr ast) {
         nowFunction.add(new New((Register) ast.getOperand(),
                 new Constant(((ClassType) ast.getType()).totalSize())));
     }
 
-    void visit(ArrayCreationExpr ast) {
+    private void visit(ArrayCreationExpr ast) {
         visit(ast.getDim());
         Operand size;
         if (ast.getDim() instanceof IntExpr) {
-            size = new Constant(((IntExpr) ast.getDim()).getValue() * ((ArrayType) ast.getType()).getBaseType().sizeOf());
+            size = new Constant(((IntExpr) ast.getDim()).getValue() * ((ArrayType) ast.getType()).getBaseType().totalSize());
         } else {
             size = new LocalRegister();
             nowFunction.add(new Binary((Register) size, (Register) ast.getDim().getOperand(),
-                    new Constant(((ArrayType) ast.getType()).getBaseType().sizeOf()), IRBinaryOp.mult));
+                    new Constant(((ArrayType) ast.getType()).getBaseType().totalSize()), BinaryOp.mult));
         }
         nowFunction.add(new New((Register) ast.getOperand(), size));
     }
 
-    void visit(SignExpr ast) {
+    private void visit(SignExpr ast) {
         if (ast.getOp()) {
             ast.changeOperand(ast.getBase().getOperand());
         } else {
@@ -310,120 +322,126 @@ public class IRBuilder {
         }
     }
 
-    void visit(IntExpr ast) {
+    private void visit(IntExpr ast) {
         // left empty intendedly
     }
 
-    void visit(BoolExpr ast) {
+    private void visit(BoolExpr ast) {
         // left empty intendedly
     }
 
-    void visit(NullExpr ast) {
+    private void visit(NullExpr ast) {
         // left empty intendedly
     }
 
-    void visit(VarExpr ast) {
+    private void visit(VarExpr ast) {
         // left empty intendedly
         if (ast.getVar().isGlobal()) {
-            nowFunction.add(new LoadLabel(ast.getVar().getGlobalLabel(), (Register) ast.getOperand(), CONSTANT.wordSize));
+            nowFunction.add(new LoadFromLabel(ast.getVar().getGlobalLabel(), (Register) ast.getOperand(), CONSTANT.wordSize));
         }
     }
 
-    void visit(StringExpr ast) {
+    private void visit(StringExpr ast) {
         // left empty intendedly
         nowFunction.add(new LoadAddress((Register) ast.getOperand(), ast.getLabel()));
         data.add(ast.getLabel() + ": " + ".asciiz \"" + ast.getText() + "\"");
     }
 
-    void visit(BitNotExpr ast) {
+    private void visit(BitNotExpr ast) {
         visit(ast.getBase());
         nowFunction.add(new Not((Register) ast.getOperand(), (Register) ast.getBase().getOperand()));
     }
 
-    void visit(LogNotExpr ast) {
+    private void visit(LogNotExpr ast) {
         visit(ast.getBase());
-        nowFunction.add(new Binary((Register) ast.getOperand(), (Register) ast.getBase().getOperand(), new Constant(1), IRBinaryOp.xor));
+        if (ast.getBase().getOperand() instanceof Constant) {
+            if (((Constant) ast.getBase().getOperand()).getValue() == 1) ast.changeOperand(new Constant(0));
+            else ast.changeOperand(new Constant(1));
+        } else
+            nowFunction.add(new Binary((Register) ast.getOperand(), (Register) ast.getBase().getOperand(), new Constant(1), BinaryOp.xor));
     }
 
-    void visit(LogBinaryExpr ast) {
+
+    private void visit(BinaryExpr ast) {
         visit(ast.getLhs());
         visit(ast.getRhs());
-        LogBinaryOp ori = ast.getOp();
-        IRBinaryOp op;
-        if (ori == LogBinaryOp.LESS) op = IRBinaryOp.slt;
-        else if (ori == LogBinaryOp.LARGE) op = IRBinaryOp.sgt;
-        else if (ori == LogBinaryOp.LEQ) op = IRBinaryOp.sle;
-        else if (ori == LogBinaryOp.GEQ) op = IRBinaryOp.sge;
-        else if (ori == LogBinaryOp.EQ) op = IRBinaryOp.seq;
-        else op = IRBinaryOp.sne;
         if (ast.getLhs().getOperand() instanceof Constant) {
             LocalRegister temp = new LocalRegister();
             nowFunction.add(new LoadImm(temp, ((Constant) ast.getLhs().getOperand()).getValue()));
             nowFunction.add(new Binary((Register) ast.getOperand(),
                     temp,
                     ast.getRhs().getOperand(),
-                    op));
-        }
-        nowFunction.add(new Binary((Register) ast.getOperand(),
+                    ast.getOp()));
+        } else nowFunction.add(new Binary((Register) ast.getOperand(),
                 (Register) ast.getLhs().getOperand(),
                 ast.getRhs().getOperand(),
-                op));
+                ast.getOp()));
     }
 
-    void visit(BinaryExpr ast) {
-        visit(ast.getLhs());
-        visit(ast.getRhs());
-        IRBinaryOp op;
-        BinaryOp ori = ast.getOp();
-        if (ori == BinaryOp.MULT) op = IRBinaryOp.mult;
-        else if (ori == BinaryOp.DIV) op = IRBinaryOp.div;
-        else if (ori == BinaryOp.MOD) op = IRBinaryOp.rem;
-        else if (ori == BinaryOp.PLUS) op = IRBinaryOp.add;
-        else if (ori == BinaryOp.MINUS) op = IRBinaryOp.sub;
-        else if (ori == BinaryOp.SHIFT_L) op = IRBinaryOp.sll;
-        else if (ori == BinaryOp.SHIFT_R) op = IRBinaryOp.sra;
-        else if (ori == BinaryOp.BIT_AND) op = IRBinaryOp.and;
-        else if (ori == BinaryOp.BIT_XOR) op = IRBinaryOp.xor;
-        else op = IRBinaryOp.or;
-        if (ast.getLhs().getOperand() instanceof Constant) {
-            LocalRegister temp = new LocalRegister();
-            nowFunction.add(new LoadImm(temp, ((Constant) ast.getLhs().getOperand()).getValue()));
-            nowFunction.add(new Binary((Register) ast.getOperand(),
-                    temp,
-                    ast.getRhs().getOperand(),
-                    op));
+    private void computeBaseAddress(FieldAccessExpr ast) {
+        if (ast.getBase() instanceof IndexExpr) {
+            visit(((IndexExpr) ast.getBase()).getBase());
+            if (!(((IndexExpr) ast.getBase()).getIndex() instanceof IntExpr)) {
+                visit(((IndexExpr) ast.getBase()).getIndex());
+                LocalRegister shift = new LocalRegister();
+                nowFunction.add(new Binary(shift,
+                        (Register) ((IndexExpr) ast.getBase()).getIndex().getOperand(),
+                        new Constant(ast.getBase().getType().totalSize()),
+                        BinaryOp.mult));
+                nowFunction.add(new Binary((Register) ast.getBase().getOperand(),
+                        (Register) ((IndexExpr) ast.getBase()).getBase().getOperand(),
+                        shift, BinaryOp.add));
+            } else {
+                nowFunction.add(new Binary((Register) ast.getBase().getOperand(),
+                        (Register) ((IndexExpr) ast.getBase()).getBase().getOperand(),
+                        new Constant(((IntExpr) ((IndexExpr) ast.getBase()).getIndex()).getValue() * ast.getBase().getType().totalSize()),
+                        BinaryOp.add));
+            }
+        } else {
+            visit(ast.getBase());
         }
-        nowFunction.add(new Binary((Register) ast.getOperand(),
-                (Register) ast.getLhs().getOperand(),
-                ast.getRhs().getOperand(),
-                op));
     }
 
-    void visit(FieldAccessExpr ast) {
-        visit(ast.getLhs());
-        nowFunction.add(new Load(ast.getType().sizeOf(), (Register) ast.getOperand(), (Register) ast.getLhs().getOperand(), ast.getShift()));
+    private void visit(FieldAccessExpr ast) {
+        computeBaseAddress(ast);
+        nowFunction.add(new Load(ast.getType().variableSize(),
+                (Register) ast.getOperand(),
+                (Register) ast.getBase().getOperand(),
+                ast.getShift()));
     }
 
-    void visit(IndexExpr ast) {
+    private void visit(IndexExpr ast) {
         visit(ast.getBase());
         if (!(ast.getIndex() instanceof IntExpr)) {
             visit(ast.getIndex());
             LocalRegister shift = new LocalRegister();
-            LocalRegister address = new LocalRegister();
             nowFunction.add(new Binary(shift, (Register) ast.getIndex().getOperand(),
-                    new Constant(ast.getType().sizeOf()), IRBinaryOp.mult));
-            nowFunction.add(new Binary(address, (Register) ast.getBase().getOperand(),
-                    shift, IRBinaryOp.add));
-            nowFunction.add(new Load(ast.getType().sizeOf(), (Register) ast.getOperand(),
-                    address, 0));
+                    new Constant(ast.getType().totalSize()), BinaryOp.mult));
+
+            if (ast.getType() instanceof ClassType) {
+                nowFunction.add(new Binary((Register) ast.getOperand(), (Register) ast.getBase().getOperand(),
+                        shift, BinaryOp.add));
+            } else {
+                LocalRegister address = new LocalRegister();
+                nowFunction.add(new Binary(address, (Register) ast.getBase().getOperand(),
+                        shift, BinaryOp.add));
+                nowFunction.add(new Load(ast.getType().totalSize(), (Register) ast.getOperand(),
+                        address, 0));
+            }
+
         } else {
-            nowFunction.add(new Load(ast.getType().sizeOf(), (Register) ast.getOperand(),
+            if (ast.getType() instanceof ClassType) {
+                nowFunction.add(new Binary((Register) ast.getOperand(),
+                        (Register) ast.getBase().getOperand(),
+                        new Constant(((IntExpr) ast.getIndex()).getValue() * ast.getType().totalSize()),
+                        BinaryOp.add));
+            } else nowFunction.add(new Load(ast.getType().variableSize(), (Register) ast.getOperand(),
                     (Register) ast.getBase().getOperand(),
-                    ((IntExpr) ast.getIndex()).getValue() * ast.getType().sizeOf()));
+                    ((IntExpr) ast.getIndex()).getValue() * CONSTANT.wordSize));
         }
     }
 
-    void getStoreIR(AddressFetch ast, Operand source) {
+    private void getStoreIR(AddressFetch ast, Register source) {
         if (ast instanceof IndexExpr) {
             visit(((IndexExpr) ast).getBase());
             if (!(((IndexExpr) ast).getIndex() instanceof IntExpr)) {
@@ -431,54 +449,44 @@ public class IRBuilder {
                 LocalRegister shift = new LocalRegister();
                 LocalRegister address = new LocalRegister();
                 nowFunction.add(new Binary(shift, (Register) ((IndexExpr) ast).getIndex().getOperand(),
-                        new Constant(((IndexExpr) ast).getType().sizeOf()), IRBinaryOp.mult));
+                        new Constant(((IndexExpr) ast).getType().variableSize()), BinaryOp.mult));
                 nowFunction.add(new Binary(address, (Register) ((IndexExpr) ast).getBase().getOperand(),
-                        shift, IRBinaryOp.add));
-                if (source instanceof Constant) {
-                    LocalRegister temp = new LocalRegister();
-                    nowFunction.add(new LoadImm(temp, ((Constant) source).getValue()));
-                    nowFunction.add(new Store(((IndexExpr) ast).getType().sizeOf(), temp,
-                            address, 0));
-                } else nowFunction.add(new Store(((IndexExpr) ast).getType().sizeOf(), (Register) source,
+                        shift, BinaryOp.add));
+
+                nowFunction.add(new Store(((IndexExpr) ast).getType().variableSize(), source,
                         address, 0));
             } else {
-                if (source instanceof Constant) {
-                    LocalRegister temp = new LocalRegister();
-                    nowFunction.add(new LoadImm(temp, ((Constant) source).getValue()));
-                    nowFunction.add(new Store(((IndexExpr) ast).getType().sizeOf(), temp,
-                            (Register) ((IndexExpr) ast).getBase().getOperand(),
-                            ((IntExpr) ((IndexExpr) ast).getIndex()).getValue() * ((IndexExpr) ast).getType().sizeOf()));
-                } else nowFunction.add(new Store(((IndexExpr) ast).getType().sizeOf(), (Register) source,
+                nowFunction.add(new Store(((IndexExpr) ast).getType().variableSize(), source,
                         (Register) ((IndexExpr) ast).getBase().getOperand(),
-                        ((IntExpr) ((IndexExpr) ast).getIndex()).getValue() * ((IndexExpr) ast).getType().sizeOf()));
+                        ((IntExpr) ((IndexExpr) ast).getIndex()).getValue() * ((IndexExpr) ast).getType().variableSize()));
             }
-            if (source instanceof Constant) {
-                nowFunction.add(new LoadImm((LocalRegister) ((IndexExpr) ast).getOperand(), ((Constant) source).getValue()));
-            } else nowFunction.add(new Move((Register) ((IndexExpr) ast).getOperand(), (Register) source));
+//            if (source instanceof Constant) {
+//                nowFunction.add(new LoadImm((LocalRegister) ((IndexExpr) ast).getOperand(), ((Constant) source).getValue()));
+//            } else nowFunction.add(new Move((Register) ((IndexExpr) ast).getOperand(), (Register) source));
         } else {
-            visit(((FieldAccessExpr) ast).getLhs());
-            if (source instanceof Constant) {
-                LocalRegister temp = new LocalRegister();
-                nowFunction.add(new LoadImm(temp, ((Constant) source).getValue()));
-                nowFunction.add(new Store(((FieldAccessExpr) ast).getType().sizeOf(), temp,
+//            visit(((FieldAccessExpr) ast).getLhs());
+            computeBaseAddress((FieldAccessExpr) ast);
+            nowFunction.add(new Store(((FieldAccessExpr) ast).getType().variableSize(), source,
                         (Register) ((FieldAccessExpr) ast).getLhs().getOperand(),
                         ((FieldAccessExpr) ast).getShift()));
-                nowFunction.add(new LoadImm((LocalRegister) ((FieldAccessExpr) ast).getOperand(), ((Constant) source).getValue()));
-            } else {
-                nowFunction.add(new Store(((FieldAccessExpr) ast).getType().sizeOf(), (Register) source,
-                        (Register) ((FieldAccessExpr) ast).getLhs().getOperand(),
-                        ((FieldAccessExpr) ast).getShift()));
-                nowFunction.add(new Move((Register) ((FieldAccessExpr) ast).getOperand(), (Register) source));
-            }
+//                nowFunction.add(new Move((Register) ((FieldAccessExpr) ast).getOperand(), (Register) source));
+
         }
     }
 
-    void visit(AssignExpr ast) {
+    private void visit(AssignExpr ast) {
         visit(ast.getRhs());
         if (ast.getLhs() instanceof AddressFetch) {
 //            visitAddress((AddressFetch) ast.getLhs());
 //            new Store(((AddressFetch) ast.getLhs()).getAddressOperand(), ast.getRhs().getOperand())
-            getStoreIR((AddressFetch) ast.getLhs(), ast.getRhs().getOperand());
+
+            LocalRegister source;
+            if (ast.getRhs().getOperand() instanceof Constant) {
+                source = new LocalRegister();
+                nowFunction.add(new LoadImm(source, ((Constant) ast.getRhs().getOperand()).getValue()));
+            } else source = (LocalRegister) ast.getRhs().getOperand();
+
+            getStoreIR((AddressFetch) ast.getLhs(), source);
         } else if (ast.getLhs() instanceof VarExpr && ((VarExpr) ast.getLhs()).getVar().isGlobal()) {
             if (ast.getRhs().getOperand() instanceof Constant) {
                 LocalRegister temp = new LocalRegister();
@@ -493,62 +501,62 @@ public class IRBuilder {
             } else
                 nowFunction.add(new Move((Register) ast.getLhs().getOperand(), (Register) ast.getRhs().getOperand()));
         }
-//        !!! Note that the result operand of the AssignExpr is the lhs's operand
-        ast.changeOperand(ast.getLhs().getOperand());
+//        !!! Note that the result operand of the AssignExpr is the Rhs's operand
+        ast.changeOperand(ast.getRhs().getOperand());
     }
 
-    void visit(SelfOpPostExpr ast) {
+    private void visit(SelfOpPostExpr ast) {
         visit(ast.getBase());
         nowFunction.add(new Move((Register) ast.getOperand(), (Register) ast.getBase().getOperand()));
         if (ast.getOp()) nowFunction.add(new Binary((Register) ast.getBase().getOperand(),
                 (Register) ast.getBase().getOperand(),
-                new Constant(1), IRBinaryOp.add));
+                new Constant(1), BinaryOp.add));
         else nowFunction.add(new Binary((Register) ast.getBase().getOperand(),
                 (Register) ast.getBase().getOperand(),
-                new Constant(1), IRBinaryOp.sub));
+                new Constant(1), BinaryOp.sub));
     }
 
-    void visit(SelfOpPreExpr ast) {
+    private void visit(SelfOpPreExpr ast) {
         visit(ast.getBase());
         if (ast.getOp())
             nowFunction.add(new Binary((Register) ast.getBase().getOperand(),
                     (Register) ast.getBase().getOperand(),
-                    new Constant(1), IRBinaryOp.add));
+                    new Constant(1), BinaryOp.add));
         else nowFunction.add(new Binary((Register) ast.getBase().getOperand(),
                 (Register) ast.getBase().getOperand(),
-                new Constant(1), IRBinaryOp.sub));
+                new Constant(1), BinaryOp.sub));
         ast.changeOperand(ast.getBase().getOperand());
 //        nowFunction.add(new Move((Register) ast.getOperand(), ast.getBase().getOperand()));
     }
 
-    void visit(ReturnStmt ast) {
+    private void visit(ReturnStmt ast) {
         nowFunction.add(new Return(ast.getReturnExpr().getOperand()));
     }
 
 
-    void visit(LogRelationExpr ast) {
+    private void visit(LogRelationExpr ast) {
         visit(ast.getLhs());
         visit(ast.getRhs());
         if (ast.isAnd()) {
             if (ast.getLhs().getOperand() instanceof Constant) {
                 nowFunction.add(new Binary((Register) ast.getOperand(),
                         (Register) ast.getRhs().getOperand(), ast.getLhs().getOperand(),
-                        IRBinaryOp.and));
+                        BinaryOp.and));
             } else nowFunction.add(new Binary((Register) ast.getOperand(),
                     (Register) ast.getLhs().getOperand(), ast.getRhs().getOperand(),
-                    IRBinaryOp.and));
+                    BinaryOp.and));
         } else {
             if (ast.getLhs().getOperand() instanceof Constant) {
                 nowFunction.add(new Binary((Register) ast.getOperand(),
                         (Register) ast.getRhs().getOperand(), ast.getLhs().getOperand(),
-                        IRBinaryOp.or));
+                        BinaryOp.or));
             } else nowFunction.add(new Binary((Register) ast.getOperand(),
                     (Register) ast.getLhs().getOperand(), ast.getRhs().getOperand(),
-                    IRBinaryOp.or));
+                    BinaryOp.or));
         }
     }
 
-    void buildCondition(Label T, Label F, ExprStmt condition) {
+    private void buildCondition(Label T, Label F, ExprStmt condition) {
         if (condition instanceof LogRelationExpr) {
             Label temp = new Label("temp", true);
             if (((LogRelationExpr) condition).isAnd()) {
@@ -573,7 +581,7 @@ public class IRBuilder {
 //        }
     }
 
-    void visit(SelectionStmt ast) {
+    private void visit(SelectionStmt ast) {
         Label LT = new Label("if_true", true);
         Label LF = new Label("if_false", true);
         buildCondition(LT, LF, ast.getCondition());
@@ -598,7 +606,7 @@ public class IRBuilder {
         }
     }
 
-    void visit(ForStmt ast) {
+    private void visit(ForStmt ast) {
         if (ast.getInit() != null) visit(ast.getInit());
         Label begin = new Label("For_Begin", true);
         if (ast.getCondition() != null) buildCondition(begin, ast.getEnd(), ast.getCondition());
@@ -610,7 +618,7 @@ public class IRBuilder {
         nowFunction.add(ast.getEnd());
     }
 
-    void visit(WhileStmt ast) {
+    private void visit(WhileStmt ast) {
         Label begin = new Label("While_Begin", true);
         buildCondition(begin, ast.getEnd(), ast.getCondition());
         nowFunction.add(begin);
@@ -620,7 +628,7 @@ public class IRBuilder {
         nowFunction.add(ast.getEnd());
     }
 
-    void visit(CompoundStmt ast) {
+    private void visit(CompoundStmt ast) {
         if (ast.getStmts() != null) {
             for (Stmt s : ast.getStmts()) {
                 visit(s);
@@ -628,11 +636,11 @@ public class IRBuilder {
         }
     }
 
-    void visit(BreakStmt ast) {
+    private void visit(BreakStmt ast) {
         nowFunction.add(new Jump(ast.getBreakTo().getEnd()));
     }
 
-    void visit(ContinueStmt ast) {
+    private void visit(ContinueStmt ast) {
         nowFunction.add(new Jump(ast.getContinueTo().getBegin()));
     }
 }

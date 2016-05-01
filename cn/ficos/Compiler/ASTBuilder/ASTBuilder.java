@@ -64,8 +64,13 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
 
     @Override
     public AST visitVarDecl(MangoParser.VarDeclContext ctx) {
-        Type varType;
         ExprStmt rhs = null;
+//        The creation should be visit first, e.g. int a = a + 1;
+        if (ctx.expr() != null) {
+            rhs = (ExprStmt) visit(ctx.expr());
+        }
+
+        Type varType;
         Name varName = getName(ctx.ID().getText());
         try {
             varType = parseType(ctx.type().getText(), global);
@@ -74,6 +79,13 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
                     ctx.type().getText() + '>');
             throw new SemanticError();
         }
+
+        if (ctx.expr() != null && !suit(varType, rhs.getType())) {
+            System.err.println("line " + ctx.getStart().getLine() + ": Unsuitable type in variable declaration, expect <" +
+                    varType + "> but meet <" + rhs.getType() + ">");
+            throw new SemanticError();
+        }
+
         VarSymbol varInfo;
         if (global.getCurrentScope() == 0) {
             varInfo = new VarSymbol(varName, varType, VarSymbol.global);
@@ -87,15 +99,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
                     ">");
             throw new SemanticError();
         }
-        if (ctx.expr() != null) {
-            rhs = (ExprStmt) visit(ctx.expr());
-            if (!suit(varType, rhs.getType())) {
-                System.err.println("line " + ctx.getStart().getLine() + ": Unsuitable type in variable declaration, expect <" +
-                        varType + "> but meet <" + rhs.getType() + ">");
-                throw new SemanticError();
-            }
 
-        }
         // currentScope == 0 means it's now in global
         if (global.getCurrentScope() == 0) {
             return new VarDecl(varInfo, rhs, new Position(ctx.getStart().getLine()));
@@ -675,25 +679,25 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
         ExprStmt lhs = (ExprStmt) visit(ctx.expr(0));
         ExprStmt rhs = (ExprStmt) visit(ctx.expr(1));
 
-        LogBinaryOp op = null;
+        BinaryOp op = null;
         switch (ctx.op.getType()) {
             case MangoParser.LESS:
-                op = LogBinaryOp.LESS;
+                op = BinaryOp.slt;
                 break;
             case MangoParser.LARGE:
-                op = LogBinaryOp.LARGE;
+                op = BinaryOp.sgt;
                 break;
             case MangoParser.LEQ:
-                op = LogBinaryOp.LEQ;
+                op = BinaryOp.sle;
                 break;
             case MangoParser.GEQ:
-                op = LogBinaryOp.GEQ;
+                op = BinaryOp.sge;
                 break;
             case MangoParser.EQ:
-                op = LogBinaryOp.EQ;
+                op = BinaryOp.seq;
                 break;
             case MangoParser.NEQ:
-                op = LogBinaryOp.NEQ;
+                op = BinaryOp.sne;
                 break;
 //            case MangoParser.LOG_AND:
 //                op = LogBinaryOp.LOG_AND;
@@ -839,34 +843,34 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
         BinaryOp op = null;
         switch (ctx.op.getType()) {
             case MangoParser.MULT:
-                op = BinaryOp.MULT;
+                op = BinaryOp.mult;
                 break;
             case MangoParser.DIV:
-                op = BinaryOp.DIV;
+                op = BinaryOp.div;
                 break;
             case MangoParser.MOD:
-                op = BinaryOp.MOD;
+                op = BinaryOp.rem;
                 break;
             case MangoParser.PLUS:
-                op = BinaryOp.PLUS;
+                op = BinaryOp.add;
                 break;
             case MangoParser.MINUS:
-                op = BinaryOp.MINUS;
+                op = BinaryOp.sub;
                 break;
             case MangoParser.SHIFT_L:
-                op = BinaryOp.SHIFT_L;
+                op = BinaryOp.sll;
                 break;
             case MangoParser.SHIFT_R:
-                op = BinaryOp.SHIFT_R;
+                op = BinaryOp.sra;
                 break;
             case MangoParser.BIT_AND:
-                op = BinaryOp.BIT_AND;
+                op = BinaryOp.and;
                 break;
             case MangoParser.BIT_XOR:
-                op = BinaryOp.BIT_XOR;
+                op = BinaryOp.xor;
                 break;
             case MangoParser.BIT_OR:
-                op = BinaryOp.BIT_OR;
+                op = BinaryOp.or;
                 break;
         }
         switch (ctx.op.getType()) {
@@ -934,7 +938,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
                     return new IntExpr(((IntExpr) lhs).getValue() + ((IntExpr) rhs).getValue(), new Position(ctx.getStart().getLine()));
             }
         }
-        return new BinaryExpr(lhs, op, rhs, new Position(ctx.getStart().getLine()));
+        return new CalcBinaryExpr(lhs, op, rhs, new Position(ctx.getStart().getLine()));
     }
 
     @Override

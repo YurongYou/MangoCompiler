@@ -68,7 +68,7 @@ public class Field_FunctionCollector extends MangoBaseListener {
             correct = false;
         }
         try {
-            ((ClassType) global.lookUpType(nowClass)).addVar(fieldName, fieldType.sizeOf());
+            ((ClassType) global.lookUpType(nowClass)).addVar(fieldName, fieldType.variableSize());
         } catch (Undefined undefined) {
             throw new Bug_TextError();
         }
