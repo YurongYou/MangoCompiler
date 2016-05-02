@@ -17,6 +17,7 @@ public class FuncSymbol extends Symbol {
     private Type returnType;
     private List<Type> formalParameterType = null;
     private List<Name> formalParameterName = null;
+    //    This parameter will be filled after the funcSymbol's construction
     private List<VarSymbol> parameter = new LinkedList<>();
     private Label funcLabel = null;
 
@@ -34,7 +35,7 @@ public class FuncSymbol extends Symbol {
         formalParameterName = FPN;
         formalParameterType = FPT;
 
-        funcLabel = new Label("func_" + _funcName, false);
+        funcLabel = new Label(_funcName.toString(), false);
     }
 
     public List<VarSymbol> getParameter() {

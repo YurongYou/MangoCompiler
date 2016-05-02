@@ -158,7 +158,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
             try {
                 while (APTitr.hasNext()) {
                     varName = APNitr.next();
-                    VarSymbol temp = new VarSymbol(varName, APTitr.next(), VarSymbol.parameter);
+                    VarSymbol temp = new VarSymbol(varName, APTitr.next(), VarSymbol.local);
                     funcInfo.getParameter().add(temp);
                     global.define(varName, temp);
                 }
@@ -843,7 +843,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
         BinaryOp op = null;
         switch (ctx.op.getType()) {
             case MangoParser.MULT:
-                op = BinaryOp.mult;
+                op = BinaryOp.mul;
                 break;
             case MangoParser.DIV:
                 op = BinaryOp.div;
@@ -1016,7 +1016,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
         }
         Name func;
         if (lhs.getType() instanceof ArrayType) {
-            func = getName("~array." + ctx.ID().getText());
+            func = getName("_array." + ctx.ID().getText());
         } else func = getName(lhs.getType() + "." + ctx.ID().getText());
         FuncSymbol funcInfo = null;
         try {

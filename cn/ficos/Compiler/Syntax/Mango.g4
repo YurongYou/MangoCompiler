@@ -172,5 +172,5 @@ ID : ID_LETTER (ID_LETTER | DIGIT)*;
 fragment ID_LETTER : [a-zA-Z_];
 fragment DIGIT : [0-9];
 
-LINE_COMMENT : '//' .*? '\r'? '\n' -> skip ; // Match "//" stuff '\n'
+LINE_COMMENT : '//' .*? '\r'? ('\n'|EOF) -> skip ; // Match "//" stuff '\n'
 WS : [ \n\r\t]+ -> skip; // toss out whitespace

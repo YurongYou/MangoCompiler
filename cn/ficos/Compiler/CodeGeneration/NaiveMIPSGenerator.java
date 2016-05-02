@@ -1,6 +1,5 @@
 package cn.ficos.Compiler.CodeGeneration;
 
-import cn.ficos.Compiler.Gadgets.CONSTANT;
 import cn.ficos.Compiler.Gadgets.Operand.Constant;
 import cn.ficos.Compiler.Gadgets.Operand.Operand;
 import cn.ficos.Compiler.Gadgets.Operand.Register;
@@ -8,8 +7,7 @@ import cn.ficos.Compiler.Gadgets.Symbol.FuncSymbol;
 import cn.ficos.Compiler.Gadgets.Symbol.VarSymbol;
 import cn.ficos.Compiler.IR.*;
 
-import java.io.OutputStream;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.ListIterator;
@@ -25,8 +23,15 @@ public class NaiveMIPSGenerator {
     LinkedList<Function> functions = new LinkedList<>();
     LinkedList<String> data;
 
-    public NaiveMIPSGenerator(IRBuilder IR_builder, OutputStream _out) {
+    public NaiveMIPSGenerator(IRBuilder IR_builder, OutputStream _out) throws Exception {
         out = new PrintStream(_out);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream("src/lib/build_in_functions.s")));
+        String line = reader.readLine();
+        while (line != null) {
+            out.println(line);
+            line = reader.readLine();
+        }
+
         data = IR_builder.getData();
         functions.add(new Function(IR_builder.getInitialization(), null));
         ListIterator<LinkedList<IRNode>> funcItr = IR_builder.getFunctions().listIterator(0);
@@ -55,82 +60,90 @@ public class NaiveMIPSGenerator {
         int maxArgu = 0;
         Map<Register, Integer> offset = new HashMap<>();
         LinkedList<IRNode> instructions;
+        int frameSize = 0;
 
         public Function(LinkedList<IRNode> func, FuncSymbol _info) {
             instructions = func;
-            if (_info != null) {
-                int count = 0;
-                for (VarSymbol var : _info.getParameter()) {
-                    offset.put(var.getReg(), count * CONSTANT.wordSize);
-                    ++count;
-                }
-            }
+            int parameter = 0;
             for (IRNode e : instructions) {
                 if (e instanceof Call) {
                     if (((Call) e).getParameters() != null &&
                             ((Call) e).getParameters().size() > maxArgu) maxArgu = ((Call) e).getParameters().size();
                 }
             }
+            if (_info != null) {
+                for (VarSymbol var : _info.getParameter()) {
+                    offset.put(var.getReg(), 0);
+                    ++parameter;
+                }
+            }
             for (IRNode e : instructions) {
                 if (e instanceof Binary) {
                     if (!offset.containsKey(((Binary) e).getTarget())) {
-                        offset.put(((Binary) e).getTarget(), 4 * (maxArgu + offset.size()));
+                        offset.put(((Binary) e).getTarget(), 4 * (maxArgu + offset.size() - parameter + 1));
                     }
                     continue;
                 }
                 if (e instanceof Call) {
                     if (((Call) e).getTarget() != null && !offset.containsKey(((Call) e).getTarget())) {
-                        offset.put(((Call) e).getTarget(), 4 * (maxArgu + offset.size()));
+                        offset.put(((Call) e).getTarget(), 4 * (maxArgu + offset.size() - parameter + 1));
                     }
                     continue;
                 }
                 if (e instanceof Load) {
                     if (!offset.containsKey(((Load) e).getTarget())) {
-                        offset.put(((Load) e).getTarget(), 4 * (maxArgu + offset.size()));
+                        offset.put(((Load) e).getTarget(), 4 * (maxArgu + offset.size() - parameter + 1));
                     }
                     continue;
                 }
                 if (e instanceof LoadAddress) {
                     if (!offset.containsKey(((LoadAddress) e).getTarget())) {
-                        offset.put(((LoadAddress) e).getTarget(), 4 * (maxArgu + offset.size()));
+                        offset.put(((LoadAddress) e).getTarget(), 4 * (maxArgu + offset.size() - parameter + 1));
                     }
                     continue;
                 }
                 if (e instanceof LoadImm) {
                     if (!offset.containsKey(((LoadImm) e).getReg())) {
-                        offset.put(((LoadImm) e).getReg(), 4 * (maxArgu + offset.size()));
+                        offset.put(((LoadImm) e).getReg(), 4 * (maxArgu + offset.size() - parameter + 1));
                     }
                 }
                 if (e instanceof LoadFromLabel) {
                     if (!offset.containsKey(((LoadFromLabel) e).getTarget())) {
-                        offset.put(((LoadFromLabel) e).getTarget(), 4 * (maxArgu + offset.size()));
+                        offset.put(((LoadFromLabel) e).getTarget(), 4 * (maxArgu + offset.size() - parameter + 1));
                     }
                     continue;
                 }
                 if (e instanceof Move) {
                     if (!offset.containsKey(((Move) e).getTarget())) {
-                        offset.put(((Move) e).getTarget(), 4 * (maxArgu + offset.size()));
+                        offset.put(((Move) e).getTarget(), 4 * (maxArgu + offset.size() - parameter + 1));
                     }
                     continue;
                 }
                 if (e instanceof Neg) {
                     if (!offset.containsKey(((Neg) e).getTarget())) {
-                        offset.put(((Neg) e).getTarget(), 4 * (maxArgu + offset.size()));
+                        offset.put(((Neg) e).getTarget(), 4 * (maxArgu + offset.size() - parameter + 1));
                     }
                     continue;
                 }
                 if (e instanceof Not) {
                     if (!offset.containsKey(((Not) e).getTarget())) {
-                        offset.put(((Not) e).getTarget(), 4 * (maxArgu + offset.size()));
+                        offset.put(((Not) e).getTarget(), 4 * (maxArgu + offset.size() - parameter + 1));
                     }
                     continue;
                 }
                 if (e instanceof New) {
                     if (!offset.containsKey(((New) e).getTarget())) {
-                        offset.put(((New) e).getTarget(), 4 * (maxArgu + offset.size()));
+                        offset.put(((New) e).getTarget(), 4 * (maxArgu + offset.size() - parameter + 1));
                     }
                 }
             }
+            frameSize = (maxArgu + 1 + offset.size() - parameter) * 4;
+            if (_info != null) {
+                for (VarSymbol var : _info.getParameter()) {
+                    offset.put(var.getReg(), 4 * (maxArgu + offset.size() - parameter + 1));
+                }
+            }
+
 //            System.out.println(instructions.getFirst());
 //            System.out.println(offset);
 //            System.out.println("Total Reg: " + offset.size());
@@ -139,19 +152,19 @@ public class NaiveMIPSGenerator {
 
         public void translate() {
             ListIterator<IRNode> itr = instructions.listIterator(0);
+//            The first node must be the function label
             IRNode node = itr.next();
             out.println(node + ":");
-            out.println("\tsubu $sp, $sp, " + (maxArgu + 1 + offset.size()) * 4);
+            out.println("\tsubu $sp, $sp, " + frameSize);
             out.println("\tsw $ra, " + maxArgu * 4 + "($sp)");
 
             while (itr.hasNext()) {
                 node = itr.next();
+//                out.println("----------------\n" + node + "  >>>>>>>");
                 if (node instanceof Label) {
 //                    indeed this will not happen
                     out.println(node + ":");
-                    continue;
-                }
-                if (node instanceof Binary) {
+                } else if (node instanceof Binary) {
                     out.println("\tlw $v0, " + offset.get(((Binary) node).getLhs()) + "($sp)");
                     if (((Binary) node).getRhs() instanceof Register) {
                         out.println("\tlw $v1, " + offset.get(((Binary) node).getRhs()) + "($sp)");
@@ -160,21 +173,19 @@ public class NaiveMIPSGenerator {
                     }
                     out.println("\t" + ((Binary) node).getOP() + " $v0, $v0, $v1");
                     out.println("\tsw $v0, " + offset.get(((Binary) node).getTarget()) + "($sp)");
-                    continue;
-                }
-                if (node instanceof Branch) {
+                } else if (node instanceof Branch) {
                     if (((Branch) node).getCondition() instanceof Constant) {
                         if (((Constant) ((Branch) node).getCondition()).getValue() == 1) {
                             out.println("\tj " + ((Branch) node).getT());
                         } else {
                             out.println("\tj " + ((Branch) node).getF());
                         }
+                    } else {
+                        out.println("\tlw $v0, " + offset.get((Register) ((Branch) node).getCondition()) + "($sp)");
+                        out.println("\tbeqz $v0, " + ((Branch) node).getF());
+                        out.println("\tj " + ((Branch) node).getT());
                     }
-                    out.println("\tbeqz " + ((Branch) node).getCondition() + ", " + ((Branch) node).getF());
-                    out.println("\tj " + ((Branch) node).getT());
-                    continue;
-                }
-                if (node instanceof Call) {
+                } else if (node instanceof Call) {
                     if (((Call) node).getParameters() != null) {
                         int count = 0;
                         ListIterator<Operand> parameter = ((Call) node).getParameters().listIterator();
@@ -183,41 +194,38 @@ public class NaiveMIPSGenerator {
                             if (temp instanceof Constant) {
                                 out.println("\tli $v0, " + ((Constant) temp).getValue());
                                 out.println("\tsw $v0, " + count * 4 + "($sp)");
-                                ++count;
                             } else {
                                 out.println("\tlw $v0, " + offset.get((Register) temp) + "($sp)");
                                 out.println("\tsw $v0, " + count * 4 + "($sp)");
                             }
+                            if (count < 4) {
+                                out.println("\tmove $a" + count + ", $v0");
+                            }
+                            ++count;
                         }
                     }
                     out.println("\tjal " + ((Call) node).getFuncLabel());
                     if (((Call) node).getTarget() != null)
-                        out.println("\tsw $v0" + offset.get(((Call) node).getTarget()) + "($sp)");
-                }
-                if (node instanceof Jump) {
+                        out.println("\tsw $v0, " + offset.get(((Call) node).getTarget()) + "($sp)");
+                } else if (node instanceof Jump) {
                     out.println("\tj " + ((Jump) node).getTarget());
-                }
-                if (node instanceof Load) {
+                } else if (node instanceof Load) {
 //                    get address
                     out.println("\tlw $v0, " + offset.get(((Load) node).getSource()) + "($sp)");
 //                    perform the load
                     out.println("\tlw $v0, " + ((Load) node).getOffset() + "($v0)");
 //                    save it
                     out.println("\tsw $v0, " + offset.get(((Load) node).getTarget()) + "($sp)");
-                }
-                if (node instanceof LoadAddress) {
+                } else if (node instanceof LoadAddress) {
                     out.println("\tla $v0, " + ((LoadAddress) node).getLabel());
                     out.println("\tsw $v0, " + offset.get(((LoadAddress) node).getTarget()) + "($sp)");
-                }
-                if (node instanceof LoadImm) {
+                } else if (node instanceof LoadImm) {
                     out.println("\tli $v0, " + ((LoadImm) node).getImm());
                     out.println("\tsw $v0, " + offset.get(((LoadImm) node).getReg()) + "($sp)");
-                }
-                if (node instanceof LoadFromLabel) {
+                } else if (node instanceof LoadFromLabel) {
                     out.println("\tlw $v0, " + ((LoadFromLabel) node).getLabel());
                     out.println("\tsw $v0, " + offset.get(((LoadFromLabel) node).getTarget()) + "($sp)");
-                }
-                if (node instanceof Move) {
+                } else if (node instanceof Move) {
 //                    if (((Move) node).getSource() instanceof Constant){
 //                        out.println("\tli $v0, " + ((Constant) ((Move) node).getSource()).getValue());
 //                        out.println("\tsw $v0, " + offset.get(((Move) node).getTarget()) + "($sp)");
@@ -226,30 +234,25 @@ public class NaiveMIPSGenerator {
                     out.println("\tlw $v0, " + offset.get(((Move) node).getSource()) + "($sp)");
                     out.println("\tsw $v0, " + offset.get(((Move) node).getTarget()) + "($sp)");
 //                    }
-                }
-                if (node instanceof Neg) {
+                } else if (node instanceof Neg) {
                     out.println("\tlw $v1, " + offset.get(((Neg) node).getSource()) + "($sp)");
                     out.println("\tneg $v0, $v1");
                     out.println("\tsw $v0, " + offset.get(((Neg) node).getTarget()) + "($sp)");
-                }
-                if (node instanceof New) {
+                } else if (node instanceof New) {
                     if (((New) node).getSize() instanceof Constant) {
                         out.println("\tli $a0, " + ((Constant) ((New) node).getSize()).getValue());
                     } else {
-                        out.println("\tlw $v0, " + offset.get((Register) ((New) node).getSize()) + "($sp)");
-                        out.println("\tmove $a0, $v0");
-                        out.println("\tli $v0, 9");
-                        out.println("\tsyscall");
-                        out.println("\tsw $v0, " + offset.get(((New) node).getTarget()) + "($sp)");
+                        out.println("\tlw $a0, " + offset.get((Register) ((New) node).getSize()) + "($sp)");
+//                        out.println("\tmove $a0, $v0");
                     }
-
-                }
-                if (node instanceof Not) {
+                    out.println("\tli $v0, 9");
+                    out.println("\tsyscall");
+                    out.println("\tsw $v0, " + offset.get(((New) node).getTarget()) + "($sp)");
+                } else if (node instanceof Not) {
                     out.println("\tlw $v1, " + offset.get(((Not) node).getSource()) + "($sp)");
                     out.println("\tnot $v0, $v1");
                     out.println("\tsw $v0, " + offset.get(((Not) node).getTarget()) + "($sp)");
-                }
-                if (node instanceof Return) {
+                } else if (node instanceof Return) {
                     if (((Return) node).getResult() != null) {
                         if (((Return) node).getResult() instanceof Constant) {
                             out.println("\tli $v0, " + ((Constant) ((Return) node).getResult()).getValue());
@@ -258,24 +261,25 @@ public class NaiveMIPSGenerator {
                         }
                     }
                     out.println("\tlw $ra, " + maxArgu * 4 + "($sp)");
+                    out.println("\taddu $sp, $sp, " + frameSize);
                     out.println("\tjr $ra");
-                }
-                if (node instanceof Store) {
+                } else if (node instanceof Store) {
 //                    get value
                     out.println("\tlw $v0, " + offset.get(((Store) node).getSource()) + "($sp)");
 //                    get address
                     out.println("\tlw $v1, " + offset.get(((Store) node).getTarget()) + "($sp)");
                     out.println("\tsw $v0, " + ((Store) node).getOffset() + "($v1)");
-                }
-                if (node instanceof StoreLabel) {
+                } else if (node instanceof StoreLabel) {
 //                    load the value
                     out.println("\tlw $v0, " + offset.get(((StoreLabel) node).getSource()) + "($sp)");
 //                    store it back
                     out.println("\tsw $v0, " + ((StoreLabel) node).getLabel());
                 }
+//                out.println("----------------\n");
             }
             out.println("\tlw $ra, " + maxArgu * 4 + "($sp)");
-            out.println("\taddu $sp, $sp, " + (maxArgu + 1 + offset.size()) * 4);
+            out.println("\taddu $sp, $sp, " + frameSize);
+            out.println("\tjr $ra");
         }
 
     }

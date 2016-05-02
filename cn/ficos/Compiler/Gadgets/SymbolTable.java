@@ -36,21 +36,34 @@ public class SymbolTable {
     private static TypeSymbol IntType = new TypeSymbol(getName("int"), INT);
     private static TypeSymbol StringType = new TypeSymbol(getName("string"), STRING);
     private static TypeSymbol BoolType = new TypeSymbol(getName("bool"), BOOL);
+
     private static FuncSymbol print = new FuncSymbol(getName("print"), null, Arrays.asList(getName("arg")), Arrays.asList(STRING));
+
     private static FuncSymbol println = new FuncSymbol(getName("println"), null, Arrays.asList(getName("arg")), Arrays.asList(STRING));
+
     private static FuncSymbol getString = new FuncSymbol(getName("getString"), STRING, null, null);
+
     private static FuncSymbol getInt = new FuncSymbol(getName("getInt"), INT, null, null);
+
     private static FuncSymbol toString = new FuncSymbol(getName("toString"), STRING, Arrays.asList(getName("i")), Arrays.asList(INT));
+
     private static FuncSymbol string_length = new FuncSymbol(getName("string.length"), INT, Arrays.asList(getName("this")), Arrays.asList(STRING));
+
     private static FuncSymbol string_substring = new FuncSymbol(getName("string.substring"), STRING, Arrays.asList(getName("this"), getName("left"), getName("right"))
             , Arrays.asList(STRING, INT, INT));
+
     private static FuncSymbol string_parseInt = new FuncSymbol(getName("string.parseInt"), INT, Arrays.asList(getName("this")), Arrays.asList(STRING));
+
     private static FuncSymbol string_ord = new FuncSymbol(getName("string.ord"), INT, Arrays.asList(getName("this"), getName("pos")), Arrays.asList(STRING, INT));
-    private static FuncSymbol _array_size = new FuncSymbol(getName("~array.size"), INT, Arrays.asList(getName("this")), Arrays.asList(ArrayType.virtualArrayType));
+
+    private static FuncSymbol _array_size = new FuncSymbol(getName("_array.size"), INT, Arrays.asList(getName("this")), Arrays.asList(ArrayType.virtualArrayType));
+
     private static FuncSymbol stringConcatenate = new FuncSymbol(getName("stringConcatenate"), STRING, Arrays.asList(getName("lhs"), getName("rhs")),
             Arrays.asList(STRING, STRING));
+
     private static FuncSymbol stringIsEqual = new FuncSymbol(getName("stringIsEqual"), BOOL, Arrays.asList(getName("lhs"), getName("rhs")),
             Arrays.asList(STRING, STRING));
+
     private static FuncSymbol stringLess = new FuncSymbol(getName("stringLess"), BOOL, Arrays.asList(getName("lhs"), getName("rhs")),
             Arrays.asList(STRING, STRING));
 
@@ -124,7 +137,7 @@ public class SymbolTable {
         define(getName("string.ord"), string_ord);
 
         //int ~array.size(~array this)
-        define(getName("~array.size"), _array_size);
+        define(getName("_array.size"), _array_size);
 
         //string stringConcatenate(string lhs, string rhs)
         define(getName("stringConcatenate"), stringConcatenate);

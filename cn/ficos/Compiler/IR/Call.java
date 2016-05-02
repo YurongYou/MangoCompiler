@@ -20,6 +20,13 @@ public class Call extends IRNode {
         this.target = target;
     }
 
+    public Call(Label info, List<Operand> parameters, Register target) {
+        funcLabel = info;
+        this.parameters = parameters;
+        this.target = target;
+    }
+
+
     public List<Operand> getParameters() {
         return parameters;
     }

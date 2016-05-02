@@ -7,7 +7,7 @@ package cn.ficos.Compiler.Gadgets;
 public enum BinaryOp {
     add,
     sub,
-    mult,
+    mul,
     div,
     rem,
     sll,

@@ -2,7 +2,6 @@ package cn.ficos.Compiler.Gadgets.Symbol;
 
 import cn.ficos.Compiler.Gadgets.Name;
 import cn.ficos.Compiler.Gadgets.Operand.LocalRegister;
-import cn.ficos.Compiler.Gadgets.Operand.ParameterRegister;
 import cn.ficos.Compiler.Gadgets.Operand.Register;
 import cn.ficos.Compiler.Gadgets.Type.Type;
 import cn.ficos.Compiler.IR.Label;
@@ -13,9 +12,8 @@ import cn.ficos.Compiler.IR.Label;
  */
 public class VarSymbol extends Symbol {
     public static final int local = 0;
-    public static final int parameter = 1;
-    public static final int global = 2;
-    public static final int classField = 3;
+    public static final int global = 1;
+    public static final int classField = 2;
     private Type type;
     private Register reg;
     private boolean isGlobal;
@@ -31,10 +29,6 @@ public class VarSymbol extends Symbol {
             case local:
                 isGlobal = false;
                 reg = new LocalRegister();
-                break;
-            case parameter:
-                isGlobal = false;
-                reg = new ParameterRegister();
                 break;
             case global:
                 isGlobal = true;

@@ -397,7 +397,7 @@ public class Printer {
         visit(node.getLhs(), 0);
         out.print(", op:");
         switch (node.getOp()) {
-            case mult:
+            case mul:
                 out.print("*");
                 break;
             case div:

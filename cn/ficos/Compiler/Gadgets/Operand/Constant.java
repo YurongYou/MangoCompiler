@@ -21,6 +21,6 @@ public class Constant extends Operand {
 
     @Override
     public String toString() {
-        return "C::" + value;
+        return Integer.toString(value);
     }
 }
