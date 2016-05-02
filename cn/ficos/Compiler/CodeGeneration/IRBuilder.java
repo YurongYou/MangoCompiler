@@ -281,6 +281,7 @@ public class IRBuilder {
                 visit(e);
                 aps.add(e.getOperand());
             }
+//            System.out.println(aps);
         }
         nowFunction.add(new Call(ast.getFuncInfo(), aps, (Register) ast.getOperand()));
     }
@@ -471,6 +472,14 @@ public class IRBuilder {
         else nowFunction.add(new Binary((Register) ast.getBase().getOperand(),
                 (Register) ast.getBase().getOperand(),
                 new Constant(1), BinaryOp.sub));
+        if (ast.getBase() instanceof VarExpr) {
+            if (((VarExpr) ast.getBase()).getVar().isGlobal()) {
+                nowFunction.add(new StoreLabel(((VarExpr) ast.getBase()).getVar().getGlobalLabel(),
+                        (Register) ast.getBase().getOperand(), CONSTANT.wordSize));
+            }
+        } else if (ast.getBase() instanceof AddressFetch) {
+            getStoreIR((AddressFetch) ast.getBase(), (Register) ast.getBase().getOperand());
+        }
     }
 
     private void visit(SelfOpPreExpr ast) {
@@ -482,6 +491,14 @@ public class IRBuilder {
         else nowFunction.add(new Binary((Register) ast.getBase().getOperand(),
                 (Register) ast.getBase().getOperand(),
                 new Constant(1), BinaryOp.sub));
+        if (ast.getBase() instanceof VarExpr) {
+            if (((VarExpr) ast.getBase()).getVar().isGlobal()) {
+                nowFunction.add(new StoreLabel(((VarExpr) ast.getBase()).getVar().getGlobalLabel(),
+                        (Register) ast.getBase().getOperand(), CONSTANT.wordSize));
+            }
+        } else if (ast.getBase() instanceof AddressFetch) {
+            getStoreIR((AddressFetch) ast.getBase(), (Register) ast.getBase().getOperand());
+        }
         ast.changeOperand(ast.getBase().getOperand());
 //        nowFunction.add(new Move((Register) ast.getOperand(), ast.getBase().getOperand()));
     }

@@ -1,11 +1,19 @@
 package cn.ficos.Compiler.CodeGeneration;
 
+import cn.ficos.Compiler.AST.AST;
+import cn.ficos.Compiler.ASTBuilder.ASTBuilder;
+import cn.ficos.Compiler.ASTVisitor.Printer;
 import cn.ficos.Compiler.Gadgets.Operand.Constant;
 import cn.ficos.Compiler.Gadgets.Operand.Operand;
 import cn.ficos.Compiler.Gadgets.Operand.Register;
 import cn.ficos.Compiler.Gadgets.Symbol.FuncSymbol;
 import cn.ficos.Compiler.Gadgets.Symbol.VarSymbol;
 import cn.ficos.Compiler.IR.*;
+import cn.ficos.Compiler.Syntax.MangoLexer;
+import cn.ficos.Compiler.Syntax.MangoParser;
+import org.antlr.v4.runtime.BailErrorStrategy;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.io.*;
 import java.util.HashMap;
@@ -40,6 +48,25 @@ public class NaiveMIPSGenerator {
             functions.add(new Function(funcItr.next(), infoItr.next()));
         }
         print();
+    }
+
+    public static void main(String[] args) throws Exception {
+        FileInputStream FileInput = new FileInputStream("MangoTestCase/local_final/mx/spill2-5100379110-daibo.mx");
+        org.antlr.v4.runtime.ANTLRInputStream input = new org.antlr.v4.runtime.ANTLRInputStream(FileInput);
+        MangoLexer lexer = new MangoLexer(input);
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        MangoParser parser = new MangoParser(tokens);
+        parser.setErrorHandler(new BailErrorStrategy());
+        ParseTree tree = parser.prog();
+
+        ASTBuilder AST_builder = new ASTBuilder(tree);
+        AST root = AST_builder.visit(tree);
+        Printer printer = new Printer(root, System.out);
+        printer.print();
+        IRBuilder IR_builder = new IRBuilder(root);
+        IR_builder.buildIR();
+
+        new NaiveMIPSGenerator(IR_builder, System.out);
     }
 
     void print() {
@@ -139,8 +166,9 @@ public class NaiveMIPSGenerator {
             }
             frameSize = (maxArgu + 1 + offset.size() - parameter) * 4;
             if (_info != null) {
+                int count = 1;
                 for (VarSymbol var : _info.getParameter()) {
-                    offset.put(var.getReg(), 4 * (maxArgu + offset.size() - parameter + 1));
+                    offset.put(var.getReg(), 4 * (maxArgu + offset.size() - parameter + count++));
                 }
             }
 

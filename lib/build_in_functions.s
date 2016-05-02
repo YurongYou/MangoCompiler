@@ -1,8 +1,54 @@
+# Built by Ficos 16/5/2
+# All rights reserved.
+#
+#
+# All test passed.
+#
+# Attention:
+# 1. to use the built-in functions, you need to call "_buffer_init" function without any args before entering the source main function
+# 	(jal _buffer_init)
+# 2. just paste all of this in front of your MIPS code
+#
+# All supported functions:
+# 		FunctionName			args
+# 1.	func_print 				$a0: the string
+# 2.	func_println			$a0: the string
+# 3.	func_getString			---
+# 4.	func_getInt				---
+# 5.	func_toString			$a0: the integer
+# 6.	func_string.length 		$a0: the string
+# 7.	func_string.substring   $a0: the string,  $a1: left pos(int), $a2: right pos(int)
+# 8.	func_string.parseInt 	$a0: the string
+# 9.	func_string.ord 		$a0: the string,  $a1: pos(int)
+# 10.	func__array.size 		$a0: the array
+# 11.	func_stringConcatenate 	$a0: left string, $a1: right string
+# 12.	func_stringIsEqual 		$a0: left string, $a1: right string
+# 13.	func_stringLess 		$a0: left string, $a1: right string
+#
+# Calling Conventions:
+# 1. args placed in $a0, $a1, $a2
+# 2. return in $v0
+# 3. follow the MIPS calling convention, be careful on regs when calling these functions
+# 4. all used regs are presented in the front of the function
+#
+# Conventions in using string:
+# 1. string object is simply a register contains the initial address of the string
+# 2. front of every initial address of a string are a word containing the length of the string
+#    e.g.
+#    .data
+#  		  .word 6
+# 	 str: .asciiz "hello\n"
+# 		  .align 2
+# 3. every string ends with '\0', which is not counted in the length
+#
+# Conventions in using array:
+# 1. front of every initial address of a array are a word containing the size of the array
+
 .data
 _end: .asciiz "\n"
 	.align 2
 _buffer: .word 0
-# 	.word 7
+# 	.word 6
 # str: .asciiz "hello\n"
 # 	.align 2
 
@@ -111,6 +157,7 @@ _buffer_init:
 
 # copy the string in $a0 to buffer in $a1, with putting '\0' in the end of the buffer
 ###### Checked ######
+# used $v0, $a0, $a1
 _string_copy:
 	_begin_string_copy:
 	lb $v0, 0($a0)
@@ -141,6 +188,7 @@ func_println:
 
 # count the length of given string in $a0
 ###### Checked ######
+# used $v0, $v1, $a0
 _count_string_length:
 	move $v0, $a0
 
@@ -156,9 +204,12 @@ _count_string_length:
 
 # non arg, string in $v0
 ###### Checked ######
+# used $a0, $a1, $v0, $t0
 func_getString:
 	subu $sp, $sp, 4
 	sw $ra, 0($sp)
+
+
 	lw $a0, _buffer
 	li $a1, 255
 	li $v0, 8
@@ -174,9 +225,10 @@ func_getString:
 	add $v0, $v0, 4
 	lw $a0, _buffer
 	move $a1, $v0
-	move $s0, $v0
+	move $t0, $v0
 	jal _string_copy
-	move $v0, $s0
+	move $v0, $t0
+
 	lw $ra, 0($sp)
 	addu $sp, $sp, 4
 	jr $ra
@@ -190,13 +242,15 @@ func_getInt:
 
 # int arg in $a0
 ###### Checked ######
+# Bug fixed(5/2): when the arg is a neg number
+# used $a0, $t0, $t1, $t2, $t3, $t5, $v0, $v1
 func_toString:
 	# subu $sp, $sp, 4
 	# sw $ra, 0($sp)
 	# first count the #digits
-	li $s0, 0			# $s0 = 0 if the number is a negnum
+	li $t0, 0			# $t0 = 0 if the number is a negnum
 	bgez $a0, _skip_set_less_than_zero
-	li $s0, 1			# now $s0 must be 1
+	li $t0, 1			# now $t0 must be 1
 	neg $a0, $a0
 	_skip_set_less_than_zero:
 	beqz $a0, _set_zero
@@ -219,7 +273,7 @@ func_toString:
 	j _begin_count_digit
 
 	_yet:
-	beqz $s0, _skip_reserve_neg
+	beqz $t0, _skip_reserve_neg
 	add $t1, $t1, 1
 	_skip_reserve_neg:
 	add $a0, $t1, 5
@@ -241,7 +295,7 @@ func_toString:
 	# bge $t1, $v0, _continue_toString
 	bnez $t3, _continue_toString
 
-	beqz $s0, _skip_place_neg
+	beqz $t0, _skip_place_neg
 	li $v1, 45
 	sb $v1, 0($t1)
 	_skip_place_neg:
@@ -270,9 +324,11 @@ func_string.length:
 
 # string arg in $a0, left in $a1, right in $a2
 ###### Checked ######
+# used $a0, $a1, $t0, $t1, $t2, $t3, $t4, $v0,
 func_string.substring:
 	subu $sp, $sp, 4
 	sw $ra, 0($sp)
+
 	move $t0, $a0
 
 	sub $t1, $a2, $a1
@@ -288,9 +344,9 @@ func_string.substring:
 	lb $t3, 1($t2)		# store the ori_begin + right + 1 char in $t3
 	sb $zero, 1($t2)	# change it to 0 for the convenience of copying
 	move $a1, $v0
-	move $s0, $v0
+	move $t4, $v0
 	jal _string_copy
-	move $v0, $s0
+	move $v0, $t4
 	sb $t3, 1($t2)
 
 	lw $ra, 0($sp)
@@ -299,6 +355,7 @@ func_string.substring:
 
 # string arg in $a0
 ###### Checked ######
+# used $t0, $t1, $t2, $v0
 func_string.parseInt:
 	li $v0, 0
 	move $t0, $a0
@@ -329,52 +386,56 @@ func_string.parseInt:
 
 # string arg in $a0, pos in $a1
 ###### Checked ######
+# used $a0, $v0
 func_string.ord:
 	add $a0, $a0, $a1
 	lb $v0, 0($a0)
 	jr $ra
 
 # array arg in $a0
+# used $v0
 func__array.size:
 	lw $v0, -4($a0)
 	jr $ra
 
 # string1 in $a0, string2 in $a1
 ###### Checked ######
+# used $a0, $a1, $t0, $t1, $t2, $t3, $t4, $t5, $v0
 func_stringConcatenate:
 
 	subu $sp, $sp, 4
 	sw $ra, 0($sp)
 
-	move $s2, $a0
-	move $s3, $a1
+	move $t2, $a0
+	move $t3, $a1
 
-	lw $s0, -4($a0)		# $s0 is the length of lhs
-	lw $s1, -4($a1)		# $s1 is the length of rhs
-	add $s5, $s0, $s1
-	add $a0, $s5, 5
+	lw $t0, -4($a0)		# $t0 is the length of lhs
+	lw $t1, -4($a1)		# $t1 is the length of rhs
+	add $t5, $t0, $t1
+	add $a0, $t5, 5
 	li $v0, 9
 	syscall
-	sw $s5, 0($v0)
+	sw $t5, 0($v0)
 	add $v0, $v0, 4
-	move $s4, $v0
+	move $t4, $v0
 
-	move $a0, $s2
-	move $a1, $s4
+	move $a0, $t2
+	move $a1, $t4
 	jal _string_copy
 
-	move $a0, $s3
-	add $a1, $s4, $s0
+	move $a0, $t3
+	add $a1, $t4, $t0
 	# add $a1, $a1, 1
 	jal _string_copy
 
-	move $v0, $s4
+	move $v0, $t4
 	lw $ra, 0($sp)
 	addu $sp, $sp, 4
 	jr $ra
 
 # string1 in $a0, string2 in $a1
 ###### Checked ######
+# used $a0, $a1, $t0, $t1, $v0
 func_stringIsEqual:
 
 	lw $t0, -4($a0)
@@ -403,6 +464,7 @@ func_stringIsEqual:
 
 # string1 in $a0, string2 in $a1
 ###### Checked ######
+# used $a0, $a1, $t0, $t1, $v0
 func_stringLess:
 
 	_begin_compare_less:

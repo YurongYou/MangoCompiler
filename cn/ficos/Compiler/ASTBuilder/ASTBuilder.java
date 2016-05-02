@@ -514,9 +514,9 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
                 throw new SemanticError();
             }
         }
-        List<Type> APT = new LinkedList<>();
-        List<ExprStmt> AP = new LinkedList<>();
-        ListIterator<ExprStmt> APItr = AP.listIterator(0);
+        LinkedList<Type> APT = new LinkedList<>();
+        LinkedList<ExprStmt> AP = new LinkedList<>();
+//        ListIterator<ExprStmt> APItr = AP.listIterator(0);
         if (inClassFunction && ctx.exprList() == null) {
             VarSymbol _this;
             try {
@@ -525,15 +525,16 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
             } catch (Undefined e) {
                 throw new Bug_TextError();
             }
-            APItr.add(new VarExpr(_this, new Position(ctx.getStart().getLine())));
+            AP.addLast(new VarExpr(_this, new Position(ctx.getStart().getLine())));
         } else {
             List<MangoParser.ExprContext> APc = ctx.exprList().expr();
             ListIterator<MangoParser.ExprContext> APcItr = APc.listIterator(0);
             while (APcItr.hasNext()) {
-                APItr.add((ExprStmt) visit(APcItr.next()));
-                APT.add(APItr.previous().getType());
+                AP.addLast((ExprStmt) visit(APcItr.next()));
+                APT.add(AP.getLast().getType());
             }
         }
+
         // compare AP and FP
         if (!funcInfo.isValidParameters(APT)) {
             System.err.println("line " + ctx.getStart().getLine() + ": Function call parameter mismatching, see function declaration at <" + funcInfo.getName() + ">");
@@ -601,6 +602,9 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
             System.err.println("line " + ctx.getStart().getLine() + ": Using undefined variable <" +
                     ctx.ID().getText() + ">");
             throw new SemanticError();
+        } catch (ClassCastException e) {
+            System.out.println(ctx.getStart().getLine());
+            throw e;
         }
         return new VarExpr(varInfo, new Position(ctx.getStart().getLine()));
     }

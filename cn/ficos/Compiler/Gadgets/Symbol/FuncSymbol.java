@@ -35,7 +35,8 @@ public class FuncSymbol extends Symbol {
         formalParameterName = FPN;
         formalParameterType = FPT;
 
-        funcLabel = new Label(_funcName.toString(), false);
+//        funcLabel = new Label(_funcName.toString(), false);
+        funcLabel = new Label("func_" + _funcName.toString(), false);
     }
 
     public List<VarSymbol> getParameter() {

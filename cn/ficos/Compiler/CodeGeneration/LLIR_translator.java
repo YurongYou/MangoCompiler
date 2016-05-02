@@ -32,7 +32,7 @@ public class LLIR_translator {
     }
 
     public static void main(String[] args) throws Exception {
-        FileInputStream FileInput = new FileInputStream("MangoTestCase/LLIRtestcase/ir/condition.mx");
+        FileInputStream FileInput = new FileInputStream("MangoTestCase/LLIRtestcase/ir/gcd.mx");
         org.antlr.v4.runtime.ANTLRInputStream input = new org.antlr.v4.runtime.ANTLRInputStream(FileInput);
         MangoLexer lexer = new MangoLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
