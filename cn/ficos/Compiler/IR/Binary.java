@@ -18,6 +18,9 @@ public class Binary extends IRNode {
         this.target = target;
         this.lhs = lhs;
         this.rhs = rhs;
+        UEVar.add(lhs);
+        if (rhs instanceof Register) UEVar.add((Register) rhs);
+        VarKill.add(target);
         this.OP = OP;
     }
 
@@ -38,7 +41,6 @@ public class Binary extends IRNode {
     }
 
     @Override
-
     public String toString() {
         return OP + " " + target + ", " + lhs + ", " + rhs;
     }

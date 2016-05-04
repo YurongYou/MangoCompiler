@@ -43,7 +43,6 @@ public class LLIR_translator {
         ASTBuilder AST_builder = new ASTBuilder(tree);
         AST root = AST_builder.visit(tree);
         IRBuilder IR_builder = new IRBuilder(root);
-        IR_builder.buildIR();
         new LLIR_translator(IR_builder, System.out);
     }
 

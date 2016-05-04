@@ -156,9 +156,16 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
 
             Name varName = null;
             try {
+                int count = 0;
                 while (APTitr.hasNext()) {
+                    ++count;
                     varName = APNitr.next();
-                    VarSymbol temp = new VarSymbol(varName, APTitr.next(), VarSymbol.local);
+                    VarSymbol temp;
+                    if (count <= 4) {
+                        temp = new VarSymbol(varName, APTitr.next(), VarSymbol.local);
+                    } else {
+                        temp = new VarSymbol(varName, APTitr.next(), VarSymbol.parameter);
+                    }
                     funcInfo.getParameter().add(temp);
                     global.define(varName, temp);
                 }

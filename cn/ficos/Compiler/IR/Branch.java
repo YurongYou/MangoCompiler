@@ -1,18 +1,19 @@
 package cn.ficos.Compiler.IR;
 
-import cn.ficos.Compiler.Gadgets.Operand.Operand;
+import cn.ficos.Compiler.Gadgets.Operand.Register;
 
 /**
  * This class serves as a branch node of IR
  * Created by Ficos on 16/4/18.
  */
 public class Branch extends IRNode {
-    Operand condition;
+    Register condition;
     Label T;
     Label F;
 
-    public Branch(Operand condition, Label t, Label f) {
+    public Branch(Register condition, Label t, Label f) {
         this.condition = condition;
+        UEVar.add(condition);
         T = t;
         F = f;
     }
@@ -22,7 +23,7 @@ public class Branch extends IRNode {
         return "Branch " + condition + ", " + T + ", " + F;
     }
 
-    public Operand getCondition() {
+    public Register getCondition() {
         return condition;
     }
 

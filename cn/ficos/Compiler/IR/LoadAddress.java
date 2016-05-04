@@ -13,6 +13,7 @@ public class LoadAddress extends IRNode {
     public LoadAddress(Register target, Label label) {
         this.target = target;
         this.label = label;
+        VarKill.add(target);
     }
 
     public Register getTarget() {

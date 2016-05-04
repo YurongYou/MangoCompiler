@@ -16,6 +16,8 @@ public class Load extends IRNode {
         size = _size;
         this.target = target;
         this.source = source;
+        UEVar.add(source);
+        VarKill.add(target);
         offset = _offset;
     }
 

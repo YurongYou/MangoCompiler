@@ -12,6 +12,8 @@ public class Move extends IRNode {
     public Move(Register _target, Register _source) {
         target = _target;
         source = _source;
+        UEVar.add(source);
+        VarKill.add(target);
     }
 
     @Override

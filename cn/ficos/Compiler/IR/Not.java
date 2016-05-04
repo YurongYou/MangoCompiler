@@ -13,6 +13,8 @@ public class Not extends IRNode {
     public Not(Register target, Register source) {
         this.target = target;
         this.source = source;
+        UEVar.add(source);
+        VarKill.add(target);
     }
 
     @Override
@@ -27,4 +29,5 @@ public class Not extends IRNode {
     public Register getSource() {
         return source;
     }
+
 }

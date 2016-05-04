@@ -64,7 +64,6 @@ public class NaiveMIPSGenerator {
         Printer printer = new Printer(root, System.out);
         printer.print();
         IRBuilder IR_builder = new IRBuilder(root);
-        IR_builder.buildIR();
 
         new NaiveMIPSGenerator(IR_builder, System.out);
     }
@@ -202,17 +201,17 @@ public class NaiveMIPSGenerator {
                     out.println("\t" + ((Binary) node).getOP() + " $v0, $v0, $v1");
                     out.println("\tsw $v0, " + offset.get(((Binary) node).getTarget()) + "($sp)");
                 } else if (node instanceof Branch) {
-                    if (((Branch) node).getCondition() instanceof Constant) {
-                        if (((Constant) ((Branch) node).getCondition()).getValue() == 1) {
-                            out.println("\tj " + ((Branch) node).getT());
-                        } else {
-                            out.println("\tj " + ((Branch) node).getF());
-                        }
-                    } else {
+//                    if (((Branch) node).getCondition() instanceof Constant) {
+//                        if (((Constant) ((Branch) node).getCondition()).getValue() == 1) {
+//                            out.println("\tj " + ((Branch) node).getT());
+//                        } else {
+//                            out.println("\tj " + ((Branch) node).getF());
+//                        }
+//                    } else {
                         out.println("\tlw $v0, " + offset.get((Register) ((Branch) node).getCondition()) + "($sp)");
                         out.println("\tbeqz $v0, " + ((Branch) node).getF());
                         out.println("\tj " + ((Branch) node).getT());
-                    }
+//                    }
                 } else if (node instanceof Call) {
                     if (((Call) node).getParameters() != null) {
                         int count = 0;

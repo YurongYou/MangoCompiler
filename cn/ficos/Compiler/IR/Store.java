@@ -17,6 +17,10 @@ public class Store extends IRNode {
 
         this.source = source;
         this.target = target;
+
+        UEVar.add(source);
+        UEVar.add(target);
+
         offset = _offset;
     }
 
@@ -40,4 +44,5 @@ public class Store extends IRNode {
     public String toString() {
         return "ST\tsize:" + size + ", " + source + ", " + offset + "(" + target + ")";
     }
+
 }

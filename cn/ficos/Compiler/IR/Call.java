@@ -18,12 +18,24 @@ public class Call extends IRNode {
         funcLabel = info.getFuncLabel();
         this.parameters = parameters;
         this.target = target;
+        if (parameters != null) {
+            for (Operand operand : parameters) {
+                if (operand instanceof Register) UEVar.add((Register) operand);
+            }
+        }
+        VarKill.add(target);
     }
 
     public Call(Label info, List<Operand> parameters, Register target) {
         funcLabel = info;
         this.parameters = parameters;
         this.target = target;
+        if (parameters != null) {
+            for (Operand operand : parameters) {
+                if (operand instanceof Register) UEVar.add((Register) operand);
+            }
+        }
+        VarKill.add(target);
     }
 
 
@@ -43,4 +55,5 @@ public class Call extends IRNode {
     public String toString() {
         return "Call:" + funcLabel + " " + target + ", " + parameters;
     }
+
 }

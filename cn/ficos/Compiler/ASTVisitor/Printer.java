@@ -29,9 +29,6 @@ public class Printer {
         visit(root, 0);
     }
 
-//    void visit(ExprStmt node){
-//
-//    }
 
     void visit(AST node, int d) {
         if (node instanceof Program) {

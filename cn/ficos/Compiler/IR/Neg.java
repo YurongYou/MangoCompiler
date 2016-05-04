@@ -13,11 +13,13 @@ public class Neg extends IRNode {
     public Neg(Register target, Register source) {
         this.target = target;
         this.source = source;
+        UEVar.add(source);
+        VarKill.add(target);
     }
 
     @Override
     public String toString() {
-        return "NEG " + target + ", " + source;
+        return "neg " + target + ", " + source;
     }
 
     public Register getTarget() {

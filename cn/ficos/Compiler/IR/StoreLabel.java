@@ -14,6 +14,7 @@ public class StoreLabel extends IRNode {
     public StoreLabel(Label label, Register source, int size) {
         this.label = label;
         this.source = source;
+        UEVar.add(source);
         this.size = size;
     }
 

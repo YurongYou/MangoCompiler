@@ -13,6 +13,7 @@ public class LoadImm extends IRNode {
     public LoadImm(LocalRegister reg, int imm) {
         this.reg = reg;
         this.imm = imm;
+        VarKill.add(reg);
     }
 
     public LocalRegister getReg() {

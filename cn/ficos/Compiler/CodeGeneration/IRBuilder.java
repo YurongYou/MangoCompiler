@@ -1,6 +1,10 @@
 package cn.ficos.Compiler.CodeGeneration;
 
 import cn.ficos.Compiler.AST.*;
+import cn.ficos.Compiler.ASTBuilder.ASTBuilder;
+import cn.ficos.Compiler.ControlFlowGraph.BasicBlock;
+import cn.ficos.Compiler.ControlFlowGraph.CFG;
+import cn.ficos.Compiler.Exceptions.Bug_TextError;
 import cn.ficos.Compiler.Gadgets.BinaryOp;
 import cn.ficos.Compiler.Gadgets.CONSTANT;
 import cn.ficos.Compiler.Gadgets.Name;
@@ -12,10 +16,14 @@ import cn.ficos.Compiler.Gadgets.Symbol.FuncSymbol;
 import cn.ficos.Compiler.Gadgets.Type.ArrayType;
 import cn.ficos.Compiler.Gadgets.Type.BuiltInType;
 import cn.ficos.Compiler.IR.*;
+import cn.ficos.Compiler.Syntax.MangoLexer;
+import cn.ficos.Compiler.Syntax.MangoParser;
+import org.antlr.v4.runtime.BailErrorStrategy;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
+import java.io.FileInputStream;
+import java.util.*;
 
 /**
  * This class can be used to build up an IR using the AST.
@@ -33,6 +41,29 @@ public class IRBuilder {
 
     public IRBuilder(AST root) {
         this.root = root;
+        buildIR();
+    }
+
+    public static void main(String[] args) throws Exception {
+        FileInputStream FileInput = new FileInputStream("MangoTestCase/BackEndTest/basic.mx");
+        org.antlr.v4.runtime.ANTLRInputStream input = new org.antlr.v4.runtime.ANTLRInputStream(FileInput);
+        MangoLexer lexer = new MangoLexer(input);
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        MangoParser parser = new MangoParser(tokens);
+        parser.setErrorHandler(new BailErrorStrategy());
+        ParseTree tree = parser.prog();
+
+        ASTBuilder AST_builder = new ASTBuilder(tree);
+        AST root = AST_builder.visit(tree);
+//        Printer printer = new Printer(root, System.out);
+//        printer.print();
+        IRBuilder IR_builder = new IRBuilder(root);
+        IR_builder.print();
+        List<CFG> CFGs = IR_builder.buildCFG();
+        System.out.println("\nBegin output ControlFlowGraph");
+        for (CFG g : CFGs) System.out.print(g);
+//        System.out.println("\nBegin output LiveOut");
+//        IR_builder.printLiveOut();
     }
 
     public LinkedList<LinkedList<IRNode>> getFunctions() {
@@ -78,6 +109,93 @@ public class IRBuilder {
                 if (e instanceof Branch || e instanceof Jump) System.out.println();
             }
         }
+    }
+
+    public void printLiveOut() {
+        for (List<IRNode> list : functions) {
+            System.out.println();
+            for (IRNode e : list) {
+                System.out.println(e);
+                System.out.println("\tLiveOut:" + e.getLiveOut());
+                if (e instanceof Branch || e instanceof Jump) System.out.println();
+            }
+        }
+    }
+
+    public List<CFG> buildCFG() {
+        LinkedList<CFG> CFGs = new LinkedList<>();
+
+        LinkedList<BasicBlock> CFG;
+
+        for (LinkedList<IRNode> func : functions) {
+            CFG = new LinkedList<>();
+            Map<Label, BasicBlock> dict = new HashMap<>();
+            LinkedList<LinkedList<Label>> successorList = new LinkedList<>();
+
+            boolean isFiniedBB = false;
+            BasicBlock nowBB = null;
+            LinkedList<Label> nowSucc = null;
+            IRNode temp;
+            ListIterator<IRNode> IRItr = func.listIterator(0);
+
+            while (IRItr.hasNext()) {
+                temp = IRItr.next();
+                if (temp instanceof Label) {
+                    if (nowSucc != null) {
+                        nowSucc.add((Label) temp);
+                    }
+
+                    nowBB = new BasicBlock();
+                    dict.put((Label) temp, nowBB);
+                    nowBB.addInstruction(temp);
+                    nowSucc = new LinkedList<>();
+
+                    successorList.add(nowSucc);
+                    CFG.add(nowBB);
+
+                    isFiniedBB = false;
+                    continue;
+                }
+                if (isFiniedBB) continue;
+                if (temp instanceof Jump) {
+                    nowBB.addInstruction(temp);
+                    nowSucc.add(((Jump) temp).getTarget());
+                    isFiniedBB = true;
+                    // prevent the following add edge to it
+                    nowSucc = null;
+                } else if (temp instanceof Branch) {
+                    nowBB.addInstruction(temp);
+                    nowSucc.add(((Branch) temp).getT());
+                    nowSucc.add(((Branch) temp).getF());
+                    isFiniedBB = true;
+                    // prevent the following add edge to it
+                    nowSucc = null;
+                } else if (temp instanceof Return) {
+                    nowBB.addInstruction(temp);
+                    isFiniedBB = true;
+                    // prevent the following add edge to it
+                    nowSucc = null;
+                } else {
+                    if (nowBB == null) {
+                        throw new Bug_TextError();
+                    }
+                    nowBB.addInstruction(temp);
+                }
+            }
+
+            ListIterator<BasicBlock> BBItr = CFG.listIterator(0);
+            ListIterator<LinkedList<Label>> succItr = successorList.listIterator(0);
+            while (BBItr.hasNext()) {
+                BasicBlock nowBBB = BBItr.next();
+                LinkedList<Label> nowSuccc = succItr.next();
+                for (Label l : nowSuccc) nowBBB.addSuccessor(dict.get(l));
+            }
+
+            CFGs.add(new CFG(CFG));
+        }
+
+
+        return CFGs;
     }
 
     private void visit(AST node) {
@@ -258,7 +376,6 @@ public class IRBuilder {
             }
         }
     }
-
 
     private void visit(FuncDecl ast) {
         functions.add(new LinkedList<>());
@@ -534,7 +651,6 @@ public class IRBuilder {
         nowFunction.add(FINAL);
     }
 
-
     private void visit(LogRelationExpr ast) {
 //        visit(ast.getLhs());
 //        visit(ast.getRhs());
@@ -589,10 +705,19 @@ public class IRBuilder {
             buildCondition(F, T, ((LogNotExpr) condition).getBase());
         } else if (condition instanceof LogBinaryExpr) {
             visit(condition);
-            nowFunction.add(new Branch(condition.getOperand(), T, F));
+            nowFunction.add(new Branch((Register) condition.getOperand(), T, F));
         } else {
             visit(condition);
-            nowFunction.add(new Branch(condition.getOperand(), T, F));
+            if (condition instanceof BoolExpr) {
+                if (((BoolExpr) condition).getValue()) {
+                    nowFunction.add(new Jump(T));
+                    return;
+                } else {
+                    nowFunction.add(new Jump(F));
+                    return;
+                }
+            }
+            nowFunction.add(new Branch((Register) condition.getOperand(), T, F));
         }
 //        else {
 //
@@ -643,7 +768,7 @@ public class IRBuilder {
         nowFunction.add(begin);
         visit(ast.getLoop());
 
-        nowFunction.add(new Jump(ast.getBegin()));
+//        nowFunction.add(new Jump(ast.getBegin()));
 
         nowFunction.add(ast.getBegin());
         if (ast.getAfter() != null) visit(ast.getAfter());
@@ -657,7 +782,7 @@ public class IRBuilder {
         nowFunction.add(begin);
         visit(ast.getLoop());
 
-        nowFunction.add(new Jump(ast.getBegin()));
+//        nowFunction.add(new Jump(ast.getBegin()));
 
         nowFunction.add(ast.getBegin());
         buildCondition(begin, ast.getEnd(), ast.getCondition());

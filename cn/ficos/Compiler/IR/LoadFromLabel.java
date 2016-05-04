@@ -14,6 +14,7 @@ public class LoadFromLabel extends IRNode {
     public LoadFromLabel(Label label, Register reg, int _size) {
         this.label = label;
         this.target = reg;
+        VarKill.add(reg);
         this.size = _size;
     }
 
