@@ -14,6 +14,7 @@ import cn.ficos.Compiler.Gadgets.Operand.LocalRegister;
 import cn.ficos.Compiler.Gadgets.Operand.Operand;
 import cn.ficos.Compiler.Gadgets.Operand.Register;
 import cn.ficos.Compiler.Gadgets.Symbol.FuncSymbol;
+import cn.ficos.Compiler.Gadgets.Symbol.VarSymbol;
 import cn.ficos.Compiler.Gadgets.Type.ArrayType;
 import cn.ficos.Compiler.Gadgets.Type.BuiltInType;
 import cn.ficos.Compiler.IR.*;
@@ -24,6 +25,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.*;
 
 /**
@@ -46,7 +48,7 @@ public class IRBuilder {
     }
 
     public static void main(String[] args) throws Exception {
-        FileInputStream FileInput = new FileInputStream("MangoTestCase/BackEndTest/basic.mx");
+        FileInputStream FileInput = new FileInputStream("MangoTestCase/local_final/mx/spill2-5100379110-daibo.mx");
         org.antlr.v4.runtime.ANTLRInputStream input = new org.antlr.v4.runtime.ANTLRInputStream(FileInput);
         MangoLexer lexer = new MangoLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -54,17 +56,24 @@ public class IRBuilder {
         parser.setErrorHandler(new BailErrorStrategy());
         ParseTree tree = parser.prog();
 
-        ASTBuilder AST_builder = new ASTBuilder(tree);
-        AST root = AST_builder.visit(tree);
+//        ASTBuilder AST_builder = new ASTBuilder(tree);
+//        AST root = AST_builder.visit(tree);
 //        Printer printer = new Printer(root, System.out);
 //        printer.print();
+//        IRBuilder IR_builder = new IRBuilder(root);
+//        IR_builder.print();
+////        CFGs CFGs = IR_builder.buildCFGs();
+////        System.out.println("\nBegin output ControlFlowGraph");
+////        for (CFG g : CFGs.getCFGList()) System.out.print(g);
+////        System.out.println("\nBegin output LiveOut");
+////        IR_builder.printLiveOut();
+//        new MIPSGenerator(System.out, IR_builder.buildCFGs());
+
+        ASTBuilder AST_builder = new ASTBuilder(tree);
+        AST root = AST_builder.visit(tree);
         IRBuilder IR_builder = new IRBuilder(root);
-        IR_builder.print();
-        CFGs CFGs = IR_builder.buildCFGs();
-        System.out.println("\nBegin output ControlFlowGraph");
-        for (CFG g : CFGs.getCFGList()) System.out.print(g);
-        System.out.println("\nBegin output LiveOut");
-        IR_builder.printLiveOut();
+//        CFGs CFGs = IR_builder.buildCFGs();
+        new MIPSGenerator(new FileOutputStream("MangoTestCase/out.s"), IR_builder.buildCFGs());
     }
 
     public LinkedList<LinkedList<IRNode>> getFunctions() {
@@ -84,8 +93,9 @@ public class IRBuilder {
     }
 
     public LinkedList<LinkedList<IRNode>> buildIR() {
+        funcInfo.add(null);
         initialization.add(new Label("main", false));
-        initialization.add(new Call(new Label("_buffer_init", false), null, null));
+//        initialization.add(new Call(new Label("_buffer_init", false), null, null));
         visit(root);
         if (main != null) {
             initialization.add(new Call(main.getFuncInfo(), null, null));
@@ -128,6 +138,7 @@ public class IRBuilder {
         CFG = new LinkedList<>();
         Map<Label, BasicBlock> dict = new HashMap<>();
         LinkedList<LinkedList<Label>> successorList = new LinkedList<>();
+        int maxArgu = 0;
 
         boolean isFiniedBB = false;
         BasicBlock nowBB = null;
@@ -176,6 +187,11 @@ public class IRBuilder {
                 if (nowBB == null) {
                     throw new Bug_TextError();
                 }
+                if (temp instanceof Call) {
+                    if (((Call) temp).getParameters() != null &&
+                            ((Call) temp).getParameters().size() > maxArgu)
+                        maxArgu = ((Call) temp).getParameters().size();
+                }
                 nowBB.addInstruction(temp);
             }
         }
@@ -188,7 +204,7 @@ public class IRBuilder {
             for (Label l : nowSuccc) nowBBB.addSuccessor(dict.get(l));
         }
 
-        return new CFG(CFG);
+        return new CFG(CFG, maxArgu);
     }
 
     public CFGs buildCFGs() {
@@ -197,7 +213,7 @@ public class IRBuilder {
         for (LinkedList<IRNode> func : functions) {
             CFGList.add(buildCFG(func));
         }
-        return new CFGs(CFGList);
+        return new CFGs(CFGList, data);
     }
 
     private void visit(AST node) {
@@ -387,6 +403,12 @@ public class IRBuilder {
         }
         nowFunction = functions.getLast();
         nowFunction.add(ast.getFuncInfo().getFuncLabel());
+        if (ast.getFuncInfo().getParameter() != null) {
+            int count = 0;
+            for (VarSymbol var : ast.getFuncInfo().getParameter()) {
+                nowFunction.add(new LoadParameter(var.getReg(), count++));
+            }
+        }
         for (Stmt s : ast.getStmts()) {
             visit(s);
         }

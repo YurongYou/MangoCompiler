@@ -10,4 +10,6 @@ public class CONSTANT {
      */
     public static int wordSize = 4;
     public static int actualRegNumber = 24;
+    public static String funcPrefix = "func_";
+    public static String builtInFuncPrefix = "func__";
 }

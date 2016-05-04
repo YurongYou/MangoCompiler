@@ -3,7 +3,7 @@ package cn.ficos.Compiler;
 import cn.ficos.Compiler.AST.AST;
 import cn.ficos.Compiler.ASTBuilder.ASTBuilder;
 import cn.ficos.Compiler.CodeGeneration.IRBuilder;
-import cn.ficos.Compiler.CodeGeneration.NaiveMIPSGenerator;
+import cn.ficos.Compiler.CodeGeneration.MIPSGenerator;
 import cn.ficos.Compiler.Syntax.MangoLexer;
 import cn.ficos.Compiler.Syntax.MangoParser;
 import org.antlr.v4.runtime.BailErrorStrategy;
@@ -64,6 +64,8 @@ public class Main {
         ASTBuilder AST_builder = new ASTBuilder(tree);
         AST root = AST_builder.visit(tree);
         IRBuilder IR_builder = new IRBuilder(root);
-        new NaiveMIPSGenerator(IR_builder, out);
+//        CFGs CFGs = IR_builder.buildCFGs();
+        new MIPSGenerator(out, IR_builder.buildCFGs());
+//        new NaiveMIPSGenerator(IR_builder, out);
     }
 }

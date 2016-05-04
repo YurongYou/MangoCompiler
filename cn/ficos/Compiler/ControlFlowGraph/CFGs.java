@@ -1,5 +1,6 @@
 package cn.ficos.Compiler.ControlFlowGraph;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -8,9 +9,16 @@ import java.util.List;
  */
 public class CFGs {
     List<CFG> CFGList;
+    LinkedList<String> data;
 
-    public CFGs(List<CFG> CFGList) {
+    public CFGs(List<CFG> CFGList, LinkedList<String> data) {
+
         this.CFGList = CFGList;
+        this.data = data;
+    }
+
+    public LinkedList<String> getData() {
+        return data;
     }
 
     public List<CFG> getCFGList() {

@@ -12,14 +12,35 @@ import java.util.*;
  */
 public class CFG {
     LinkedList<BasicBlock> CFG;
+    int maxArgu;
+    int frameSize;
+    Map<Register, Integer> spills = new HashMap<>();
 
-    public CFG(LinkedList<BasicBlock> CFG) {
+    public CFG(LinkedList<BasicBlock> CFG, int _maxArgu) {
         this.CFG = CFG;
+        maxArgu = _maxArgu;
 //        Automatically color the registers
         for (BasicBlock block : CFG) block.gatherInitialInfo();
         solveLiveOut();
         for (BasicBlock block : CFG) block.computeLiveOutInside();
         colorRegister();
+        frameSize = (maxArgu + 1 + CONSTANT.actualRegNumber + spills.size()) * 4;
+    }
+
+    public LinkedList<BasicBlock> getCFG() {
+        return CFG;
+    }
+
+    public int getMaxArgu() {
+        return maxArgu;
+    }
+
+    public int getFrameSize() {
+        return frameSize;
+    }
+
+    public Map<Register, Integer> getSpills() {
+        return spills;
     }
 
     private void solveLiveOut() {
@@ -88,6 +109,7 @@ public class CFG {
                     break;
                 }
             }
+            if (!now.isColored()) spills.put(now, spills.size());
         }
 
         // test

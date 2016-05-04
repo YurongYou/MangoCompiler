@@ -1,5 +1,6 @@
 package cn.ficos.Compiler.Gadgets.Symbol;
 
+import cn.ficos.Compiler.Gadgets.CONSTANT;
 import cn.ficos.Compiler.Gadgets.Name;
 import cn.ficos.Compiler.Gadgets.Type.Type;
 import cn.ficos.Compiler.IR.Label;
@@ -36,7 +37,7 @@ public class FuncSymbol extends Symbol {
         formalParameterType = FPT;
 
 //        funcLabel = new Label(_funcName.toString(), false);
-        funcLabel = new Label("func_" + _funcName.toString(), false);
+        funcLabel = new Label(CONSTANT.funcPrefix + _funcName.toString(), false);
     }
 
     public List<VarSymbol> getParameter() {

@@ -6,8 +6,6 @@ import cn.ficos.Compiler.ASTVisitor.Printer;
 import cn.ficos.Compiler.Gadgets.Operand.Constant;
 import cn.ficos.Compiler.Gadgets.Operand.Operand;
 import cn.ficos.Compiler.Gadgets.Operand.Register;
-import cn.ficos.Compiler.Gadgets.Symbol.FuncSymbol;
-import cn.ficos.Compiler.Gadgets.Symbol.VarSymbol;
 import cn.ficos.Compiler.IR.*;
 import cn.ficos.Compiler.Syntax.MangoLexer;
 import cn.ficos.Compiler.Syntax.MangoParser;
@@ -41,11 +39,11 @@ public class NaiveMIPSGenerator {
         }
 
         data = IR_builder.getData();
-        functions.add(new Function(IR_builder.getInitialization(), null));
         ListIterator<LinkedList<IRNode>> funcItr = IR_builder.getFunctions().listIterator(0);
-        ListIterator<FuncSymbol> infoItr = IR_builder.getFuncInfo().listIterator();
+//        ListIterator<FuncSymbol> infoItr = IR_builder.getFuncInfo().listIterator();
+        functions.add(new Function(IR_builder.getInitialization()));
         while (funcItr.hasNext()) {
-            functions.add(new Function(funcItr.next(), infoItr.next()));
+            functions.add(new Function(funcItr.next()));
         }
         print();
     }
@@ -88,88 +86,94 @@ public class NaiveMIPSGenerator {
         LinkedList<IRNode> instructions;
         int frameSize = 0;
 
-        public Function(LinkedList<IRNode> func, FuncSymbol _info) {
+        public Function(LinkedList<IRNode> func) {
             instructions = func;
-            int parameter = 0;
+//            int parameter = 0;
             for (IRNode e : instructions) {
                 if (e instanceof Call) {
                     if (((Call) e).getParameters() != null &&
                             ((Call) e).getParameters().size() > maxArgu) maxArgu = ((Call) e).getParameters().size();
                 }
             }
-            if (_info != null) {
-                for (VarSymbol var : _info.getParameter()) {
-                    offset.put(var.getReg(), 0);
-                    ++parameter;
-                }
-            }
+//            if (_info != null) {
+//                for (VarSymbol var : _info.getParameter()) {
+//                    offset.put(var.getReg(), 0);
+//                    ++parameter;
+//                }
+//            }
             for (IRNode e : instructions) {
                 if (e instanceof Binary) {
                     if (!offset.containsKey(((Binary) e).getTarget())) {
-                        offset.put(((Binary) e).getTarget(), 4 * (maxArgu + offset.size() - parameter + 1));
+                        offset.put(((Binary) e).getTarget(), 4 * (maxArgu + offset.size() + 1));
                     }
                     continue;
                 }
                 if (e instanceof Call) {
                     if (((Call) e).getTarget() != null && !offset.containsKey(((Call) e).getTarget())) {
-                        offset.put(((Call) e).getTarget(), 4 * (maxArgu + offset.size() - parameter + 1));
+                        offset.put(((Call) e).getTarget(), 4 * (maxArgu + offset.size() + 1));
                     }
                     continue;
                 }
                 if (e instanceof Load) {
                     if (!offset.containsKey(((Load) e).getTarget())) {
-                        offset.put(((Load) e).getTarget(), 4 * (maxArgu + offset.size() - parameter + 1));
+                        offset.put(((Load) e).getTarget(), 4 * (maxArgu + offset.size() + 1));
                     }
                     continue;
                 }
                 if (e instanceof LoadAddress) {
                     if (!offset.containsKey(((LoadAddress) e).getTarget())) {
-                        offset.put(((LoadAddress) e).getTarget(), 4 * (maxArgu + offset.size() - parameter + 1));
+                        offset.put(((LoadAddress) e).getTarget(), 4 * (maxArgu + offset.size() + 1));
                     }
                     continue;
                 }
                 if (e instanceof LoadImm) {
                     if (!offset.containsKey(((LoadImm) e).getReg())) {
-                        offset.put(((LoadImm) e).getReg(), 4 * (maxArgu + offset.size() - parameter + 1));
+                        offset.put(((LoadImm) e).getReg(), 4 * (maxArgu + offset.size() + 1));
                     }
                 }
                 if (e instanceof LoadFromLabel) {
                     if (!offset.containsKey(((LoadFromLabel) e).getTarget())) {
-                        offset.put(((LoadFromLabel) e).getTarget(), 4 * (maxArgu + offset.size() - parameter + 1));
+                        offset.put(((LoadFromLabel) e).getTarget(), 4 * (maxArgu + offset.size() + 1));
+                    }
+                    continue;
+                }
+                if (e instanceof LoadParameter) {
+                    if (!offset.containsKey(((LoadParameter) e).getTarget())) {
+                        offset.put(((LoadParameter) e).getTarget(), 4 * (maxArgu + offset.size() + 1));
                     }
                     continue;
                 }
                 if (e instanceof Move) {
                     if (!offset.containsKey(((Move) e).getTarget())) {
-                        offset.put(((Move) e).getTarget(), 4 * (maxArgu + offset.size() - parameter + 1));
+                        offset.put(((Move) e).getTarget(), 4 * (maxArgu + offset.size() + 1));
                     }
                     continue;
                 }
                 if (e instanceof Neg) {
                     if (!offset.containsKey(((Neg) e).getTarget())) {
-                        offset.put(((Neg) e).getTarget(), 4 * (maxArgu + offset.size() - parameter + 1));
+                        offset.put(((Neg) e).getTarget(), 4 * (maxArgu + offset.size() + 1));
                     }
                     continue;
                 }
                 if (e instanceof Not) {
                     if (!offset.containsKey(((Not) e).getTarget())) {
-                        offset.put(((Not) e).getTarget(), 4 * (maxArgu + offset.size() - parameter + 1));
+                        offset.put(((Not) e).getTarget(), 4 * (maxArgu + offset.size() + 1));
                     }
                     continue;
                 }
                 if (e instanceof New) {
                     if (!offset.containsKey(((New) e).getTarget())) {
-                        offset.put(((New) e).getTarget(), 4 * (maxArgu + offset.size() - parameter + 1));
+                        offset.put(((New) e).getTarget(), 4 * (maxArgu + offset.size() + 1));
                     }
                 }
             }
-            frameSize = (maxArgu + 1 + offset.size() - parameter) * 4;
-            if (_info != null) {
-                int count = 1;
-                for (VarSymbol var : _info.getParameter()) {
-                    offset.put(var.getReg(), 4 * (maxArgu + offset.size() - parameter + count++));
-                }
-            }
+            frameSize = (maxArgu + 1 + offset.size()) * 4;
+//            if (_info != null) {
+//                int count = 1;
+//                for (VarSymbol var : _info.getParameter()) {
+//                    offset.put(var.getReg(), 4 * (maxArgu + offset.size() + count++));
+//                }
+//            }
 
 //            System.out.println(instructions.getFirst());
 //            System.out.println(offset);
@@ -301,6 +305,11 @@ public class NaiveMIPSGenerator {
                     out.println("\tlw $v0, " + offset.get(((StoreLabel) node).getSource()) + "($sp)");
 //                    store it back
                     out.println("\tsw $v0, " + ((StoreLabel) node).getLabel());
+                } else if (node instanceof LoadParameter) {
+//                    out.println("\tli $v0, " + ((LoadImm) node).getImm());
+//                    out.println("\tsw $v0, " + offset.get(((LoadImm) node).getReg()) + "($sp)");
+                    out.println("\tlw $v0, " + (((LoadParameter) node).getNo() * 4 + frameSize) + "($sp)");
+                    out.println("\tsw $v0, " + offset.get(((LoadParameter) node).getTarget()) + "($sp)");
                 }
 //                out.println("----------------\n");
             }

@@ -14,7 +14,6 @@ public abstract class Register extends Operand implements Comparable<Register> {
     protected int ID;
     int color = -1;
     Set<Register> interference = new HashSet<>();
-
     Register() {
         ID = count++;
     }
