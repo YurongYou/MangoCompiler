@@ -12,13 +12,13 @@ import java.util.Set;
 public abstract class IRNode {
     Set<Register> LiveOut = new HashSet<>();
     Set<Register> UEVar = new HashSet<>();
-    Set<Register> VarKill = new HashSet<>();
+    Register VarKill = null;
 
     public Set<Register> getUEVar() {
         return UEVar;
     }
 
-    public Set<Register> getVarKill() {
+    public Register getVarKill() {
         return VarKill;
     }
 

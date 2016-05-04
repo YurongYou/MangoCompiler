@@ -14,7 +14,7 @@ public class Neg extends IRNode {
         this.target = target;
         this.source = source;
         UEVar.add(source);
-        VarKill.add(target);
+        VarKill = target;
     }
 
     @Override

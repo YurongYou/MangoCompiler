@@ -22,17 +22,17 @@ public class BasicBlock {
     public BasicBlock() {
     }
 
-    public Set<Register> getLiveOut() {
-        return LiveOut;
-    }
+//    public Set<Register> getLiveOut() {
+////        return LiveOut;
+////    }
 
     public Set<Register> getUEVar() {
         return UEVar;
     }
 
-    public Set<Register> getVarKill() {
-        return VarKill;
-    }
+//    public Set<Register> getVarKill() {
+//        return VarKill;
+//    }
 
     public void gatherInitialInfo() {
         for (IRNode node : instructions) {
@@ -40,8 +40,8 @@ public class BasicBlock {
             for (Register r : node.getUEVar())
                 if (!VarKill.contains(r)) UEVar.add(r);
             // Process Write
-            for (Register r : node.getVarKill())
-                VarKill.add(r);
+            if (node.getVarKill() != null)
+                VarKill.add(node.getVarKill());
         }
     }
 
@@ -76,7 +76,7 @@ public class BasicBlock {
             temp = IRItr.next();
             for (Register r : pre.getUEVar()) temp.addLiveOut(r);
             for (Register r : pre.getLiveOut())
-                if (!pre.getVarKill().contains(r))
+                if (pre.getVarKill() != r)
                     temp.addLiveOut(r);
         }
     }

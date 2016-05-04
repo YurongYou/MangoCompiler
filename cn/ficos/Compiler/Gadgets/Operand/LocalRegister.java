@@ -8,5 +8,6 @@ public class LocalRegister extends Register {
     @Override
     public String toString() {
         return "$LR" + ID;
+//        return "$r" + color;
     }
 }

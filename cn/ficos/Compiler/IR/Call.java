@@ -23,7 +23,7 @@ public class Call extends IRNode {
                 if (operand instanceof Register) UEVar.add((Register) operand);
             }
         }
-        VarKill.add(target);
+        VarKill = target;
     }
 
     public Call(Label info, List<Operand> parameters, Register target) {
@@ -35,7 +35,7 @@ public class Call extends IRNode {
                 if (operand instanceof Register) UEVar.add((Register) operand);
             }
         }
-        VarKill.add(target);
+        VarKill = target;
     }
 
 

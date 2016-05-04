@@ -4,6 +4,7 @@ import cn.ficos.Compiler.AST.*;
 import cn.ficos.Compiler.ASTBuilder.ASTBuilder;
 import cn.ficos.Compiler.ControlFlowGraph.BasicBlock;
 import cn.ficos.Compiler.ControlFlowGraph.CFG;
+import cn.ficos.Compiler.ControlFlowGraph.CFGs;
 import cn.ficos.Compiler.Exceptions.Bug_TextError;
 import cn.ficos.Compiler.Gadgets.BinaryOp;
 import cn.ficos.Compiler.Gadgets.CONSTANT;
@@ -59,11 +60,11 @@ public class IRBuilder {
 //        printer.print();
         IRBuilder IR_builder = new IRBuilder(root);
         IR_builder.print();
-        List<CFG> CFGs = IR_builder.buildCFG();
+        CFGs CFGs = IR_builder.buildCFGs();
         System.out.println("\nBegin output ControlFlowGraph");
-        for (CFG g : CFGs) System.out.print(g);
-//        System.out.println("\nBegin output LiveOut");
-//        IR_builder.printLiveOut();
+        for (CFG g : CFGs.getCFGList()) System.out.print(g);
+        System.out.println("\nBegin output LiveOut");
+        IR_builder.printLiveOut();
     }
 
     public LinkedList<LinkedList<IRNode>> getFunctions() {
@@ -122,80 +123,81 @@ public class IRBuilder {
         }
     }
 
-    public List<CFG> buildCFG() {
-        LinkedList<CFG> CFGs = new LinkedList<>();
-
+    public CFG buildCFG(LinkedList<IRNode> func) {
         LinkedList<BasicBlock> CFG;
+        CFG = new LinkedList<>();
+        Map<Label, BasicBlock> dict = new HashMap<>();
+        LinkedList<LinkedList<Label>> successorList = new LinkedList<>();
 
-        for (LinkedList<IRNode> func : functions) {
-            CFG = new LinkedList<>();
-            Map<Label, BasicBlock> dict = new HashMap<>();
-            LinkedList<LinkedList<Label>> successorList = new LinkedList<>();
+        boolean isFiniedBB = false;
+        BasicBlock nowBB = null;
+        LinkedList<Label> nowSucc = null;
+        IRNode temp;
+        ListIterator<IRNode> IRItr = func.listIterator(0);
 
-            boolean isFiniedBB = false;
-            BasicBlock nowBB = null;
-            LinkedList<Label> nowSucc = null;
-            IRNode temp;
-            ListIterator<IRNode> IRItr = func.listIterator(0);
-
-            while (IRItr.hasNext()) {
-                temp = IRItr.next();
-                if (temp instanceof Label) {
-                    if (nowSucc != null) {
-                        nowSucc.add((Label) temp);
-                    }
-
-                    nowBB = new BasicBlock();
-                    dict.put((Label) temp, nowBB);
-                    nowBB.addInstruction(temp);
-                    nowSucc = new LinkedList<>();
-
-                    successorList.add(nowSucc);
-                    CFG.add(nowBB);
-
-                    isFiniedBB = false;
-                    continue;
+        while (IRItr.hasNext()) {
+            temp = IRItr.next();
+            if (temp instanceof Label) {
+                if (nowSucc != null) {
+                    nowSucc.add((Label) temp);
                 }
-                if (isFiniedBB) continue;
-                if (temp instanceof Jump) {
-                    nowBB.addInstruction(temp);
-                    nowSucc.add(((Jump) temp).getTarget());
-                    isFiniedBB = true;
-                    // prevent the following add edge to it
-                    nowSucc = null;
-                } else if (temp instanceof Branch) {
-                    nowBB.addInstruction(temp);
-                    nowSucc.add(((Branch) temp).getT());
-                    nowSucc.add(((Branch) temp).getF());
-                    isFiniedBB = true;
-                    // prevent the following add edge to it
-                    nowSucc = null;
-                } else if (temp instanceof Return) {
-                    nowBB.addInstruction(temp);
-                    isFiniedBB = true;
-                    // prevent the following add edge to it
-                    nowSucc = null;
-                } else {
-                    if (nowBB == null) {
-                        throw new Bug_TextError();
-                    }
-                    nowBB.addInstruction(temp);
+
+                nowBB = new BasicBlock();
+                dict.put((Label) temp, nowBB);
+                nowBB.addInstruction(temp);
+                nowSucc = new LinkedList<>();
+
+                successorList.add(nowSucc);
+                CFG.add(nowBB);
+
+                isFiniedBB = false;
+                continue;
+            }
+            if (isFiniedBB) continue;
+            if (temp instanceof Jump) {
+                nowBB.addInstruction(temp);
+                nowSucc.add(((Jump) temp).getTarget());
+                isFiniedBB = true;
+                // prevent the following add edge to it
+                nowSucc = null;
+            } else if (temp instanceof Branch) {
+                nowBB.addInstruction(temp);
+                nowSucc.add(((Branch) temp).getT());
+                nowSucc.add(((Branch) temp).getF());
+                isFiniedBB = true;
+                // prevent the following add edge to it
+                nowSucc = null;
+            } else if (temp instanceof Return) {
+                nowBB.addInstruction(temp);
+                isFiniedBB = true;
+                // prevent the following add edge to it
+                nowSucc = null;
+            } else {
+                if (nowBB == null) {
+                    throw new Bug_TextError();
                 }
+                nowBB.addInstruction(temp);
             }
-
-            ListIterator<BasicBlock> BBItr = CFG.listIterator(0);
-            ListIterator<LinkedList<Label>> succItr = successorList.listIterator(0);
-            while (BBItr.hasNext()) {
-                BasicBlock nowBBB = BBItr.next();
-                LinkedList<Label> nowSuccc = succItr.next();
-                for (Label l : nowSuccc) nowBBB.addSuccessor(dict.get(l));
-            }
-
-            CFGs.add(new CFG(CFG));
         }
 
+        ListIterator<BasicBlock> BBItr = CFG.listIterator(0);
+        ListIterator<LinkedList<Label>> succItr = successorList.listIterator(0);
+        while (BBItr.hasNext()) {
+            BasicBlock nowBBB = BBItr.next();
+            LinkedList<Label> nowSuccc = succItr.next();
+            for (Label l : nowSuccc) nowBBB.addSuccessor(dict.get(l));
+        }
 
-        return CFGs;
+        return new CFG(CFG);
+    }
+
+    public CFGs buildCFGs() {
+        LinkedList<CFG> CFGList = new LinkedList<>();
+        CFGList.add(buildCFG(initialization));
+        for (LinkedList<IRNode> func : functions) {
+            CFGList.add(buildCFG(func));
+        }
+        return new CFGs(CFGList);
     }
 
     private void visit(AST node) {

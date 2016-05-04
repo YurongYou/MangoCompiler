@@ -20,7 +20,7 @@ public class Binary extends IRNode {
         this.rhs = rhs;
         UEVar.add(lhs);
         if (rhs instanceof Register) UEVar.add((Register) rhs);
-        VarKill.add(target);
+        VarKill = target;
         this.OP = OP;
     }
 

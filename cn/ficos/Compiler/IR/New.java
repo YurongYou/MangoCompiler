@@ -15,7 +15,7 @@ public class New extends IRNode {
     public New(Register target, Operand size) {
         this.target = target;
         this.size = size;
-        VarKill.add(target);
+        VarKill = target;
     }
 
     @Override

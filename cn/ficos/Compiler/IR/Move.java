@@ -13,7 +13,7 @@ public class Move extends IRNode {
         target = _target;
         source = _source;
         UEVar.add(source);
-        VarKill.add(target);
+        VarKill = target;
     }
 
     @Override
