@@ -48,7 +48,7 @@ public class IRBuilder {
     }
 
     public static void main(String[] args) throws Exception {
-        FileInputStream FileInput = new FileInputStream("MangoTestCase/BackEndTest/basic.mx");
+        FileInputStream FileInput = new FileInputStream("MangoTestCase/local_final/mx/string_test-huyuncong.mx");
         org.antlr.v4.runtime.ANTLRInputStream input = new org.antlr.v4.runtime.ANTLRInputStream(FileInput);
         MangoLexer lexer = new MangoLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -58,8 +58,7 @@ public class IRBuilder {
 
 //        ASTBuilder AST_builder = new ASTBuilder(tree);
 //        AST root = AST_builder.visit(tree);
-//        Printer printer = new Printer(root, System.out);
-//        printer.print();
+
 //        IRBuilder IR_builder = new IRBuilder(root);
 //        IR_builder.print();
 ////        CFGs CFGs = IR_builder.buildCFGs();
@@ -71,7 +70,10 @@ public class IRBuilder {
 
         ASTBuilder AST_builder = new ASTBuilder(tree);
         AST root = AST_builder.visit(tree);
+//        Printer printer = new Printer(root, System.out);
+//        printer.print();
         IRBuilder IR_builder = new IRBuilder(root);
+        IR_builder.print();
 //        CFGs CFGs = IR_builder.buildCFGs();
         new MIPSGenerator(new FileOutputStream("MangoTestCase/out.s"), IR_builder.buildCFGs());
     }
@@ -499,10 +501,18 @@ public class IRBuilder {
         }
     }
 
+    private int getLength(String s) {
+        int count = s.length();
+        for (int i = 0; i < s.length(); ++i) {
+            if (s.charAt(i) == '\\') --count;
+        }
+        return count;
+    }
+
     private void visit(StringExpr ast) {
         // left empty intendedly
         nowFunction.add(new LoadAddress((Register) ast.getOperand(), ast.getLabel()));
-        data.add("\t.word " + ast.getText().length());
+        data.add("\t.word " + getLength(ast.getText()));
         data.add(ast.getLabel() + ": " + ".asciiz \"" + ast.getText() + "\"");
         data.add(".align 2");
     }
@@ -804,7 +814,11 @@ public class IRBuilder {
 
         nowFunction.add(ast.getBegin());
         if (ast.getAfter() != null) visit(ast.getAfter());
-        if (ast.getCondition() != null) buildCondition(begin, ast.getEnd(), ast.getCondition());
+        if (ast.getCondition() != null) {
+            buildCondition(begin, ast.getEnd(), ast.getCondition());
+        } else {
+            nowFunction.add(new Jump(begin));
+        }
         nowFunction.add(ast.getEnd());
     }
 

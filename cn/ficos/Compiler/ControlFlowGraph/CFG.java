@@ -28,7 +28,12 @@ public class CFG {
         for (BasicBlock block : CFG) block.computeLiveOutInside();
         colorRegister();
         countUse();
-        frameSize = (maxArgu + 1 + CONSTANT.actualRegNumber + spills.size()) * 4;
+        if (isLeaf) frameSize = (maxArgu + spills.size()) * 4;
+        else frameSize = (maxArgu + CONSTANT.actualRegNumber + spills.size()) * 4;
+    }
+
+    public boolean isLeaf() {
+        return isLeaf;
     }
 
     public LinkedList<BasicBlock> getCFG() {

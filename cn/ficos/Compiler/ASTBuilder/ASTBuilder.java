@@ -1037,7 +1037,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
         }
 
         List<Type> APT = new LinkedList<>();
-        List<ExprStmt> AP = new LinkedList<>();
+        LinkedList<ExprStmt> AP = new LinkedList<>();
         ListIterator<ExprStmt> APItr = AP.listIterator(0);
         APT.add(lhs.getType());
         APItr.add(lhs);
@@ -1045,9 +1045,14 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
             List<MangoParser.ExprContext> APc = ctx.exprList().expr();
             ListIterator<MangoParser.ExprContext> APcItr = APc.listIterator(0);
             while (APcItr.hasNext()) {
-                APItr.add((ExprStmt) visit(APcItr.next()));
-                APT.add(APItr.previous().getType());
+                AP.addLast((ExprStmt) visit(APcItr.next()));
+                APT.add(AP.getLast().getType());
             }
+//            System.out.println("check: " + ctx.getText());
+//            for (ExprStmt e: AP){
+//                System.out.print(e + " ");
+//            }
+//            System.out.println();
         }
         // compare AP and FP
         if (!funcInfo.isValidParameters(APT)) {

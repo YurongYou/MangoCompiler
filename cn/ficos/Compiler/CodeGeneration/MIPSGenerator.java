@@ -42,13 +42,13 @@ public class MIPSGenerator {
             "$a2",
             "$a3",
     };
-    static final boolean[] notSaved = {false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,};
-    static final boolean[] println = {false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false,};
-    static final boolean[] getString = {true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, false, false,};
-    static final boolean[] toString = {true, true, true, true, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false,};
-    static final boolean[] subStringAndConcatenate = {true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, false, false,};
-    static final boolean[] parseInt = {true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false,};
-    static final boolean[] compare = {false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, false, false,};
+    //    static final boolean[] notSaved = {false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,};
+//    static final boolean[] println = {false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false,};
+//    static final boolean[] getString = {true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, false, false,};
+//    static final boolean[] toString = {true, true, true, true, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false,};
+//    static final boolean[] subStringAndConcatenate = {true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, false, false,};
+//    static final boolean[] parseInt = {true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false,};
+//    static final boolean[] compare = {false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, false, false,};
     PrintStream out;
     CFGs CFGList;
 
@@ -78,7 +78,7 @@ public class MIPSGenerator {
 //            The first node must be the function label
         for (BasicBlock block : G.getCFG()) {
             for (IRNode node : block.getInstructions()) {
-//                out.println("#\t" + node);
+                out.println("#\t" + node);
                 if (node instanceof Binary) {
                     out.println("\t" + ((Binary) node).getOP()
                             + " " + processWrite(((Binary) node).getTarget())
@@ -91,8 +91,7 @@ public class MIPSGenerator {
                     out.println("\tj " + ((Branch) node).getT());
                 } else if (node instanceof Call) {
                     boolean isBuiltIn = ((Call) node).getFuncLabel().getLabelName().startsWith(CONSTANT.builtInFuncPrefix);
-                    boolean[] pattern = notSaved;
-                    ;
+//                    boolean[] pattern = notSaved;
 //                    if (!isBuiltIn) {
 //                        for (Register reg : node.getLiveOut()) saveReg(G, reg);
 //                    }
@@ -156,7 +155,14 @@ public class MIPSGenerator {
                     out.println("\tj " + ((Jump) node).getTarget());
                 } else if (node instanceof Label) {
                     out.println(node + ":");
-                    if (((Label) node).getLabelName().startsWith(CONSTANT.funcPrefix) || ((Label) node).getLabelName().equals("main")) {
+                    if (((Label) node).getLabelName().equals("main")) {
+                        if (G.getSpills().size() != 0) {
+                            out.println("\tsubu $sp, $sp, " + G.getFrameSize());
+                        }
+                        continue;
+                    }
+                    if (((Label) node).getLabelName().startsWith(CONSTANT.funcPrefix)) {
+                        if (G.getFrameSize() == 0) continue;
                         out.println("\tsubu $sp, $sp, " + G.getFrameSize());
                         out.println("\tsw $ra, " + G.getMaxArgu() * 4 + "($sp)");
                     }
@@ -220,6 +226,10 @@ public class MIPSGenerator {
                             out.println("\tli $v0, " + ((Constant) ((Return) node).getResult()).getValue());
                         } else out.println("\tmove $v0, " + processRead(G, ((Return) node).getResult(), false));
                     }
+                    if (G.getFrameSize() == 0) {
+                        out.println("\tjr $ra");
+                        continue;
+                    }
                     out.println("\tlw $ra, " + G.getMaxArgu() * 4 + "($sp)");
                     out.println("\taddu $sp, $sp, " + G.getFrameSize());
                     out.println("\tjr $ra");
@@ -235,6 +245,16 @@ public class MIPSGenerator {
 //                for (Register r: node.getLiveOut()) if (!r.isColored()) out.print(r + " ");
                 out.println();
             }
+        }
+        if (((Label) G.getCFG().peek().getInstructions().peek()).getLabelName().equals("main")) {
+            out.println("\tmove $a0, $v0");
+            out.println("\tli $v0, 17");
+            out.println("\tsyscall");
+            return;
+        }
+        if (G.getFrameSize() == 0) {
+            out.println("\tjr $ra");
+            return;
         }
         out.println("\tlw $ra, " + G.getMaxArgu() * 4 + "($sp)");
         out.println("\taddu $sp, $sp, " + G.getFrameSize());
