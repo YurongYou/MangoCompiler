@@ -14,6 +14,8 @@ public class Call extends IRNode {
     Label funcLabel;
     List<Operand> parameters;
     Register target;
+    boolean[] targetUsedRegs;
+
     public Call(FuncSymbol info, List<Operand> parameters, Register target) {
         funcLabel = info.getFuncLabel();
         this.parameters = parameters;
@@ -38,6 +40,13 @@ public class Call extends IRNode {
         VarKill = target;
     }
 
+    public boolean[] getTargetUsedRegs() {
+        return targetUsedRegs;
+    }
+
+    public void setTargetUsedRegs(boolean[] targetUsedRegs) {
+        this.targetUsedRegs = targetUsedRegs;
+    }
 
     public List<Operand> getParameters() {
         return parameters;

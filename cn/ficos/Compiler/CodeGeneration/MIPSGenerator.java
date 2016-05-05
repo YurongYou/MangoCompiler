@@ -93,26 +93,32 @@ public class MIPSGenerator {
                     boolean isBuiltIn = ((Call) node).getFuncLabel().getLabelName().startsWith(CONSTANT.builtInFuncPrefix);
                     boolean[] pattern = notSaved;
                     ;
-                    if (!isBuiltIn) for (Register reg : node.getLiveOut()) saveReg(G, reg);
-                    else {
-                        if (((Call) node).getFuncLabel().getLabelName().equals("func__println")) pattern = println;
-                        else if (((Call) node).getFuncLabel().getLabelName().equals("func__getString"))
-                            pattern = getString;
-                        else if (((Call) node).getFuncLabel().getLabelName().equals("func__toString"))
-                            pattern = toString;
-                        else if (((Call) node).getFuncLabel().getLabelName().equals("func__string.substring"))
-                            pattern = subStringAndConcatenate;
-                        else if (((Call) node).getFuncLabel().getLabelName().equals("func__string.parseInt"))
-                            pattern = parseInt;
-                        else if (((Call) node).getFuncLabel().getLabelName().equals("func__stringConcatenate"))
-                            pattern = subStringAndConcatenate;
-                        else if (((Call) node).getFuncLabel().getLabelName().equals("func__stringIsEqual"))
-                            pattern = compare;
-                        else if (((Call) node).getFuncLabel().getLabelName().equals("func__stringLess"))
-                            pattern = compare;
-                        else pattern = notSaved;
-                        for (Register reg : node.getLiveOut())
-                            if (reg.isColored() && pattern[reg.getColor()]) saveReg(G, reg);
+//                    if (!isBuiltIn) {
+//                        for (Register reg : node.getLiveOut()) saveReg(G, reg);
+//                    }
+//                    else {
+//                        if (((Call) node).getFuncLabel().getLabelName().equals("func__println")) pattern = println;
+//                        else if (((Call) node).getFuncLabel().getLabelName().equals("func__getString"))
+//                            pattern = getString;
+//                        else if (((Call) node).getFuncLabel().getLabelName().equals("func__toString"))
+//                            pattern = toString;
+//                        else if (((Call) node).getFuncLabel().getLabelName().equals("func__string.substring"))
+//                            pattern = subStringAndConcatenate;
+//                        else if (((Call) node).getFuncLabel().getLabelName().equals("func__string.parseInt"))
+//                            pattern = parseInt;
+//                        else if (((Call) node).getFuncLabel().getLabelName().equals("func__stringConcatenate"))
+//                            pattern = subStringAndConcatenate;
+//                        else if (((Call) node).getFuncLabel().getLabelName().equals("func__stringIsEqual"))
+//                            pattern = compare;
+//                        else if (((Call) node).getFuncLabel().getLabelName().equals("func__stringLess"))
+//                            pattern = compare;
+//                        else pattern = notSaved;
+//                        for (Register reg : node.getLiveOut())
+//                            if (reg.isColored() && pattern[reg.getColor()]) saveReg(G, reg);
+//                    }
+
+                    for (Register reg : node.getLiveOut()) {
+                        if (reg.isColored() && ((Call) node).getTargetUsedRegs()[reg.getColor()]) saveReg(G, reg);
                     }
                     if (((Call) node).getParameters() != null) {
                         int count = 0;
@@ -133,11 +139,14 @@ public class MIPSGenerator {
                         }
                     }
                     out.println("\tjal " + ((Call) node).getFuncLabel());
-                    if (!isBuiltIn) for (Register reg : node.getLiveOut()) loadBackReg(G, reg);
-                    else {
-                        for (Register reg : node.getLiveOut())
-                            if (reg.isColored() && pattern[reg.getColor()]) loadBackReg(G, reg);
+                    for (Register reg : node.getLiveOut()) {
+                        if (reg.isColored() && ((Call) node).getTargetUsedRegs()[reg.getColor()]) loadBackReg(G, reg);
                     }
+//                    if (!isBuiltIn) for (Register reg : node.getLiveOut()) loadBackReg(G, reg);
+//                    else {
+//                        for (Register reg : node.getLiveOut())
+//                            if (reg.isColored() && pattern[reg.getColor()]) loadBackReg(G, reg);
+//                    }
 
                     if (((Call) node).getTarget() != null) {
                         out.println("\tmove " + processWrite(((Call) node).getTarget()) + ", $v0");

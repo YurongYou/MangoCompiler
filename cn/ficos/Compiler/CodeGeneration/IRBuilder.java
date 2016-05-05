@@ -33,11 +33,11 @@ import java.util.*;
  * Created by Ficos on 16/4/20.
  */
 public class IRBuilder {
+    Label MIPSMainLabel = null;
     private AST root;
     private LinkedList<LinkedList<IRNode>> functions = new LinkedList<>();
     private LinkedList<IRNode> nowFunction = null;
     private LinkedList<IRNode> initialization = new LinkedList<>();
-
     private LinkedList<String> data = new LinkedList<>();
     private LinkedList<FuncSymbol> funcInfo = new LinkedList<>();
     private FuncDecl main = null;
@@ -48,7 +48,7 @@ public class IRBuilder {
     }
 
     public static void main(String[] args) throws Exception {
-        FileInputStream FileInput = new FileInputStream("MangoTestCase/local_final/mx/spill2-5100379110-daibo.mx");
+        FileInputStream FileInput = new FileInputStream("MangoTestCase/BackEndTest/basic.mx");
         org.antlr.v4.runtime.ANTLRInputStream input = new org.antlr.v4.runtime.ANTLRInputStream(FileInput);
         MangoLexer lexer = new MangoLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -92,9 +92,14 @@ public class IRBuilder {
         return funcInfo;
     }
 
+    public Label getMIPSMainLabel() {
+        return MIPSMainLabel;
+    }
+
     public LinkedList<LinkedList<IRNode>> buildIR() {
         funcInfo.add(null);
-        initialization.add(new Label("main", false));
+        MIPSMainLabel = new Label("main", false);
+        initialization.add(MIPSMainLabel);
 //        initialization.add(new Call(new Label("_buffer_init", false), null, null));
         visit(root);
         if (main != null) {
@@ -139,8 +144,9 @@ public class IRBuilder {
         Map<Label, BasicBlock> dict = new HashMap<>();
         LinkedList<LinkedList<Label>> successorList = new LinkedList<>();
         int maxArgu = 0;
+        boolean isLeaf = true;
 
-        boolean isFiniedBB = false;
+        boolean isFinishedBB = false;
         BasicBlock nowBB = null;
         LinkedList<Label> nowSucc = null;
         IRNode temp;
@@ -161,26 +167,26 @@ public class IRBuilder {
                 successorList.add(nowSucc);
                 CFG.add(nowBB);
 
-                isFiniedBB = false;
+                isFinishedBB = false;
                 continue;
             }
-            if (isFiniedBB) continue;
+            if (isFinishedBB) continue;
             if (temp instanceof Jump) {
                 nowBB.addInstruction(temp);
                 nowSucc.add(((Jump) temp).getTarget());
-                isFiniedBB = true;
+                isFinishedBB = true;
                 // prevent the following add edge to it
                 nowSucc = null;
             } else if (temp instanceof Branch) {
                 nowBB.addInstruction(temp);
                 nowSucc.add(((Branch) temp).getT());
                 nowSucc.add(((Branch) temp).getF());
-                isFiniedBB = true;
+                isFinishedBB = true;
                 // prevent the following add edge to it
                 nowSucc = null;
             } else if (temp instanceof Return) {
                 nowBB.addInstruction(temp);
-                isFiniedBB = true;
+                isFinishedBB = true;
                 // prevent the following add edge to it
                 nowSucc = null;
             } else {
@@ -189,8 +195,10 @@ public class IRBuilder {
                 }
                 if (temp instanceof Call) {
                     if (((Call) temp).getParameters() != null &&
-                            ((Call) temp).getParameters().size() > maxArgu)
+                            ((Call) temp).getParameters().size() > maxArgu) {
                         maxArgu = ((Call) temp).getParameters().size();
+                        isLeaf = false;
+                    }
                 }
                 nowBB.addInstruction(temp);
             }
@@ -204,7 +212,7 @@ public class IRBuilder {
             for (Label l : nowSuccc) nowBBB.addSuccessor(dict.get(l));
         }
 
-        return new CFG(CFG, maxArgu);
+        return new CFG(CFG, maxArgu, isLeaf);
     }
 
     public CFGs buildCFGs() {
@@ -213,7 +221,7 @@ public class IRBuilder {
         for (LinkedList<IRNode> func : functions) {
             CFGList.add(buildCFG(func));
         }
-        return new CFGs(CFGList, data);
+        return new CFGs(CFGList, data, MIPSMainLabel);
     }
 
     private void visit(AST node) {

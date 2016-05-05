@@ -3,7 +3,10 @@ package cn.ficos.Compiler.ControlFlowGraph;
 import cn.ficos.Compiler.Gadgets.Operand.Register;
 import cn.ficos.Compiler.IR.IRNode;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Set;
 
 /**
  * This class implements the ControlFlowGraph nodes
@@ -97,7 +100,7 @@ public class BasicBlock {
         return successors;
     }
 
-    public List<IRNode> getInstructions() {
+    public LinkedList<IRNode> getInstructions() {
         return instructions;
     }
 

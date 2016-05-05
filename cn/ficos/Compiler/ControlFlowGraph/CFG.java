@@ -14,16 +14,20 @@ public class CFG {
     LinkedList<BasicBlock> CFG;
     int maxArgu;
     int frameSize;
+    boolean isLeaf;
+    boolean[] usedReg = {false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,};
     Map<Register, Integer> spills = new HashMap<>();
 
-    public CFG(LinkedList<BasicBlock> CFG, int _maxArgu) {
+    public CFG(LinkedList<BasicBlock> CFG, int _maxArgu, boolean _isLeaf) {
         this.CFG = CFG;
         maxArgu = _maxArgu;
+        isLeaf = _isLeaf;
 //        Automatically color the registers
         for (BasicBlock block : CFG) block.gatherInitialInfo();
         solveLiveOut();
         for (BasicBlock block : CFG) block.computeLiveOutInside();
         colorRegister();
+        countUse();
         frameSize = (maxArgu + 1 + CONSTANT.actualRegNumber + spills.size()) * 4;
     }
 
@@ -114,6 +118,28 @@ public class CFG {
 
         // test
 //        for (Register reg: regs) System.out.println(reg + "'s color is " + reg.getColor());
+    }
+
+
+    public boolean[] getUsedReg() {
+        return usedReg;
+    }
+
+    private void countUse() {
+        if (!isLeaf) {
+            boolean[] usedAll = {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true};
+            usedReg = usedAll;
+            return;
+        }
+        for (BasicBlock block : CFG) {
+            for (IRNode node : block.getInstructions()) {
+                if (node.getVarKill() != null) {
+                    if (node.getVarKill().isColored()) {
+                        usedReg[node.getVarKill().getColor()] = true;
+                    }
+                }
+            }
+        }
     }
 
     public String toString() {
