@@ -61,6 +61,10 @@ public class CFGs {
         dict.put(SymbolTable.stringConcatenate.getFuncLabel(), Concatenate);
         dict.put(SymbolTable.stringIsEqual.getFuncLabel(), compare);
         dict.put(SymbolTable.stringLess.getFuncLabel(), compare);
+        dict.put(SymbolTable.stringLarge.getFuncLabel(), compare);
+        dict.put(SymbolTable.stringLeq.getFuncLabel(), compare);
+        dict.put(SymbolTable.stringNeq.getFuncLabel(), compare);
+        dict.put(SymbolTable.stringGeq.getFuncLabel(), compare);
         dict.put(SymbolTable.print.getFuncLabel(), SaveA0);
         dict.put(SymbolTable.getString.getFuncLabel(), usedNone);
         dict.put(SymbolTable.getInt.getFuncLabel(), usedNone);

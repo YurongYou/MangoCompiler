@@ -49,6 +49,14 @@ public class SymbolTable {
             Arrays.asList(STRING, STRING));
     public static FuncSymbol stringLess = new FuncSymbol(getName("_stringLess"), BOOL, Arrays.asList(getName("lhs"), getName("rhs")),
             Arrays.asList(STRING, STRING));
+    public static FuncSymbol stringLarge = new FuncSymbol(getName("_stringLarge"), BOOL, Arrays.asList(getName("lhs"), getName("rhs")),
+            Arrays.asList(STRING, STRING));
+    public static FuncSymbol stringGeq = new FuncSymbol(getName("_stringGeq"), BOOL, Arrays.asList(getName("lhs"), getName("rhs")),
+            Arrays.asList(STRING, STRING));
+    public static FuncSymbol stringNeq = new FuncSymbol(getName("_stringNeq"), BOOL, Arrays.asList(getName("lhs"), getName("rhs")),
+            Arrays.asList(STRING, STRING));
+    public static FuncSymbol stringLeq = new FuncSymbol(getName("_stringLeq"), BOOL, Arrays.asList(getName("lhs"), getName("rhs")),
+            Arrays.asList(STRING, STRING));
     private static TypeSymbol IntType = new TypeSymbol(getName("int"), INT);
     private static TypeSymbol StringType = new TypeSymbol(getName("string"), STRING);
     private static TypeSymbol BoolType = new TypeSymbol(getName("bool"), BOOL);
@@ -132,6 +140,18 @@ public class SymbolTable {
 
         //bool stringLess(string lhs, string rhs)
         define(getName("stringLess"), stringLess);
+
+        //bool stringLarge(string lhs, string rhs)
+        define(getName("stringLarge"), stringLarge);
+
+        //bool stringGeq(string lhs, string rhs)
+        define(getName("stringGeq"), stringGeq);
+
+        //bool stringLeq(string lhs, string rhs)
+        define(getName("stringLeq"), stringLeq);
+
+        //bool stringNeq(string lhs, string rhs)
+        define(getName("stringNeq"), stringNeq);
     }
 
     /**

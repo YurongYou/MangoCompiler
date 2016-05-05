@@ -718,17 +718,6 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
 //                break;
         }
         switch (ctx.op.getType()) {
-            case MangoParser.LARGE:
-            case MangoParser.LEQ:
-            case MangoParser.GEQ:
-            case MangoParser.NEQ: {
-                if (!(suit(SymbolTable.INT, lhs.getType()) &&
-                        suit(SymbolTable.INT, rhs.getType()))) {
-                    System.err.println("line " + ctx.getStart().getLine() + ": Logical operation on wrong operands <" + ctx.getText() + ">");
-                    throw new SemanticError();
-                }
-            }
-            break;
             case MangoParser.EQ:
                 if (!(suit(SymbolTable.INT, lhs.getType()) &&
                         suit(SymbolTable.INT, rhs.getType())) &&
@@ -761,6 +750,10 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
                     }
                 }
                 break;
+            case MangoParser.LARGE:
+            case MangoParser.LEQ:
+            case MangoParser.GEQ:
+            case MangoParser.NEQ:
             case MangoParser.LESS: {
                 if (!(suit(SymbolTable.INT, lhs.getType()) &&
                         suit(SymbolTable.INT, rhs.getType())) &&
@@ -783,7 +776,18 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
                     AP.add(lhs);
                     AP.add(rhs);
                     try {
-                        return new CallExpr((FuncSymbol) global.resolve(getName("stringLess")), AP, new Position(ctx.getStart().getLine()));
+                        switch (ctx.op.getType()) {
+                            case MangoParser.LARGE:
+                                return new CallExpr((FuncSymbol) global.resolve(getName("stringLarge")), AP, new Position(ctx.getStart().getLine()));
+                            case MangoParser.LEQ:
+                                return new CallExpr((FuncSymbol) global.resolve(getName("stringLeq")), AP, new Position(ctx.getStart().getLine()));
+                            case MangoParser.GEQ:
+                                return new CallExpr((FuncSymbol) global.resolve(getName("stringGeq")), AP, new Position(ctx.getStart().getLine()));
+                            case MangoParser.NEQ:
+                                return new CallExpr((FuncSymbol) global.resolve(getName("stringNeq")), AP, new Position(ctx.getStart().getLine()));
+                            case MangoParser.LESS:
+                                return new CallExpr((FuncSymbol) global.resolve(getName("stringLess")), AP, new Position(ctx.getStart().getLine()));
+                        }
                     } catch (Undefined e) {
                         throw new Bug_FuncNotDefine();
                     }
