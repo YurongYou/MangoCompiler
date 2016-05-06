@@ -1,5 +1,6 @@
 all: clean
 	@mkdir -p ./bin/Compiler
+	@mkdir -p ./bin/src/lib
 	@javac -cp \
 		./lib/antlr-4.5.2-complete.jar \
 		./cn/ficos/Compiler/*/*/*.java \
