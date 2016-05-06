@@ -7,6 +7,7 @@ all: clean
 		./cn/ficos/Compiler/*.java \
 		-d ./bin
 	@cp ./lib/antlr-4.5.2-complete.jar ./bin
+	@cp ./lib/build_in_functions.s ./bin/src/lib
 	@cd ./bin && jar xf ./antlr-4.5.2-complete.jar \
 			  && rm -rf ./META-INF \
 			  && jar cef cn/ficos/Compiler/Main Compiler.jar ./ \
