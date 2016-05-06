@@ -23,28 +23,6 @@ import java.io.OutputStream;
  */
 public class Main {
     public static void main(String[] args) throws IOException {
-        // File Read In
-//        FileInputStream FileInput = new FileInputStream("MangoTestCase/semantic/compile_error/class-2-5120309049-liaochao.mx");
-//        ANTLRInputStream input = new ANTLRInputStream(FileInput);
-//        MangoLexer lexer = new MangoLexer(input);
-//        CommonTokenStream tokens = new CommonTokenStream(lexer);
-//        MangoParser parser = new MangoParser(tokens);
-//
-//        try {
-//            parser.setErrorHandler(new BailErrorStrategy());
-//            ParseTree tree = parser.prog();
-//            ASTBuilder builder = new ASTBuilder(tree);
-//            builder.visit(tree);
-//        } catch (Exception e) {
-////            System.out.println(1);
-//            System.exit(1);
-//        }
-//        System.exit(0);
-//        System.exit(0);
-//        PrintStream out = new PrintStream("MangoTestCase/output/Built_In_Functions-5140519064-ficos.AST");
-//        Printer print = new Printer(root, out);
-//        print.print();
-
         try {
             compile(System.in, System.out);
         } catch (Exception e) {
