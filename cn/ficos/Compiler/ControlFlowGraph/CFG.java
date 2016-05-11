@@ -62,6 +62,7 @@ public class CFG {
                 if (BBItr.next().recomputeLiveOut()) changed = true;
             }
         }
+        for (BasicBlock BB : CFG) BB.getherIsReserved();
     }
 
     private void buildInterference() {

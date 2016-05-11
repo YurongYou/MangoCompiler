@@ -1,7 +1,11 @@
 package cn.ficos.Compiler.ControlFlowGraph;
 
+import cn.ficos.Compiler.Gadgets.BinaryOp;
 import cn.ficos.Compiler.Gadgets.Operand.Register;
+import cn.ficos.Compiler.IR.Binary;
+import cn.ficos.Compiler.IR.Branch;
 import cn.ficos.Compiler.IR.IRNode;
+import cn.ficos.Compiler.IR.Label;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -21,11 +25,19 @@ public class BasicBlock {
     Set<Register> UEVar = new HashSet<>();
     Set<Register> VarKill = new HashSet<>();
     private int ID = count++;
+    private boolean isCombineLast = false;
+    private Binary reserved = null;
+    private Label IROrderSucc = null;
 
-    public BasicBlock() {
+    public Label getIROrderSucc() {
+        return IROrderSucc;
     }
 
-//    public Set<Register> getLiveOut() {
+    public void setIROrderSucc(Label IROrderSucc) {
+
+        this.IROrderSucc = IROrderSucc;
+    }
+    //    public Set<Register> getLiveOut() {
 ////        return LiveOut;
 ////    }
 
@@ -36,6 +48,14 @@ public class BasicBlock {
 //    public Set<Register> getVarKill() {
 //        return VarKill;
 //    }
+
+    public boolean isCombineLast() {
+        return isCombineLast;
+    }
+
+    public Binary getReserved() {
+        return reserved;
+    }
 
     public void gatherInitialInfo() {
         for (IRNode node : instructions) {
@@ -48,6 +68,27 @@ public class BasicBlock {
         }
     }
 
+    public void getherIsReserved() {
+        Iterator<IRNode> IRItr = instructions.descendingIterator();
+        if (IRItr.hasNext()) {
+            if (IRItr.next() instanceof Branch) {
+                if (IRItr.hasNext()) {
+                    IRNode temp = IRItr.next();
+                    if (temp instanceof Binary) {
+                        if ((((Binary) temp).getOP() == BinaryOp.seq ||
+                                ((Binary) temp).getOP() == BinaryOp.sge ||
+                                ((Binary) temp).getOP() == BinaryOp.sgt ||
+                                ((Binary) temp).getOP() == BinaryOp.sle ||
+                                ((Binary) temp).getOP() == BinaryOp.slt ||
+                                ((Binary) temp).getOP() == BinaryOp.sne) && !LiveOut.contains(temp.getVarKill())) {
+                            isCombineLast = true;
+                            reserved = (Binary) temp;
+                        }
+                    }
+                }
+            }
+        }
+    }
     public Boolean recomputeLiveOut() {
         Boolean isChanged = false;
         for (BasicBlock succ : successors) {

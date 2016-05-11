@@ -48,7 +48,7 @@ public class IRBuilder {
     }
 
     public static void main(String[] args) throws Exception {
-        FileInputStream FileInput = new FileInputStream("MangoTestCase/local_final/mx/hashmap-5100309127-hetianxing.mx");
+        FileInputStream FileInput = new FileInputStream("MangoTestCase/local_final/mx/maxflow-5100379110-daibo.mx");
         org.antlr.v4.runtime.ANTLRInputStream input = new org.antlr.v4.runtime.ANTLRInputStream(FileInput);
         MangoLexer lexer = new MangoLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -72,11 +72,11 @@ public class IRBuilder {
         AST root = AST_builder.visit(tree);
         Printer printer = new Printer(root, System.out);
         printer.print();
-//        IRBuilder IR_builder = new IRBuilder(root);
+        IRBuilder IR_builder = new IRBuilder(root);
 //        IR_builder.print();
 //        CFGs CFGs = IR_builder.buildCFGs();
 //        new MIPSGenerator(new FileOutputStream("MangoTestCase/out.s"), IR_builder.buildCFGs());
-//        new MIPSGenerator(System.out, IR_builder.buildCFGs());
+        new MIPSGenerator(System.out, IR_builder.buildCFGs());
     }
 
     public LinkedList<LinkedList<IRNode>> getFunctions() {
@@ -215,6 +215,15 @@ public class IRBuilder {
             for (Label l : nowSuccc) nowBBB.addSuccessor(dict.get(l));
         }
 
+        Iterator<BasicBlock> Itr = CFG.descendingIterator();
+        if (Itr.hasNext()) {
+            Label pre = (Label) Itr.next().getInstructions().getFirst();
+            while (Itr.hasNext()) {
+                BasicBlock bb = Itr.next();
+                bb.setIROrderSucc(pre);
+                pre = (Label) bb.getInstructions().getFirst();
+            }
+        }
         return new CFG(CFG, maxArgu, isLeaf);
     }
 

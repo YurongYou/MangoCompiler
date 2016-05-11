@@ -3,6 +3,7 @@ package cn.ficos.Compiler.CodeGeneration;
 import cn.ficos.Compiler.ControlFlowGraph.BasicBlock;
 import cn.ficos.Compiler.ControlFlowGraph.CFG;
 import cn.ficos.Compiler.ControlFlowGraph.CFGs;
+import cn.ficos.Compiler.Gadgets.BinaryOp;
 import cn.ficos.Compiler.Gadgets.CONSTANT;
 import cn.ficos.Compiler.Gadgets.Operand.Constant;
 import cn.ficos.Compiler.Gadgets.Operand.Operand;
@@ -10,6 +11,7 @@ import cn.ficos.Compiler.Gadgets.Operand.Register;
 import cn.ficos.Compiler.IR.*;
 
 import java.io.*;
+import java.util.ListIterator;
 
 /**
  * This class reads an CFGs and generate the target MIPS codes
@@ -42,13 +44,6 @@ public class MIPSGenerator {
 //            "$a1",
 //            "$a2",
     };
-    //    static final boolean[] notSaved = {false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,};
-//    static final boolean[] println = {false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false,};
-//    static final boolean[] getString = {true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, false, false,};
-//    static final boolean[] toString = {true, true, true, true, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false,};
-//    static final boolean[] subStringAndConcatenate = {true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, false, false,};
-//    static final boolean[] parseInt = {true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false,};
-//    static final boolean[] compare = {false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, false, false,};
     PrintStream out;
     CFGs CFGList;
 
@@ -77,21 +72,145 @@ public class MIPSGenerator {
     private void translate(CFG G) {
 //            The first node must be the function label
         for (BasicBlock block : G.getCFG()) {
-            for (IRNode node : block.getInstructions()) {
+            ListIterator<IRNode> IRItr = block.getInstructions().listIterator(0);
+            while (IRItr.hasNext()) {
+                IRNode node = IRItr.next();
                 out.println("#\t" + node);
                 if (!(node instanceof Call) && node.getVarKill() != null && !node.getLiveOut().contains(node.getVarKill())) {
                     continue;
                 }
                 if (node instanceof Binary) {
+                    if (block.isCombineLast() && node == block.getReserved()) {
+                        continue;
+                    }
                     out.println("\t" + ((Binary) node).getOP()
                             + " " + processWrite(((Binary) node).getTarget())
                             + ", " + processRead(G, ((Binary) node).getLhs(), true)
                             + ", " + processRead(G, ((Binary) node).getRhs(), false));
                     processSpill(G, ((Binary) node).getTarget());
                 } else if (node instanceof Branch) {
-                    out.println("\tbeqz " + processRead(G, ((Branch) node).getCondition(), true)
-                            + ", " + ((Branch) node).getF());
-                    out.println("\tj " + ((Branch) node).getT());
+                    boolean hasFallThrough = false;
+                    boolean fall = false;
+                    if (((Branch) node).getT() == block.getIROrderSucc()) {
+                        hasFallThrough = true;
+                        fall = true;
+                    } else if (((Branch) node).getF() == block.getIROrderSucc()) {
+                        hasFallThrough = true;
+                        fall = false;
+                    }
+                    if (block.isCombineLast()) {
+                        Binary last = block.getReserved();
+                        if (last.getOP() == BinaryOp.sne) {
+                            if (hasFallThrough) {
+                                if (fall) {
+                                    out.println("\tbeq " + processRead(G, last.getLhs(), true)
+                                            + ", " + processRead(G, last.getRhs(), false) + ", " + ((Branch) node).getF());
+                                } else {
+                                    out.println("\tbne " + processRead(G, last.getLhs(), true)
+                                            + ", " + processRead(G, last.getRhs(), false)
+                                            + ", " + ((Branch) node).getT());
+                                }
+                            } else {
+                                out.println("\tbne " + processRead(G, last.getLhs(), true)
+                                        + ", " + processRead(G, last.getRhs(), false) + ", " + ((Branch) node).getT());
+                                out.println("\tj " + ((Branch) node).getF());
+                            }
+                        } else if (last.getOP() == BinaryOp.slt) {
+                            if (hasFallThrough) {
+                                if (fall) {
+                                    out.println("\tbge " + processRead(G, last.getLhs(), true)
+                                            + ", " + processRead(G, last.getRhs(), false)
+                                            + ", " + ((Branch) node).getF());
+                                } else {
+                                    out.println("\tblt " + processRead(G, last.getLhs(), true)
+                                            + ", " + processRead(G, last.getRhs(), false)
+                                            + ", " + ((Branch) node).getT());
+                                }
+                            } else {
+                                out.println("\tblt " + processRead(G, last.getLhs(), true)
+                                        + ", " + processRead(G, last.getRhs(), false) + ", " + ((Branch) node).getT());
+                                out.println("\tj " + ((Branch) node).getF());
+                            }
+                        } else if (last.getOP() == BinaryOp.sle) {
+                            if (hasFallThrough) {
+                                if (fall) {
+                                    out.println("\tbgt " + processRead(G, last.getLhs(), true)
+                                            + ", " + processRead(G, last.getRhs(), false)
+                                            + ", " + ((Branch) node).getF());
+                                } else {
+                                    out.println("\tble " + processRead(G, last.getLhs(), true)
+                                            + ", " + processRead(G, last.getRhs(), false)
+                                            + ", " + ((Branch) node).getT());
+                                }
+                            } else {
+                                out.println("\tble " + processRead(G, last.getLhs(), true)
+                                        + ", " + processRead(G, last.getRhs(), false) + ", " + ((Branch) node).getT());
+                                out.println("\tj " + ((Branch) node).getF());
+                            }
+                        } else if (last.getOP() == BinaryOp.sgt) {
+                            if (hasFallThrough) {
+                                if (fall) {
+                                    out.println("\tble " + processRead(G, last.getLhs(), true)
+                                            + ", " + processRead(G, last.getRhs(), false)
+                                            + ", " + ((Branch) node).getF());
+                                } else {
+                                    out.println("\tbgt " + processRead(G, last.getLhs(), true)
+                                            + ", " + processRead(G, last.getRhs(), false)
+                                            + ", " + ((Branch) node).getT());
+                                }
+                            } else {
+                                out.println("\tbgt " + processRead(G, last.getLhs(), true)
+                                        + ", " + processRead(G, last.getRhs(), false) + ", " + ((Branch) node).getT());
+                                out.println("\tj " + ((Branch) node).getF());
+                            }
+                        } else if (last.getOP() == BinaryOp.seq) {
+                            if (hasFallThrough) {
+                                if (fall) {
+                                    out.println("\tbne " + processRead(G, last.getLhs(), true)
+                                            + ", " + processRead(G, last.getRhs(), false)
+                                            + ", " + ((Branch) node).getF());
+                                } else {
+                                    out.println("\tbeq " + processRead(G, last.getLhs(), true)
+                                            + ", " + processRead(G, last.getRhs(), false)
+                                            + ", " + ((Branch) node).getT());
+                                }
+                            } else {
+                                out.println("\tbeq " + processRead(G, last.getLhs(), true)
+                                        + ", " + processRead(G, last.getRhs(), false) + ", " + ((Branch) node).getT());
+                                out.println("\tj " + ((Branch) node).getF());
+                            }
+                        } else {
+                            if (hasFallThrough) {
+                                if (fall) {
+                                    out.println("\tblt " + processRead(G, last.getLhs(), true)
+                                            + ", " + processRead(G, last.getRhs(), false)
+                                            + ", " + ((Branch) node).getF());
+                                } else {
+                                    out.println("\tbge " + processRead(G, last.getLhs(), true)
+                                            + ", " + processRead(G, last.getRhs(), false)
+                                            + ", " + ((Branch) node).getT());
+                                }
+                            } else {
+                                out.println("\tbge " + processRead(G, last.getLhs(), true)
+                                        + ", " + processRead(G, last.getRhs(), false) + ", " + ((Branch) node).getT());
+                                out.println("\tj " + ((Branch) node).getF());
+                            }
+                        }
+                        continue;
+                    }
+                    if (hasFallThrough) {
+                        if (fall) {
+                            out.println("\tbeqz " + processRead(G, ((Branch) node).getCondition(), true)
+                                    + ", " + ((Branch) node).getF());
+                        } else {
+                            out.println("\tbnez " + processRead(G, ((Branch) node).getCondition(), true)
+                                    + ", " + ((Branch) node).getT());
+                        }
+                    } else {
+                        out.println("\tbeqz " + processRead(G, ((Branch) node).getCondition(), true)
+                                + ", " + ((Branch) node).getF());
+                        out.println("\tj " + ((Branch) node).getT());
+                    }
                 } else if (node instanceof Call) {
                     if (((Call) node).getFuncLabel().getLabelName().equals("func__print")) {
                         out.println("\tmove $a0" + ", " + processRead(G, ((Call) node).getParameters().get(0), true));
@@ -137,12 +256,6 @@ public class MIPSGenerator {
                     for (Register reg : node.getLiveOut()) {
                         if (reg.isColored() && ((Call) node).getTargetUsedRegs()[reg.getColor()]) loadBackReg(G, reg);
                     }
-//                    if (!isBuiltIn) for (Register reg : node.getLiveOut()) loadBackReg(G, reg);
-//                    else {
-//                        for (Register reg : node.getLiveOut())
-//                            if (reg.isColored() && pattern[reg.getColor()]) loadBackReg(G, reg);
-//                    }
-
                     if (((Call) node).getTarget() != null) {
                         out.println("\tmove " + processWrite(((Call) node).getTarget()) + ", $v0");
                         processSpill(G, ((Call) node).getTarget());
