@@ -1195,6 +1195,11 @@ private void parseStringConcatenation(List<Stmt> stmts, ExprStmt ast) {
     if ((ast instanceof CallExpr) && ((CallExpr) ast).getFuncInfo().getName().toString().equals("_stringConcatenate")) {
         parseStringConcatenation(stmts, ((CallExpr) ast).getActualParameter().get(0));
 //            stmts.add(((CallExpr) ast).getActualParameter().get(1));
+        if (((CallExpr) ast).getActualParameter().get(1) instanceof CallExpr &&
+                ((CallExpr) ((CallExpr) ast).getActualParameter().get(1)).getFuncInfo().getName().toString().equals("_toString")) {
+            stmts.add(new CallExpr(SymbolTable.printInt, Arrays.asList(((CallExpr) ((CallExpr) ast).getActualParameter().get(1)).getActualParameter().get(0)), ast.getPosition(), null));
+            return;
+        }
         stmts.add(new CallExpr(SymbolTable.print, Arrays.asList(((CallExpr) ast).getActualParameter().get(1)), ast.getPosition(), null));
     } else {
         if (ast instanceof CallExpr && ((CallExpr) ast).getFuncInfo().getName().toString().equals("_toString")) {

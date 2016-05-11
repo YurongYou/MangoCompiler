@@ -37,10 +37,10 @@ public class MIPSGenerator {
             "$s7",
             "$gp",
             "$fp",
-            "$a0",
-            "$a1",
-            "$a2",
             "$a3",
+//            "$a0",
+//            "$a1",
+//            "$a2",
     };
     //    static final boolean[] notSaved = {false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,};
 //    static final boolean[] println = {false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false,};
@@ -93,32 +93,22 @@ public class MIPSGenerator {
                             + ", " + ((Branch) node).getF());
                     out.println("\tj " + ((Branch) node).getT());
                 } else if (node instanceof Call) {
+                    if (((Call) node).getFuncLabel().getLabelName().equals("func__print")) {
+                        out.println("\tmove $a0" + ", " + processRead(G, ((Call) node).getParameters().get(0), true));
+                        out.println("\tli $v0, 4");
+                        out.println("\tsyscall");
+                        continue;
+                    }
+                    if (((Call) node).getFuncLabel().getLabelName().equals("func__println")) {
+                        out.println("\tmove $a0" + ", " + processRead(G, ((Call) node).getParameters().get(0), true));
+                        out.println("\tli $v0, 4");
+                        out.println("\tsyscall");
+                        out.println("\tla $a0, _end");
+                        out.println("\tli $v0, 4");
+                        out.println("\tsyscall");
+                        continue;
+                    }
                     boolean isBuiltIn = ((Call) node).getFuncLabel().getLabelName().startsWith(CONSTANT.builtInFuncPrefix);
-//                    boolean[] pattern = notSaved;
-//                    if (!isBuiltIn) {
-//                        for (Register reg : node.getLiveOut()) saveReg(G, reg);
-//                    }
-//                    else {
-//                        if (((Call) node).getFuncLabel().getLabelName().equals("func__println")) pattern = println;
-//                        else if (((Call) node).getFuncLabel().getLabelName().equals("func__getString"))
-//                            pattern = getString;
-//                        else if (((Call) node).getFuncLabel().getLabelName().equals("func__toString"))
-//                            pattern = toString;
-//                        else if (((Call) node).getFuncLabel().getLabelName().equals("func__string.substring"))
-//                            pattern = subStringAndConcatenate;
-//                        else if (((Call) node).getFuncLabel().getLabelName().equals("func__string.parseInt"))
-//                            pattern = parseInt;
-//                        else if (((Call) node).getFuncLabel().getLabelName().equals("func__stringConcatenate"))
-//                            pattern = subStringAndConcatenate;
-//                        else if (((Call) node).getFuncLabel().getLabelName().equals("func__stringIsEqual"))
-//                            pattern = compare;
-//                        else if (((Call) node).getFuncLabel().getLabelName().equals("func__stringLess"))
-//                            pattern = compare;
-//                        else pattern = notSaved;
-//                        for (Register reg : node.getLiveOut())
-//                            if (reg.isColored() && pattern[reg.getColor()]) saveReg(G, reg);
-//                    }
-
                     for (Register reg : node.getLiveOut()) {
                         if (reg.isColored() && ((Call) node).getTargetUsedRegs()[reg.getColor()]) saveReg(G, reg);
                     }
@@ -126,16 +116,19 @@ public class MIPSGenerator {
                         int count = 0;
                         for (Operand operand : ((Call) node).getParameters()) {
                             if (operand instanceof Constant) {
-                                out.println("\tli $v0, " + ((Constant) operand).getValue());
-                                out.println("\tsw $v0, " + count * 4 + "($sp)");
                                 if (count < 3 && isBuiltIn) {
                                     out.println("\tli $a" + count + ", " + ((Constant) operand).getValue());
+                                } else {
+                                    out.println("\tli $v0, " + ((Constant) operand).getValue());
+                                    out.println("\tsw $v0, " + count * 4 + "($sp)");
                                 }
                                 ++count;
                             } else {
-                                out.println("\tsw " + processRead(G, (Register) operand, true) + ", " + count * 4 + "($sp)");
                                 if (count < 3 && isBuiltIn)
-                                    out.println("\tlw $a" + count + ", " + count * 4 + "($sp)");
+                                    out.println("\tmove $a" + count + ", " + processRead(G, operand, true));
+                                else {
+                                    out.println("\tsw " + processRead(G, operand, true) + ", " + count * 4 + "($sp)");
+                                }
                                 ++count;
                             }
                         }

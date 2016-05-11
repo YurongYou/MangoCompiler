@@ -263,13 +263,13 @@ func__getInt:
 # Change(5/4): use less regs, you don't need to preserve reg before calling it
 # used $a0, $t0, $t1, $t2, $t3, $t5, $v0, $v1
 func__toString:
-	subu $sp, $sp, 24
-	sw $a0, 0($sp)
-	sw $t0, 4($sp)
-	sw $t1, 8($sp)
-	sw $t2, 12($sp)
-	sw $t3, 16($sp)
-	sw $t5, 20($sp)
+	# subu $sp, $sp, 24
+	# sw $a0, 0($sp)
+	# sw $t0, 4($sp)
+	# sw $t1, 8($sp)
+	# sw $t2, 12($sp)
+	# sw $t3, 16($sp)
+	# sw $t5, 20($sp)
 
 	# first count the #digits
 	li $t0, 0			# $t0 = 0 if the number is a negnum
@@ -326,14 +326,14 @@ func__toString:
 	# lw $ra, 0($sp)
 	# addu $sp, $sp, 4
 
-	lw $a0, 0($sp)
-	lw $t0, 4($sp)
-	lw $t1, 8($sp)
-	lw $t2, 12($sp)
-	lw $t3, 16($sp)
-	lw $t5, 20($sp)
+	# lw $a0, 0($sp)
+	# lw $t0, 4($sp)
+	# lw $t1, 8($sp)
+	# lw $t2, 12($sp)
+	# lw $t3, 16($sp)
+	# lw $t5, 20($sp)
 
-	addu $sp, $sp, 24
+	# addu $sp, $sp, 24
 	jr $ra
 
 	_set_zero:
@@ -346,14 +346,14 @@ func__toString:
 	li $a0, 48
 	sb $a0, 0($v0)
 
-	lw $a0, 0($sp)
-	lw $t0, 4($sp)
-	lw $t1, 8($sp)
-	lw $t2, 12($sp)
-	lw $t3, 16($sp)
-	lw $t5, 20($sp)
+	# lw $a0, 0($sp)
+	# lw $t0, 4($sp)
+	# lw $t1, 8($sp)
+	# lw $t2, 12($sp)
+	# lw $t3, 16($sp)
+	# lw $t5, 20($sp)
 
-	addu $sp, $sp, 24
+	# addu $sp, $sp, 24
 	jr $ra
 
 
@@ -475,13 +475,13 @@ func__array.size:
 # used $a0, $a1, $t0, $t1, $t2, $v0, $v1
 func__stringConcatenate:
 
-	subu $sp, $sp, 24
+	subu $sp, $sp, 4
 	sw $ra, 0($sp)
-	sw $a0, 4($sp)
-	sw $a1, 8($sp)
-	sw $t0, 12($sp)
-	sw $t1, 16($sp)
-	sw $t2, 20($sp)
+	# sw $a0, 4($sp)
+	# sw $a1, 8($sp)
+	# sw $t0, 12($sp)
+	# sw $t1, 16($sp)
+	# sw $t2, 20($sp)
 
 	lw $t0, -4($a0)		# $t0 is the length of lhs
 	lw $t1, -4($a1)		# $t1 is the length of rhs
@@ -510,12 +510,12 @@ func__stringConcatenate:
 
 	move $v0, $v1
 	lw $ra, 0($sp)
-	lw $a0, 4($sp)
-	lw $a1, 8($sp)
-	lw $t0, 12($sp)
-	lw $t1, 16($sp)
-	lw $t2, 20($sp)
-	addu $sp, $sp, 24
+	# lw $a0, 4($sp)
+	# lw $a1, 8($sp)
+	# lw $t0, 12($sp)
+	# lw $t1, 16($sp)
+	# lw $t2, 20($sp)
+	addu $sp, $sp, 4
 	jr $ra
 
 # string1 in $a0, string2 in $a1

@@ -35,18 +35,18 @@ public class CFGs {
     }
 
     private void setTargetRegUse() {
-        boolean[] usedAll = {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,};
-        boolean[] usedNone = {false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,};
-        boolean[] notSaved = {false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,};
-        boolean[] SaveA0A1 = {false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, false, false,};
-        boolean[] SaveA0 = {false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false,};
+        boolean[] usedAll = {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,};
+        boolean[] usedNone = {false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,};
+        boolean[] notSaved = {false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,};
+        boolean[] SaveA0A1 = {false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,};
+        boolean[] SaveA0 = {false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,};
 //        boolean[] print = {false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false,};
-        boolean[] getString = {true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, false, false,};
-        boolean[] toString = {true, true, true, true, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false,};
-        boolean[] subString = {true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, false, false,};
-        boolean[] Concatenate = {false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, false, false};
-        boolean[] parseInt = {true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false,};
-        boolean[] compare = {false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, false, false,};
+        boolean[] getString = {true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,};
+        boolean[] toString = {true, true, true, true, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,};
+        boolean[] subString = {true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,};
+        boolean[] Concatenate = {false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false};
+        boolean[] parseInt = {true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,};
+        boolean[] compare = {false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,};
 
         Map<Label, boolean[]> dict = new HashMap<>();
         for (CFG G : CFGList) {
@@ -55,7 +55,7 @@ public class CFGs {
         }
         dict.put(SymbolTable.println.getFuncLabel(), SaveA0);
         dict.put(SymbolTable.getString.getFuncLabel(), getString);
-        dict.put(SymbolTable.toString.getFuncLabel(), SaveA0);
+        dict.put(SymbolTable.toString.getFuncLabel(), toString);
         dict.put(SymbolTable.string_substring.getFuncLabel(), subString);
         dict.put(SymbolTable.string_parseInt.getFuncLabel(), parseInt);
         dict.put(SymbolTable.stringConcatenate.getFuncLabel(), Concatenate);
