@@ -2,6 +2,7 @@ package cn.ficos.Compiler.CodeGeneration;
 
 import cn.ficos.Compiler.AST.*;
 import cn.ficos.Compiler.ASTBuilder.ASTBuilder;
+import cn.ficos.Compiler.ASTVisitor.Printer;
 import cn.ficos.Compiler.ControlFlowGraph.BasicBlock;
 import cn.ficos.Compiler.ControlFlowGraph.CFG;
 import cn.ficos.Compiler.ControlFlowGraph.CFGs;
@@ -25,7 +26,6 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.util.*;
 
 /**
@@ -48,7 +48,7 @@ public class IRBuilder {
     }
 
     public static void main(String[] args) throws Exception {
-        FileInputStream FileInput = new FileInputStream("MangoTestCase/local_final/mx/string_test-huyuncong.mx");
+        FileInputStream FileInput = new FileInputStream("MangoTestCase/BackEnd/mx/simple.mx");
         org.antlr.v4.runtime.ANTLRInputStream input = new org.antlr.v4.runtime.ANTLRInputStream(FileInput);
         MangoLexer lexer = new MangoLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -70,12 +70,13 @@ public class IRBuilder {
 
         ASTBuilder AST_builder = new ASTBuilder(tree);
         AST root = AST_builder.visit(tree);
-//        Printer printer = new Printer(root, System.out);
-//        printer.print();
-        IRBuilder IR_builder = new IRBuilder(root);
-        IR_builder.print();
+        Printer printer = new Printer(root, System.out);
+        printer.print();
+//        IRBuilder IR_builder = new IRBuilder(root);
+//        IR_builder.print();
 //        CFGs CFGs = IR_builder.buildCFGs();
-        new MIPSGenerator(new FileOutputStream("MangoTestCase/out.s"), IR_builder.buildCFGs());
+//        new MIPSGenerator(new FileOutputStream("MangoTestCase/out.s"), IR_builder.buildCFGs());
+//        new MIPSGenerator(System.out, IR_builder.buildCFGs());
     }
 
     public LinkedList<LinkedList<IRNode>> getFunctions() {
@@ -218,12 +219,33 @@ public class IRBuilder {
     }
 
     public CFGs buildCFGs() {
+        refine();
         LinkedList<CFG> CFGList = new LinkedList<>();
         CFGList.add(buildCFG(initialization));
         for (LinkedList<IRNode> func : functions) {
             CFGList.add(buildCFG(func));
         }
         return new CFGs(CFGList, data, MIPSMainLabel);
+    }
+
+    private void refine() {
+        for (LinkedList<IRNode> func : functions) {
+            ListIterator<IRNode> IRItr = func.listIterator();
+            IRNode pre = IRItr.next();
+            IRNode now;
+            while (IRItr.hasNext()) {
+                now = IRItr.next();
+                if (now instanceof Label &&
+                        pre instanceof Jump &&
+                        ((Jump) pre).getTarget() == now) {
+                    IRItr.previous();
+                    IRItr.previous();
+                    IRItr.remove();
+                    IRItr.next();
+                }
+                pre = now;
+            }
+        }
     }
 
     private void visit(AST node) {

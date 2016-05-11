@@ -33,6 +33,7 @@ public class SymbolTable {
      */
     public static BuiltInType BOOL = new BuiltInType(getName("bool"), 4);
     public static FuncSymbol print = new FuncSymbol(getName("_print"), null, Arrays.asList(getName("arg")), Arrays.asList(STRING));
+    public static FuncSymbol printInt = new FuncSymbol(getName("_printInt"), null, Arrays.asList(getName("arg")), Arrays.asList(INT));
     public static FuncSymbol println = new FuncSymbol(getName("_println"), null, Arrays.asList(getName("arg")), Arrays.asList(STRING));
     public static FuncSymbol getString = new FuncSymbol(getName("_getString"), STRING, null, null);
     public static FuncSymbol getInt = new FuncSymbol(getName("_getInt"), INT, null, null);
@@ -104,6 +105,9 @@ public class SymbolTable {
         //void print(string arg)
 
         define(getName("print"), print);
+
+        //void printInt(int a)
+        define(getName("printInt"), printInt);
 
         //void println(string arg)
         define(getName("println"), println);

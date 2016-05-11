@@ -15,6 +15,7 @@ public class New extends IRNode {
     public New(Register target, Operand size) {
         this.target = target;
         this.size = size;
+        if (size instanceof Register) UEVar.add((Register) size);
         VarKill = target;
     }
 

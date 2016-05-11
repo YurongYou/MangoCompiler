@@ -26,6 +26,7 @@ public class CFG {
         for (BasicBlock block : CFG) block.gatherInitialInfo();
         solveLiveOut();
         for (BasicBlock block : CFG) block.computeLiveOutInside();
+//        refine();
         colorRegister();
         countUse();
         if (isLeaf) frameSize = (maxArgu + spills.size()) * 4;

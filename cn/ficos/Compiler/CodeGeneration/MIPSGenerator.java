@@ -79,6 +79,9 @@ public class MIPSGenerator {
         for (BasicBlock block : G.getCFG()) {
             for (IRNode node : block.getInstructions()) {
                 out.println("#\t" + node);
+                if (!(node instanceof Call) && node.getVarKill() != null && !node.getLiveOut().contains(node.getVarKill())) {
+                    continue;
+                }
                 if (node instanceof Binary) {
                     out.println("\t" + ((Binary) node).getOP()
                             + " " + processWrite(((Binary) node).getTarget())

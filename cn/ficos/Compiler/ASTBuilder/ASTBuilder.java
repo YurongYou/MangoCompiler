@@ -14,6 +14,7 @@ import cn.ficos.Compiler.Syntax.MangoParser;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -31,7 +32,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
     private String nowClass = null;
     private Stack<LoopScope> nowLoop = new Stack<>();
     private FuncDecl nowFunc = null;
-//    private Boolean finelyReturned = false;
+
 
     public ASTBuilder(org.antlr.v4.runtime.tree.ParseTree ctx) {
         // collect information before visit.
@@ -521,6 +522,34 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
                 throw new SemanticError();
             }
         }
+
+        if (funcInfo.getName().toString().equals("_print") || funcInfo.getName().toString().equals("_println")) {
+            ExprStmt temp = (ExprStmt) visit(ctx.exprList().expr(0));
+            if (!suit(SymbolTable.STRING, temp.getType())) {
+                System.err.println("line " + ctx.getStart().getLine() + ": Function call parameter mismatching, see function declaration at <" + funcInfo.getName() + ">");
+                throw new SemanticError();
+            }
+//            if (temp instanceof CallExpr && ((CallExpr) temp).getFuncInfo().getName().toString().equals("_stringConcatenate")){
+
+
+            List<Stmt> nowPrint = new LinkedList<>();
+            parseStringConcatenation(nowPrint, temp);
+            if (funcInfo.getName().toString().equals("_println")) {
+                nowPrint.add(new CallExpr(SymbolTable.println,
+                        Arrays.asList(new StringExpr("", new Position(ctx.getStart().getLine()))),
+                        new Position(ctx.getStart().getLine()), null));
+            }
+            return new CompoundStmt(nowPrint, new Position(ctx.getStart().getLine()));
+
+
+//            }
+//            else {
+//                LinkedList<ExprStmt> AP = new LinkedList<>();
+//                AP.add(temp);
+//                return new CallExpr(funcInfo, AP, new Position(ctx.getStart().getLine()), null);
+//            }
+        }
+
         LinkedList<Type> APT = new LinkedList<>();
         LinkedList<ExprStmt> AP = new LinkedList<>();
 //        ListIterator<ExprStmt> APItr = AP.listIterator(0);
@@ -548,9 +577,7 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
             throw new SemanticError();
         }
 
-//        System.out.println("visit call:" + funcInfo.getName() + ", with return type: " + funcInfo.getReturnType());
         if (funcInfo.getReturnType() == null) {
-//            System.out.println("null return type!!!!!!!!!!!");
             return new CallExpr(funcInfo, AP, new Position(ctx.getStart().getLine()), null);
         }
 
@@ -1164,5 +1191,18 @@ public class ASTBuilder extends MangoBaseVisitor<AST> {
 //    public AST visitClassFunction(MangoParser.ClassFunctionContext ctx) {
 //        return visitChildren(ctx);
 //    }
-
+private void parseStringConcatenation(List<Stmt> stmts, ExprStmt ast) {
+    if ((ast instanceof CallExpr) && ((CallExpr) ast).getFuncInfo().getName().toString().equals("_stringConcatenate")) {
+        parseStringConcatenation(stmts, ((CallExpr) ast).getActualParameter().get(0));
+//            stmts.add(((CallExpr) ast).getActualParameter().get(1));
+        stmts.add(new CallExpr(SymbolTable.print, Arrays.asList(((CallExpr) ast).getActualParameter().get(1)), ast.getPosition(), null));
+    } else {
+        if (ast instanceof CallExpr && ((CallExpr) ast).getFuncInfo().getName().toString().equals("_toString")) {
+            stmts.add(new CallExpr(SymbolTable.printInt, Arrays.asList(((CallExpr) ast).getActualParameter().get(0)), ast.getPosition(), null));
+            return;
+        }
+        stmts.add(new CallExpr(SymbolTable.print, Arrays.asList(ast), ast.getPosition(), null));
+        return;
+    }
+}
 }

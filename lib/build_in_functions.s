@@ -28,6 +28,7 @@
 # 15.	func__stringGeq	 		$a0: left string, $a1: right string
 # 16.	func__stringNeq	 		$a0: left string, $a1: right string
 # 17.	func__stringLarge 		$a0: left string, $a1: right string
+# 18. 	func__printInt			$a0: the integer
 #
 # Calling Conventions:
 # 1. args placed in $a0, $a1, $a2
@@ -175,6 +176,12 @@ _string_copy:
 	j _begin_string_copy
 	_exit_string_copy:
 	sb $zero, 0($a1)
+	jr $ra
+
+# integer arg in $a0
+func__printInt:
+	li $v0, 1
+	syscall
 	jr $ra
 
 # string arg in $a0

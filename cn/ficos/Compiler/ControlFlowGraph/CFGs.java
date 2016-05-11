@@ -40,7 +40,7 @@ public class CFGs {
         boolean[] notSaved = {false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,};
         boolean[] SaveA0A1 = {false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, false, false,};
         boolean[] SaveA0 = {false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false,};
-        boolean[] println = {false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false,};
+//        boolean[] print = {false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false,};
         boolean[] getString = {true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, false, false,};
         boolean[] toString = {true, true, true, true, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false,};
         boolean[] subString = {true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, false, false,};
@@ -53,7 +53,7 @@ public class CFGs {
             if (G.isLeaf) dict.put((Label) (G.getCFG().peek().getInstructions().peek()), G.getUsedReg());
             else dict.put((Label) (G.getCFG().peek().getInstructions().peek()), usedAll);
         }
-        dict.put(SymbolTable.println.getFuncLabel(), println);
+        dict.put(SymbolTable.println.getFuncLabel(), SaveA0);
         dict.put(SymbolTable.getString.getFuncLabel(), getString);
         dict.put(SymbolTable.toString.getFuncLabel(), SaveA0);
         dict.put(SymbolTable.string_substring.getFuncLabel(), subString);
@@ -71,6 +71,7 @@ public class CFGs {
         dict.put(SymbolTable.string_length.getFuncLabel(), SaveA0);
         dict.put(SymbolTable.string_ord.getFuncLabel(), SaveA0);
         dict.put(SymbolTable._array_size.getFuncLabel(), SaveA0);
+        dict.put(SymbolTable.printInt.getFuncLabel(), SaveA0);
         dict.put(Main, usedAll);
 
 //        System.out.println(dict);
