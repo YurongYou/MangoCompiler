@@ -30,6 +30,8 @@ public class LineCounter {
         countLine(file);
         file = new File("/Users/youyurong/Dropbox/course/Compiler/Mango/src/cn/ficos/Compiler/CodeGeneration");
         countLine(file);
+        file = new File("/Users/youyurong/Dropbox/course/Compiler/Mango/src/cn/ficos/Compiler/ControlFlowGraph");
+        countLine(file);
         System.out.println("有效代码行数: " + normalLine);
         System.out.println("注释行数: " + commentLine);
         System.out.println("空白行数: " + whiteLine);
