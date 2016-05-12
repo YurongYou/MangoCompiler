@@ -6,7 +6,6 @@ import cn.ficos.Compiler.IR.Label;
 /**
  * The for-loop statement node in AST.
  * Fields will be set as null if it's empty
- * Created by Ficos on 16/3/31.
  */
 public class ForStmt extends Stmt implements LoopScope {
     ExprStmt init;

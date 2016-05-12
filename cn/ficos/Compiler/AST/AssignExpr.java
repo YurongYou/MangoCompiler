@@ -4,7 +4,6 @@ import cn.ficos.Compiler.Gadgets.Position;
 
 /**
  * The assignment expression (e.g. a = b, t = 1, a.b = 1,  etc.) node in AST
- * Created by Ficos on 16/3/31.
  */
 public class AssignExpr extends ExprStmt {
     ExprStmt lhs;

@@ -5,7 +5,6 @@ import cn.ficos.Compiler.Gadgets.Symbol.VarSymbol;
 
 /**
  * The variable declaration node (Global) in AST
- * Created by Ficos on 16/3/31.
  */
 public class VarDecl extends Decl {
     private VarSymbol var;

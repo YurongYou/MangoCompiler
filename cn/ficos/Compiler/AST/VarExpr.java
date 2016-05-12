@@ -6,7 +6,6 @@ import cn.ficos.Compiler.Gadgets.Symbol.VarSymbol;
 
 /**
  * The Id node in AST
- * Created by Ficos on 16/3/31.
  */
 public class VarExpr extends ExprStmt implements LValue {
     VarSymbol var;

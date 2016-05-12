@@ -8,7 +8,7 @@ import java.util.*;
 
 /**
  * This class is a Control Flow Graph, a single function in the source file is a CFG
- * Created by Ficos on 16/5/4.
+
  */
 public class CFG {
     LinkedList<BasicBlock> CFG;
@@ -62,7 +62,7 @@ public class CFG {
                 if (BBItr.next().recomputeLiveOut()) changed = true;
             }
         }
-        for (BasicBlock BB : CFG) BB.getherIsReserved();
+        for (BasicBlock BB : CFG) BB.gatherIsReserved();
     }
 
     private void buildInterference() {

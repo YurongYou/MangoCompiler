@@ -5,7 +5,6 @@ import java.util.Set;
 
 /**
  * This class means the operand is a reg
- * Created by Ficos on 16/4/20.
  */
 public abstract class Register extends Operand implements Comparable<Register> {
     private static int count = 0;
@@ -46,10 +45,12 @@ public abstract class Register extends Operand implements Comparable<Register> {
     @Override
     public String toString() {
         return "$R" + ID;
-//        return "$r" + color;
     }
 
     @Override
+    /**
+     * This class is intended to let Register can be used in PriorityQueue in coloring process.
+     */
     public int compareTo(Register o) {
         if (nowAdj < o.nowAdj) return -1;
         if (nowAdj > o.nowAdj) return 1;

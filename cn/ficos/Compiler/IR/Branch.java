@@ -4,7 +4,6 @@ import cn.ficos.Compiler.Gadgets.Operand.Register;
 
 /**
  * This class serves as a branch node of IR
- * Created by Ficos on 16/4/18.
  */
 public class Branch extends IRNode {
     Register condition;

@@ -4,7 +4,6 @@ import cn.ficos.Compiler.Gadgets.Position;
 
 /**
  * The bitwise-not expression in AST.
- * Created by Ficos on 16/3/31.
  */
 public class BitNotExpr extends ExprStmt {
     ExprStmt base;

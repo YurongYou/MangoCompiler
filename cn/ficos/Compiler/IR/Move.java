@@ -3,7 +3,7 @@ package cn.ficos.Compiler.IR;
 import cn.ficos.Compiler.Gadgets.Operand.Register;
 
 /**
- * Created by Ficos on 16/4/18.
+ * This class represents the move node in IR.
  */
 public class Move extends IRNode {
     Register target;

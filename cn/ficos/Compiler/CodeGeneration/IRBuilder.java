@@ -30,7 +30,6 @@ import java.util.*;
 
 /**
  * This class can be used to build up an IR using the AST.
- * Created by Ficos on 16/4/20.
  */
 public class IRBuilder {
     Label MIPSMainLabel = null;
@@ -56,17 +55,6 @@ public class IRBuilder {
         parser.setErrorHandler(new BailErrorStrategy());
         ParseTree tree = parser.prog();
 
-//        ASTBuilder AST_builder = new ASTBuilder(tree);
-//        AST root = AST_builder.visit(tree);
-
-//        IRBuilder IR_builder = new IRBuilder(root);
-//        IR_builder.print();
-////        CFGs CFGs = IR_builder.buildCFGs();
-////        System.out.println("\nBegin output ControlFlowGraph");
-////        for (CFG g : CFGs.getCFGList()) System.out.print(g);
-////        System.out.println("\nBegin output LiveOut");
-////        IR_builder.printLiveOut();
-//        new MIPSGenerator(System.out, IR_builder.buildCFGs());
 
         ASTBuilder AST_builder = new ASTBuilder(tree);
         AST root = AST_builder.visit(tree);
@@ -103,7 +91,6 @@ public class IRBuilder {
         funcInfo.add(null);
         MIPSMainLabel = new Label("main", false);
         initialization.add(MIPSMainLabel);
-//        initialization.add(new Call(new Label("_buffer_init", false), null, null));
         visit(root);
         if (main != null) {
             initialization.add(new Call(main.getFuncInfo(), null, null));
@@ -141,7 +128,7 @@ public class IRBuilder {
         }
     }
 
-    public CFG buildCFG(LinkedList<IRNode> func) {
+    private CFG buildCFG(LinkedList<IRNode> func) {
         LinkedList<BasicBlock> CFG;
         CFG = new LinkedList<>();
         Map<Label, BasicBlock> dict = new HashMap<>();
@@ -227,6 +214,12 @@ public class IRBuilder {
         return new CFG(CFG, maxArgu, isLeaf);
     }
 
+    /**
+     * Build up CFGs after building up the whole IR.
+     * Refine IR before building it.
+     *
+     * @return corresponding CFGs
+     */
     public CFGs buildCFGs() {
         refine();
         LinkedList<CFG> CFGList = new LinkedList<>();
@@ -388,7 +381,6 @@ public class IRBuilder {
 
     private void visit(VarDecl ast) {
         String init = ast.getVar().getGlobalLabel() + ": .word ";
-//        data.add(ast.getVar().getGlobalLabel() + ": " + ".word 0");
         if (ast.getCreation() != null) {
             nowFunction = initialization;
 
@@ -690,7 +682,6 @@ public class IRBuilder {
             getStoreIR((AddressFetch) ast.getBase(), (Register) ast.getBase().getOperand());
         }
         ast.changeOperand(ast.getBase().getOperand());
-//        nowFunction.add(new Move((Register) ast.getOperand(), ast.getBase().getOperand()));
     }
 
     private void visit(ReturnStmt ast) {
@@ -725,26 +716,6 @@ public class IRBuilder {
     }
 
     private void visit(LogRelationExpr ast) {
-//        visit(ast.getLhs());
-//        visit(ast.getRhs());
-//        if (ast.isAnd()) {
-//            if (ast.getLhs().getOperand() instanceof Constant) {
-//                nowFunction.add(new Binary((Register) ast.getOperand(),
-//                        (Register) ast.getRhs().getOperand(), ast.getLhs().getOperand(),
-//                        BinaryOp.and));
-//            } else nowFunction.add(new Binary((Register) ast.getOperand(),
-//                    (Register) ast.getLhs().getOperand(), ast.getRhs().getOperand(),
-//                    BinaryOp.and));
-//        } else {
-//            if (ast.getLhs().getOperand() instanceof Constant) {
-//                nowFunction.add(new Binary((Register) ast.getOperand(),
-//                        (Register) ast.getRhs().getOperand(), ast.getLhs().getOperand(),
-//                        BinaryOp.or));
-//            } else nowFunction.add(new Binary((Register) ast.getOperand(),
-//                    (Register) ast.getLhs().getOperand(), ast.getRhs().getOperand(),
-//                    BinaryOp.or));
-//        }
-
         Label T = new Label("Log_true", true);
         Label F = new Label("Log_false", true);
         Label FINAL = new Label("Log_final", true);
@@ -774,7 +745,6 @@ public class IRBuilder {
                 buildCondition(T, F, ((LogRelationExpr) condition).getRhs());
             }
         } else if (condition instanceof LogNotExpr) {
-//            visit(((LogNotExpr) condition).getBase());
             buildCondition(F, T, ((LogNotExpr) condition).getBase());
         } else if (condition instanceof LogBinaryExpr) {
             visit(condition);
@@ -792,15 +762,6 @@ public class IRBuilder {
             }
             nowFunction.add(new Branch((Register) condition.getOperand(), T, F));
         }
-//        else {
-//
-//            System.err.println("at line: " + condition.getPosition().line);
-//            throw new Bug_TextError();
-//        }
-//        else {
-//            visit(condition);
-//            nowFunction.add(new Branch(condition.getOperand(), T, F));
-//        }
     }
 
     private void visit(SelectionStmt ast) {
@@ -826,10 +787,8 @@ public class IRBuilder {
             }
         }
         if (ast.getElseStmt() != null) {
-//            System.out.println("Entered!!!");
             visit(ast.getElseStmt());
             nowFunction.add(new Jump(FINAL));
-//            nowFunction.add(new Label("exitElse", true));
         }
         nowFunction.add(FINAL);
     }
@@ -840,9 +799,6 @@ public class IRBuilder {
         if (ast.getCondition() != null) buildCondition(begin, ast.getEnd(), ast.getCondition());
         nowFunction.add(begin);
         visit(ast.getLoop());
-
-//        nowFunction.add(new Jump(ast.getBegin()));
-
         nowFunction.add(ast.getBegin());
         if (ast.getAfter() != null) visit(ast.getAfter());
         if (ast.getCondition() != null) {
@@ -858,9 +814,6 @@ public class IRBuilder {
         buildCondition(begin, ast.getEnd(), ast.getCondition());
         nowFunction.add(begin);
         visit(ast.getLoop());
-
-//        nowFunction.add(new Jump(ast.getBegin()));
-
         nowFunction.add(ast.getBegin());
         buildCondition(begin, ast.getEnd(), ast.getCondition());
         nowFunction.add(ast.getEnd());

@@ -4,7 +4,6 @@ import cn.ficos.Compiler.Gadgets.Operand.Register;
 
 /**
  * This class means loading from a label address
- * Created by Ficos on 16/4/27.
  */
 public class LoadAddress extends IRNode {
     Register target;

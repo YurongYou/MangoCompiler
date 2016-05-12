@@ -19,7 +19,7 @@ import java.util.ListIterator;
 /**
  * This class is designed to translate my own IR to the IR that can run on LLIRInterpreter
  * Note: do support global variable and string
- * Created by Ficos on 16/5/2.
+
  */
 public class LLIR_translator {
     IRBuilder ori;

@@ -5,7 +5,7 @@ import cn.ficos.Compiler.Gadgets.Name;
 
 /**
  * BuiltIn Type, such as int, string, bool
- * Created by Ficos on 16/3/30.
+
  */
 public class BuiltInType extends Type {
     private Name className;

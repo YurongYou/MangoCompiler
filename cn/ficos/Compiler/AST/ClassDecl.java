@@ -7,7 +7,6 @@ import java.util.List;
 
 /**
  * The class declaration node in AST
- * Created by Ficos on 16/3/31.
  */
 public class ClassDecl extends Decl {
     private ClassType classType;

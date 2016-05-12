@@ -7,7 +7,7 @@ import cn.ficos.Compiler.Gadgets.Position;
 /**
  * The binary expression (e.g. 1 + 2, i % j, etc.) node in AST.
  * Note that such expression does not include logical binary expression
- * Created by Ficos on 16/3/31.
+ * The computed results of such node are integers
  */
 public class CalcBinaryExpr extends ExprStmt implements BinaryExpr {
     BinaryOp op;

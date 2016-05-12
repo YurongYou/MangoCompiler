@@ -8,14 +8,13 @@ import cn.ficos.Compiler.IR.Label;
 
 /**
  * This derived class represents a variable symbol
- * Created by Ficos on 16/3/30.
  */
 public class VarSymbol extends Symbol {
     public static final int local = 0;
     public static final int global = 1;
     public static final int classField = 2;
     //    the parameter identifier is intended to specify the No.>4 args, such as f(a0, a1, a2, a3, a4), a4 will be set as parameter.
-//    Because the No.>4 args are stored in MeM, you need you fetch it from mem
+    //    Because the No.>4 args are stored in MeM, you need you fetch it from mem
     public static final int parameter = 3;
     private Type type;
     private Register reg;

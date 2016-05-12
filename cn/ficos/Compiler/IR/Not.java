@@ -4,7 +4,6 @@ import cn.ficos.Compiler.Gadgets.Operand.Register;
 
 /**
  * This class means the bitwise not expression
- * Created by Ficos on 16/4/25.
  */
 public class Not extends IRNode {
     Register target;

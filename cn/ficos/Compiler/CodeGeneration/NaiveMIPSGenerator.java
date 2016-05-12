@@ -20,9 +20,7 @@ import java.util.ListIterator;
 import java.util.Map;
 
 /**
- * This class is used to generate the naive MIPS code.
- * <p>
- * Created by Ficos on 16/4/28.
+ * This class is used to generate the naive MIPS code, using only 2 registers (CISC style)
  */
 public class NaiveMIPSGenerator {
     PrintStream out;

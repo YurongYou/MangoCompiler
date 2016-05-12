@@ -21,8 +21,7 @@ import static cn.ficos.Compiler.Gadgets.TypeParser.parseType;
 /**
  * This class is intended to collect all global functions,
  * class fields and class functions
- * <p>Note that the global SymbolTable should have contain all class declaration
- * Created by Ficos on 16/4/2.
+ * <p>Note that the global SymbolTable should have contained all class declaration
  */
 public class Field_FunctionCollector extends MangoBaseListener {
     private SymbolTable global;

@@ -1,8 +1,7 @@
 package cn.ficos.Compiler.Gadgets;
 
 /**
- * The types are used in IR
- * Created by Ficos on 16/4/20.
+ * The binary operations that are used in AST, IR, MIPS
  */
 public enum BinaryOp {
     add,

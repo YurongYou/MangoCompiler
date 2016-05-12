@@ -17,7 +17,6 @@ import static cn.ficos.Compiler.Gadgets.Name.getName;
 
 /**
  * This is the symbol table for reference when building the AST
- * Created by Ficos on 16/3/31.
  */
 public class SymbolTable {
     /**

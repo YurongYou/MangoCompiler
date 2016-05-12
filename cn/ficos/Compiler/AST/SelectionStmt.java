@@ -7,7 +7,6 @@ import java.util.List;
 /**
  * The selection statement node in AST.
  * Note that if there are not any sub-selections, the two list will be set as null.
- * Created by Ficos on 16/3/31.
  */
 public class SelectionStmt extends Stmt {
     ExprStmt condition;

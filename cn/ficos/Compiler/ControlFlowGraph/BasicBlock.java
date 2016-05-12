@@ -14,8 +14,6 @@ import java.util.Set;
 
 /**
  * This class implements the ControlFlowGraph nodes
- * <p>
- * Created by Ficos on 16/5/4.
  */
 public class BasicBlock {
     private static int count = 0;
@@ -37,17 +35,11 @@ public class BasicBlock {
 
         this.IROrderSucc = IROrderSucc;
     }
-    //    public Set<Register> getLiveOut() {
-////        return LiveOut;
-////    }
 
     public Set<Register> getUEVar() {
         return UEVar;
     }
 
-//    public Set<Register> getVarKill() {
-//        return VarKill;
-//    }
 
     public boolean isCombineLast() {
         return isCombineLast;
@@ -57,6 +49,10 @@ public class BasicBlock {
         return reserved;
     }
 
+    /**
+     * Collect the initial information of the basic block
+     * see P447 of EaC
+     */
     public void gatherInitialInfo() {
         for (IRNode node : instructions) {
             // Process Read
@@ -68,7 +64,10 @@ public class BasicBlock {
         }
     }
 
-    public void getherIsReserved() {
+    /**
+     * this function is used for branch refine, see {@link cn.ficos.Compiler.CodeGeneration.MIPSGenerator}'s branch case
+     */
+    public void gatherIsReserved() {
         Iterator<IRNode> IRItr = instructions.descendingIterator();
         if (IRItr.hasNext()) {
             if (IRItr.next() instanceof Branch) {
@@ -89,6 +88,13 @@ public class BasicBlock {
             }
         }
     }
+
+    /**
+     * Fix-point algorithm to compute the LiveOut.
+     * See P477 of EaC
+     *
+     * @return whether the LiveOut has changed
+     */
     public Boolean recomputeLiveOut() {
         Boolean isChanged = false;
         for (BasicBlock succ : successors) {

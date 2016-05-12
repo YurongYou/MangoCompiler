@@ -4,7 +4,6 @@ import java.util.LinkedList;
 
 /**
  * Simple stack implemented by LinkedList.
- * Created by Ficos on 16/4/2.
  */
 public class Stack<T> {
     private LinkedList<T> storage = new LinkedList<>();

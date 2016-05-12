@@ -10,7 +10,7 @@ import java.util.Map;
  * Type for user defined class.
  * It stores all class information, including all class variable, class functions
  * Remember to call ".equals(Type rhs)" to compare types
- * Created by Ficos on 16/3/30.
+
  */
 public class ClassType extends Type {
 

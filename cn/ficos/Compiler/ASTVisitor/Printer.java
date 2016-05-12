@@ -9,7 +9,6 @@ import java.util.ListIterator;
 
 /**
  * This class will visit a AST tree and print out all information
- * Created by Ficos on 16/4/3.
  */
 public class Printer {
     AST root;

@@ -6,7 +6,6 @@ import cn.ficos.Compiler.Gadgets.Type.Type;
 
 /**
  * This gadget is used for parsing type string such as "int[][][]" to a type object
- * Created by Ficos on 16/4/2.
  */
 public class TypeParser {
     public static Type parseType(String type, SymbolTable global) throws Undefined {

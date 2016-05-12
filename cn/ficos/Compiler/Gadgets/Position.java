@@ -2,7 +2,6 @@ package cn.ficos.Compiler.Gadgets;
 
 /**
  * Indicates where the node/leaf begins in {@link cn.ficos.Compiler.AST.AST}
- * Created by Ficos on 16/3/31.
  */
 public class Position {
     public int line;

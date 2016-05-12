@@ -5,7 +5,6 @@ import cn.ficos.Compiler.Gadgets.Symbol.VarSymbol;
 
 /**
  * The variable declaration node (Local) in AST.
- * Created by Ficos on 16/3/31.
  */
 public class VarDeclStmt extends Stmt {
     VarSymbol varInfo;

@@ -6,7 +6,6 @@ import cn.ficos.Compiler.Gadgets.SymbolTable;
 
 /**
  * The literal int node in AST
- * Created by Ficos on 16/4/2.
  */
 public class IntExpr extends ExprStmt {
     private int value;

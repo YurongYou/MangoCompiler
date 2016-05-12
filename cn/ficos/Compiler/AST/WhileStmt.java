@@ -5,7 +5,6 @@ import cn.ficos.Compiler.IR.Label;
 
 /**
  * The while-loop statement node in AST.
- * Created by Ficos on 16/3/31.
  */
 public class WhileStmt extends Stmt implements LoopScope {
     ExprStmt condition;

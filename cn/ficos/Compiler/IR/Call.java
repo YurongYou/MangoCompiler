@@ -8,7 +8,6 @@ import java.util.List;
 
 /**
  * This class serves as a call node in IR. e.g. f(1), new ...
- * Created by Ficos on 16/4/19.
  */
 public class Call extends IRNode {
     Label funcLabel;

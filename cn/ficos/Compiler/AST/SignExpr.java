@@ -5,7 +5,6 @@ import cn.ficos.Compiler.Gadgets.SymbolTable;
 
 /**
  * The sign expression in AST.
- * Created by Ficos on 16/3/31.
  */
 public class SignExpr extends ExprStmt {
     ExprStmt base;

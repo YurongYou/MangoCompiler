@@ -9,7 +9,6 @@ import cn.ficos.Compiler.Gadgets.Type.Type;
  * The expression statement node in AST.
  * Note that every expression must have a Type
  * It contains a operand of localRegister
- * Created by Ficos on 16/3/31.
  */
 public abstract class ExprStmt extends Stmt {
     private Type type;
@@ -31,6 +30,12 @@ public abstract class ExprStmt extends Stmt {
         return operand;
     }
 
+    /**
+     * change the result operand of the node.
+     * useful in building IR, see {@link cn.ficos.Compiler.CodeGeneration.IRBuilder}'s visit assign/selfOp
+     *
+     * @param _operand the operand to be change for
+     */
     public void changeOperand(Operand _operand) {
         operand = _operand;
     }

@@ -4,7 +4,6 @@ import cn.ficos.Compiler.Gadgets.Operand.Register;
 
 /**
  * This class means the arithmetic negation node in IR
- * Created by Ficos on 16/4/25.
  */
 public class Neg extends IRNode {
     Register target;

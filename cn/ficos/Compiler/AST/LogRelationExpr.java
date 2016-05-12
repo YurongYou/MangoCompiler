@@ -5,7 +5,7 @@ import cn.ficos.Compiler.Gadgets.SymbolTable;
 
 /**
  * Binary Logical Relation: && ||
- * Created by Ficos on 16/4/25.
+ * This kind of AST is designed for the convenience of short-cut evaluation in building IR
  */
 public class LogRelationExpr extends ExprStmt {
     ExprStmt lhs;

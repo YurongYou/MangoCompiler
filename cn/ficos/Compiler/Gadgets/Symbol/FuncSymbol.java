@@ -12,7 +12,6 @@ import java.util.ListIterator;
 /**
  * This derived class represents a function symbol
  * Note that if the function has no return value, the returnType will be set as null.
- * Created by Ficos on 16/3/30.
  */
 public class FuncSymbol extends Symbol {
     private Type returnType;

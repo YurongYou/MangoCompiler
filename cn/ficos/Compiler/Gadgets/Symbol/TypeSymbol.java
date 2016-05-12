@@ -5,7 +5,6 @@ import cn.ficos.Compiler.Gadgets.Type.Type;
 
 /**
  * This derived class represents a type symbol
- * Created by Ficos on 16/3/30.
  */
 public class TypeSymbol extends Symbol {
     private Type type;

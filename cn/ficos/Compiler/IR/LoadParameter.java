@@ -3,8 +3,7 @@ package cn.ficos.Compiler.IR;
 import cn.ficos.Compiler.Gadgets.Operand.Register;
 
 /**
- * This class represents the the loading of parameter before a function begin
- * Created by Ficos on 16/5/4.
+ * This class represents the loading of parameter before a function begin
  */
 public class LoadParameter extends IRNode {
     Register target;

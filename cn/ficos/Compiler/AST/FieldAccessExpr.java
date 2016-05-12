@@ -6,13 +6,11 @@ import cn.ficos.Compiler.Gadgets.Type.Type;
 
 /**
  * The field-access expression in AST.
- * The base operand is the result, the address operand means the address operand for the load result
- * Created by Ficos on 16/3/31.
+ * The corresponding register can vary, sometimes means the contents, otherwise it means the address
  */
 public class FieldAccessExpr extends ExprStmt implements LValue, AddressFetch {
     ExprStmt base;
     Name field;
-    //    LocalRegister address = new LocalRegister();
     int shift = 0;
 
     public FieldAccessExpr(Type _type, ExprStmt _lhs, Name _field, int _shift, Position _pos) {
@@ -39,13 +37,4 @@ public class FieldAccessExpr extends ExprStmt implements LValue, AddressFetch {
         return base;
     }
 
-//    @Override
-//    public LocalRegister getAddressOperand() {
-//        return address;
-//    }
-
-//    @Override
-//    public LocalRegister getResultOperand() {
-//        return (LocalRegister) getOperand();
-//    }
 }

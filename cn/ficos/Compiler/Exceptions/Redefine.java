@@ -1,8 +1,7 @@
 package cn.ficos.Compiler.Exceptions;
 
 /**
- * Created by Ficos on 16/3/30.
+ * The "redefine" fault.
  */
 public class Redefine extends Exception {
-
 }

@@ -7,7 +7,6 @@ import java.util.List;
 
 /**
  * The function declaration node in AST.
- * Created by Ficos on 16/3/31.
  */
 public class FuncDecl extends Decl {
     FuncSymbol info;

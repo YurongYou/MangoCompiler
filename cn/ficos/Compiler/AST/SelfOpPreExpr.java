@@ -4,7 +4,6 @@ import cn.ficos.Compiler.Gadgets.Position;
 
 /**
  * The prefix self increase/decrease expression (e.g. ++a, ++a) in AST.
- * Created by Ficos on 16/3/31.
  */
 public class SelfOpPreExpr extends ExprStmt {
     ExprStmt base;

@@ -6,8 +6,8 @@ import cn.ficos.Compiler.Gadgets.SymbolTable;
 import cn.ficos.Compiler.IR.Label;
 
 /**
- * The literal string node in AST
- * Created by Ficos on 16/4/2.
+ * The literal string node in AST.
+ * Stores corresponding Label in IR
  */
 public class StringExpr extends ExprStmt {
     String text;

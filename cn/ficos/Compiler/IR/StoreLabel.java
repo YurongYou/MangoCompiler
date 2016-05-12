@@ -4,7 +4,6 @@ import cn.ficos.Compiler.Gadgets.Operand.Register;
 
 /**
  * this class is mainly used to represent the store of a global variable
- * Created by Ficos on 16/4/28.
  */
 public class StoreLabel extends IRNode {
     Label label;

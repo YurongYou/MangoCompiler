@@ -7,7 +7,7 @@ import cn.ficos.Compiler.Gadgets.Name;
 /**
  * Array Type, note that the base type can also be an ArrayType, and can not be null
  * This is the only Type class that can be arbitrarily created
- * Created by Ficos on 16/3/30.
+
  */
 public class ArrayType extends Type {
     public static ArrayType virtualArrayType = new ArrayType();

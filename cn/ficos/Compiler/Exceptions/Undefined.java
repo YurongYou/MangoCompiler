@@ -1,7 +1,7 @@
 package cn.ficos.Compiler.Exceptions;
 
 /**
- * Created by Ficos on 16/3/31.
+ * The "undefine" fault
  */
 public class Undefined extends Exception {
 }

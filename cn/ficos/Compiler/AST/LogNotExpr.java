@@ -5,7 +5,6 @@ import cn.ficos.Compiler.Gadgets.SymbolTable;
 
 /**
  * The logical-not expression in AST.
- * Created by Ficos on 16/3/31.
  */
 public class LogNotExpr extends ExprStmt {
     ExprStmt base;

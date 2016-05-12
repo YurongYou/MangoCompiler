@@ -6,7 +6,6 @@ import java.util.List;
 
 /**
  * The root of AST
- * Created by Ficos on 16/3/31.
  */
 public class Program extends AST {
     private List<Decl> decls;

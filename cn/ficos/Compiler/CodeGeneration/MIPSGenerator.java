@@ -15,7 +15,7 @@ import java.util.ListIterator;
 
 /**
  * This class reads an CFGs and generate the target MIPS codes
- * Created by Ficos on 16/5/4.
+ * Used registers as showed in regDict
  */
 public class MIPSGenerator {
     static final String[] regDict = {
@@ -47,6 +47,12 @@ public class MIPSGenerator {
     PrintStream out;
     CFGs CFGList;
 
+    /**
+     * Output the whole MIPS code after initialization.
+     *
+     * @param _out    the output stream
+     * @param CFGList the original CFGs
+     */
     public MIPSGenerator(OutputStream _out, CFGs CFGList) throws Exception {
         out = new PrintStream(_out);
         BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream("src/lib/build_in_functions.s")));

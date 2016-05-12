@@ -4,7 +4,6 @@ import cn.ficos.Compiler.Gadgets.Position;
 
 /**
  * The break statement node in AST.
- * Created by Ficos on 16/3/31.
  */
 public class BreakStmt extends Stmt {
     LoopScope breakTo;
@@ -14,6 +13,11 @@ public class BreakStmt extends Stmt {
         breakTo = _breakTo;
     }
 
+    /**
+     * Get where the break stmt breaks to, for the convenience in building IR
+     *
+     * @return the label where the break stmt breaks to
+     */
     public LoopScope getBreakTo() {
         return breakTo;
     }

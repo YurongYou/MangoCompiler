@@ -7,7 +7,7 @@ import cn.ficos.Compiler.Gadgets.SymbolTable;
 
 /**
  * The logical binary expression (< > == != >= <=) node in AST.
- * Created by Ficos on 16/3/31.
+ * The difference between LogBinary and CalcBinary is their result type
  */
 public class LogBinaryExpr extends ExprStmt implements BinaryExpr {
     BinaryOp op;

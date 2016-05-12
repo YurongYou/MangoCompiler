@@ -2,7 +2,6 @@ package cn.ficos.Compiler.IR;
 
 /**
  * This class serves as a label in IR
- * Created by Ficos on 16/4/19.
  */
 public class Label extends IRNode {
     private static int count = 0;
@@ -12,7 +11,6 @@ public class Label extends IRNode {
     public Label(String _name, boolean isCount) {
         if (isCount) labelName = _name + "_" + ID;
         else labelName = _name;
-//        System.out.println("create label " + ID + ": " + _name);
     }
 
     public String getLabelName() {

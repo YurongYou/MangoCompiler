@@ -1,8 +1,7 @@
 package cn.ficos.Compiler.Gadgets.Operand;
 
 /**
- * This class means the constant operand
- * Created by Ficos on 16/4/20.
+ * This class means the constant operand.
  */
 public class Constant extends Operand {
     int value;
@@ -15,6 +14,11 @@ public class Constant extends Operand {
         System.out.println(new Constant(23333));
     }
 
+    /**
+     * The actual value of the imm
+     *
+     * @return the actual value
+     */
     public int getValue() {
         return value;
     }

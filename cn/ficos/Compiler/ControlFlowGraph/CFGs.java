@@ -12,7 +12,7 @@ import java.util.Map;
 
 /**
  * Just a list contains CFGs
- * Created by Ficos on 16/5/4.
+ * Set usage of regs in built-in functions
  */
 public class CFGs {
     List<CFG> CFGList;
@@ -37,10 +37,7 @@ public class CFGs {
     private void setTargetRegUse() {
         boolean[] usedAll = {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,};
         boolean[] usedNone = {false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,};
-        boolean[] notSaved = {false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,};
-        boolean[] SaveA0A1 = {false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,};
         boolean[] SaveA0 = {false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,};
-//        boolean[] print = {false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false,};
         boolean[] getString = {true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,};
         boolean[] toString = {true, true, true, true, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,};
         boolean[] subString = {true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false,};

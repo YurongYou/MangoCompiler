@@ -11,7 +11,6 @@ import cn.ficos.Compiler.Syntax.MangoParser;
 
 /**
  * This class is intended to collect all class declaration in source code
- * Created by Ficos on 16/4/2.
  */
 public class ClassCollector extends MangoBaseListener {
     private SymbolTable global;

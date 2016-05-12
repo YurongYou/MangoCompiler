@@ -3,7 +3,7 @@ package cn.ficos.Compiler;
 import cn.ficos.Compiler.AST.AST;
 import cn.ficos.Compiler.ASTBuilder.ASTBuilder;
 import cn.ficos.Compiler.CodeGeneration.IRBuilder;
-import cn.ficos.Compiler.CodeGeneration.MIPSGenerator;
+import cn.ficos.Compiler.CodeGeneration.NaiveMIPSGenerator;
 import cn.ficos.Compiler.Syntax.MangoLexer;
 import cn.ficos.Compiler.Syntax.MangoParser;
 import org.antlr.v4.runtime.BailErrorStrategy;
@@ -19,7 +19,7 @@ import java.io.OutputStream;
  * @author YurongYou
  *
  * This class is intended to accomplish the main procedure of compiling.
- * Created by Ficos on 16/3/30.
+
  */
 public class Main {
     public static void main(String[] args) throws IOException {
@@ -43,7 +43,7 @@ public class Main {
         AST root = AST_builder.visit(tree);
         IRBuilder IR_builder = new IRBuilder(root);
 //        CFGs CFGs = IR_builder.buildCFGs();
-        new MIPSGenerator(out, IR_builder.buildCFGs());
-//        new NaiveMIPSGenerator(IR_builder, out);
+//        new MIPSGenerator(out, IR_builder.buildCFGs());
+        new NaiveMIPSGenerator(IR_builder, out);
     }
 }

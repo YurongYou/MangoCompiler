@@ -7,7 +7,6 @@ import cn.ficos.Compiler.Gadgets.SymbolTable;
 
 /**
  * The literal bool node in AST
- * Created by Ficos on 16/4/2.
  */
 public class BoolExpr extends ExprStmt {
     Boolean value;

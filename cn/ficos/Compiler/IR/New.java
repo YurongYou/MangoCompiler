@@ -5,8 +5,7 @@ import cn.ficos.Compiler.Gadgets.Operand.Register;
 
 /**
  * This class represents the new statement of IR
- * The size counts in words
- * Created by Ficos on 16/4/20.
+ * The size counts in bytes
  */
 public class New extends IRNode {
     Register target;

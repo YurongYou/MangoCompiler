@@ -6,7 +6,6 @@ import cn.ficos.Compiler.Gadgets.Operand.Register;
 
 /**
  * This class represents the binary statements of IR, all operands are registers
- * Created by Ficos on 16/4/20.
  */
 public class Binary extends IRNode {
     Register target;
