@@ -1,4 +1,8 @@
 # MangoCompiler
+<p align="center">
+	<img src ="Documents/overview.png" width="900" />
+</p>
+
 The Compiler Project for MS208 (Compiler Design and Implementation), ACM Class, SJTU, 2014.
 
 Homepage: http://acm.sjtu.edu.cn/wiki/Compiler_2016
@@ -16,3 +20,5 @@ Comments are welcome!
 ## license
 
 MIT
+
+
